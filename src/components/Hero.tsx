@@ -78,7 +78,7 @@ export const Hero: React.FC<{
             {t('heroSubtitle', 'Boutique Beach Resort')}
           </p>
           <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl text-white tracking-tight leading-[1.1] mb-6 font-normal">
-            {t('heroTitle', 'Where the Waves Find Reflection.')}
+            {t('heroTitle', 'Where Waves Rest and Souls Glow')}
           </h1>
 
           <p className="text-sm sm:text-base text-stone-200 max-w-2xl font-light leading-relaxed mb-8">

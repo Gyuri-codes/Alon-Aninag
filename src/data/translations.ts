@@ -37,8 +37,9 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
 
     // Hero Section
     'heroSubtitle': 'Boutique Beach Resort',
-    'heroTitle1': 'Where the Waves',
-    'heroTitle2': 'Find Reflection.',
+    'heroTitle': 'Where Waves Rest and Souls Glow',
+    'heroTitle1': 'Where Waves Rest',
+    'heroTitle2': 'and Souls Glow.',
     'heroDescription': 'An intimate 12-room beachfront retreat on the golden sands of Poblacion Beach. Warm wood & white aesthetics, peaceful sunsets, soul bonfires, and genuine Negrense hospitality.',
     'newDaytimeExperience': 'New Daytime Experience',
     'dayglowTitle': 'The Aninag Dayglow & Floating Tray',
@@ -164,7 +165,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'newsletterDesc': 'Exclusive promo codes, island hopping guides, and low-season specials.',
     'subscribe': 'Get Promo Code',
     'subscribed': 'Subscribed! ✨',
-    'footerTagline': 'Where the Waves Find Reflection. A 12-room boutique beachfront sanctuary on Poblacion Beach, Sipalay City, Negros Occidental.',
+    'footerTagline': 'Where Waves Rest and Souls Glow. A 12-room boutique beachfront sanctuary on Poblacion Beach, Sipalay City, Negros Occidental.',
     'quickLinks': 'Quick Links',
     'contactUs': 'Contact Us',
     'phone': 'Phone',
@@ -232,6 +233,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
 
     // Hero Section
     'heroSubtitle': 'Boutique Beach Resort',
+    'heroTitle': 'Kung Saan ang Alon ay Nagpapahinga at ang Kaluluwa ay May Ningning',
     'heroTitle1': 'Kung Saan ang Alon',
     'heroTitle2': 'Ay May Ningning.',
     'heroDescription': 'Isang pribadong 12-kuwartong resort sa ginintuang buhangin ng Poblacion Beach. Maaliwalas na kahoy at puting disenyo, payapang paglubog ng araw, bonfire sa gabi, at tunay na mabuting pakikitungong Negrense.',
@@ -427,6 +429,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
 
     // Hero Section
     'heroSubtitle': 'Boutique Beach Resort',
+    'heroTitle': 'Sa Diin ang Balod Nagasiga kag Nagapahuway',
     'heroTitle1': 'Sa Diin ang Balod',
     'heroTitle2': 'Nagasiga kag Nagapahuway.',
     'heroDescription': 'Pribado nga 12-kuwarto nga resort sa maputi kag bulawanon nga baybayon sang Poblacion. Mainit nga kahoy kag puti nga disenyo, matawhay nga pagtunod sang adlaw, kalayo sa kagab-ihon, kag matuod nga gugma nga Ilonggo.',
@@ -622,6 +625,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
 
     // Hero Section
     'heroSubtitle': 'Boutique Beach Resort',
+    'heroTitle': 'Kung Diin ang Balod Nagadan-ag ug Mopahulay',
     'heroTitle1': 'Kung Diin ang Balod',
     'heroTitle2': 'Nagadan-ag ug Mopahulay.',
     'heroDescription': 'Usa ka pribadong 12-kwarto nga santuwaryo sa bulawanong balas sa Poblacion Beach. Mainit nga kahoy ug puti nga disenyo, malinawong pagsalop sa adlaw, bonfire sa gabii, ug tinud-anay nga pag-abiabi sa Negros.',
@@ -817,8 +821,9 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
 
     // Hero Section
     'heroSubtitle': 'Boutique Beach Resort',
+    'heroTitle': 'Donde las Olas Descansan y las Almas Brillan',
     'heroTitle1': 'Donde las Olas',
-    'heroTitle2': 'Encuentran su Reflejo.',
+    'heroTitle2': 'Descansan y las Almas Brillan.',
     'heroDescription': 'Un íntimo refugio frente al mar de 12 habitaciones en las arenas doradas de Playa Población. Estética de maderas cálidas y blancos puros, serenos atardeceres, fogatas nocturnas y auténtica hospitalidad negrense.',
     'newDaytimeExperience': 'Nueva Experiencia Diurna',
     'dayglowTitle': 'Aninag Dayglow y Bandeja Flotante',
@@ -944,7 +949,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'newsletterDesc': 'Códigos promocionales exclusivos, guías de viaje y ofertas especiales.',
     'subscribe': 'Obtener Código',
     'subscribed': '¡Suscrito con éxito! ✨',
-    'footerTagline': 'Donde las Olas Encuentran su Reflejo. Un santuario boutique de 12 habitaciones en Playa Población, Ciudad de Sipalay, Negros Occidental.',
+    'footerTagline': 'Donde las Olas Descansan y las Almas Brillan. Un santuario boutique de 12 habitaciones en Playa Población, Ciudad de Sipalay, Negros Occidental.',
     'quickLinks': 'Enlaces Rápidos',
     'contactUs': 'Contáctenos',
     'phone': 'Teléfono',
@@ -1012,6 +1017,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
 
     // Hero Section
     'heroSubtitle': 'ブティックビーチリゾート',
+    'heroTitle': '波が憩い、魂が輝く場所',
     'heroTitle1': '波が憩い、',
     'heroTitle2': '魂が輝きを見つける場所。',
     'heroDescription': 'ポブラシオンビーチの黄金の砂浜に佇む全12室の隠れ家リゾート。温もりのある木と白を基調とした上質な空間、静寂な夕日、夕暮れの焚き火、そして温かなフィリピン・ネグロスのホスピタリティでお迎えします。',
@@ -1207,6 +1213,7 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
 
     // Hero Section
     'heroSubtitle': '부티크 비치 리조트',
+    'heroTitle': '파도가 쉬어가고, 영혼이 반짝이는 곳',
     'heroTitle1': '파도가 쉬어가고,',
     'heroTitle2': '영혼이 반짝이는 곳.',
     'heroDescription': '포블라시온 비치의 황금빛 모래사장 위에 위치한 12실 규모의 프라이빗 해변 안식처. 따뜻한 원목과 화이트 톤의 아늑한 인테리어, 평화로운 석양, 밤의 모닥불, 그리고 정성 어린 환대를 경험해보세요.',
