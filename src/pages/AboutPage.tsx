@@ -1,7 +1,7 @@
 import React from 'react';
 import { useResort } from '../context/ResortContext';
 import { PageHeader } from '../components/PageHeader';
-import { RESORT_INFO, RESORT_IMAGES, DAYGLOW_EXPERIENCE_DATA } from '../data/resortData';
+import { RESORT_INFO, RESORT_IMAGES } from '../data/resortData';
 import { 
   Sparkles, 
   Waves, 
@@ -9,7 +9,6 @@ import {
   Heart, 
   ShieldCheck, 
   MapPin, 
-  GraduationCap, 
   Users, 
   Check, 
   ArrowRight,
@@ -216,56 +215,7 @@ export const AboutPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. Strategic Project Heritage & Academic Foundation */}
-      <section className="py-20 bg-white dark:bg-[#0E1720] border-b border-stone-200 dark:border-stone-800 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-[#F8F5F2] dark:bg-[#131F2A] rounded-2xl p-8 sm:p-12 border border-stone-200 dark:border-stone-800">
-            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-8 pb-8 border-b border-stone-200 dark:border-stone-800">
-              <div className="space-y-2">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/40 text-[#006D77] dark:text-[#83C5BE] text-xs font-bold uppercase tracking-widest">
-                  <GraduationCap className="w-4 h-4" />
-                  <span>{t('academicBadge', 'Strategic Planning Foundation')}</span>
-                </div>
-                <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 dark:text-white font-normal">
-                  {t('academicCourse', 'Bachelor of Science in Hospitality Management (BSHM - 4B)')}
-                </h3>
-                <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 font-light">
-                  {t('academicSubject', 'Strategic Management • Group Application Project: New Product Development for Alon & Aninag Boutique Resort')}
-                </p>
-              </div>
-
-              <div className="px-4 py-2 rounded-lg bg-[#006D77] text-white text-xs font-bold uppercase tracking-widest">
-                {t('academicDecision', 'Strategic Decision: GO Rollout')}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-              {DAYGLOW_EXPERIENCE_DATA.academicProjectInfo.members.map((member, i) => (
-                <div 
-                  key={i} 
-                  className="p-4 rounded-xl bg-white dark:bg-[#0E1720] border border-stone-200 dark:border-stone-800/80 shadow-xs"
-                >
-                  <div className="w-8 h-8 rounded-full bg-[#006D77]/10 dark:bg-[#83C5BE]/20 text-[#006D77] dark:text-[#83C5BE] flex items-center justify-center font-bold text-xs mb-2">
-                    {i + 1}
-                  </div>
-                  <div className="font-serif text-sm font-semibold text-stone-900 dark:text-white">
-                    {member.name}
-                  </div>
-                  <div className="text-[11px] text-stone-500 dark:text-stone-400 mt-1 leading-snug">
-                    {member.role}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 p-4 rounded-xl bg-teal-50/60 dark:bg-teal-950/30 border border-teal-200/60 dark:border-teal-900/50 text-xs text-stone-700 dark:text-stone-300 leading-relaxed font-light">
-              <strong>Strategic Rationale:</strong> "{DAYGLOW_EXPERIENCE_DATA.academicProjectInfo.strategicRationale}"
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. Destination Spotlight: Why Poblacion Beach, Sipalay City */}
+      {/* 4. Destination Spotlight: Why Poblacion Beach, Sipalay City */}
       <section className="py-20 bg-[#F8F5F2] dark:bg-[#0B131A] transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">

@@ -546,7 +546,14 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(() => {
     try {
       const saved = safeGetItem('alon_aninag_user');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.email === 'camille.tan@example.com') {
+          parsed.email = 'camille.tan@gmail.com';
+          safeSetItem('alon_aninag_user', JSON.stringify(parsed));
+        }
+        return parsed;
+      }
     } catch {
       // fallback
     }
@@ -555,7 +562,7 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       name: 'Camille Tan',
       firstName: 'Camille',
       lastName: 'Tan',
-      email: 'camille.tan@example.com',
+      email: 'camille.tan@gmail.com',
       phone: '+63 917 555 9012',
       role: 'customer',
       loyaltyPoints: 340,
