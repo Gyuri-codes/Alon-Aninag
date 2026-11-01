@@ -1,6 +1,7 @@
 import { LanguageCode } from '../types';
+import { PAGE_TRANSLATIONS } from './pageTranslations';
 
-export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
+const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
   en: {
     // Top Bar & Meta
     'liveWeather': 'Sipalay Live',
@@ -1373,3 +1374,14 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'guests': '투숙 인원'
   }
 };
+
+export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
+  en: { ...BASE_TRANSLATIONS.en, ...(PAGE_TRANSLATIONS.en || {}) },
+  fil: { ...BASE_TRANSLATIONS.fil, ...(PAGE_TRANSLATIONS.fil || {}) },
+  hil: { ...BASE_TRANSLATIONS.hil, ...(PAGE_TRANSLATIONS.hil || {}) },
+  ceb: { ...BASE_TRANSLATIONS.ceb, ...(PAGE_TRANSLATIONS.ceb || {}) },
+  es: { ...BASE_TRANSLATIONS.es, ...(PAGE_TRANSLATIONS.es || {}) },
+  ja: { ...BASE_TRANSLATIONS.ja, ...(PAGE_TRANSLATIONS.ja || {}) },
+  ko: { ...BASE_TRANSLATIONS.ko, ...(PAGE_TRANSLATIONS.ko || {}) }
+};
+

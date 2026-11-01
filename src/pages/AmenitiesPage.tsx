@@ -31,18 +31,18 @@ interface AmenitiesPageProps {
 }
 
 export const AmenitiesPage: React.FC<AmenitiesPageProps> = ({ onOpenDayglowModal }) => {
-  const { formatPrice, navigateTo } = useResort();
+  const { formatPrice, navigateTo, t } = useResort();
   const [activeTab, setActiveTab] = useState<string>('all');
   const [activeMenuCategory, setActiveMenuCategory] = useState<string>('Breakfast');
 
   const tabs = [
-    { id: 'all', label: 'All Features' },
-    { id: 'dayglow', label: 'Aninag Dayglow & Paddle ✨' },
-    { id: 'dining', label: 'Dining & Sunset Bar' },
-    { id: 'bonfire', label: 'Nightly Soul Bonfire' },
-    { id: 'wellness', label: 'Wellness & Hilot' },
-    { id: 'facilities', label: 'Resort Facilities' },
-    { id: 'tours', label: 'Island Tours Desk' }
+    { id: 'all', label: t('tabAllFeatures', 'All Features') },
+    { id: 'dayglow', label: t('tabDayglowPaddle', 'Aninag Dayglow & Paddle ✨') },
+    { id: 'dining', label: t('tabDiningSunsetBar', 'Dining & Sunset Bar') },
+    { id: 'bonfire', label: t('tabNightlyBonfire', 'Nightly Soul Bonfire') },
+    { id: 'wellness', label: t('tabWellnessHilot', 'Wellness & Hilot') },
+    { id: 'facilities', label: t('tabResortFacilities', 'Resort Facilities') },
+    { id: 'tours', label: t('tabIslandToursDesk', 'Island Tours Desk') }
   ];
 
   const filteredMenuItems = MENU_ITEMS.filter(item => item.category === activeMenuCategory);
@@ -51,9 +51,9 @@ export const AmenitiesPage: React.FC<AmenitiesPageProps> = ({ onOpenDayglowModal
     <div className="animate-fadeIn">
       {/* Page Header */}
       <PageHeader 
-        title="Features & Resort Amenities"
-        subtitle="Slow down and savor unhurried moments: transparent kayak paddling, oceanview dining, starlit soul bonfires, and traditional Hilot wellness."
-        badge="Resort Facilities & Guest Experiences"
+        title={t('amenitiesPageTitle', 'Features & Resort Amenities')}
+        subtitle={t('amenitiesPageSubtitle', 'Slow down and savor unhurried moments: transparent kayak paddling, oceanview dining, starlit soul bonfires, and traditional Hilot wellness.')}
+        badge={t('amenitiesPageBadge', 'Resort Facilities & Guest Experiences')}
         bgImage={RESORT_IMAGES.dayglow}
       />
 
@@ -86,31 +86,31 @@ export const AmenitiesPage: React.FC<AmenitiesPageProps> = ({ onOpenDayglowModal
               <div className="lg:col-span-6 space-y-6">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E29578] text-white text-xs font-bold uppercase tracking-widest shadow-xs">
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Signature Daytime Experience</span>
+                  <span>{t('homeDayglowBadge', 'Featured Daytime Innovation')}</span>
                 </div>
 
                 <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-stone-900 dark:text-white tracking-tight leading-tight">
-                  The Aninag Dayglow & Paddle Experience
+                  {t('homeDayglowTitle', 'The Aninag Dayglow & Paddle Experience')}
                 </h2>
 
                 <p className="font-serif italic text-base sm:text-lg text-[#006D77] dark:text-[#83C5BE]">
-                  "{DAYGLOW_EXPERIENCE_DATA.tagline}"
+                  "{t('homeDayglowTagline', 'Paddle. Relax. Capture the Glow.')}"
                 </p>
 
                 <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 leading-relaxed font-light">
-                  A multi-sensory coastal journey designed for couples, barkadas, and aesthetic seekers. Glide atop calm turquoise waters in 100% transparent clear kayaks, followed by an artisanal floating woven bamboo tray loaded with cold-brew herbal teas, fresh mangoes, and native Negrense delicacies.
+                  {t('homeDayglowDesc', 'A multi-sensory coastal journey designed for couples, barkadas, and aesthetic seekers. Glide atop calm turquoise waters in 100% transparent clear kayaks, followed by an artisanal floating woven bamboo tray loaded with cold-brew herbal teas, fresh mangoes, and native Negrense delicacies.')}
                 </p>
 
                 {/* Inclusions Grid */}
                 <div className="space-y-2 pt-2">
                   <div className="text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300">
-                    What's Included in Your 2-Hour Experience:
+                    {t('dayglowInclusionsTitle', "What's Included in Your 2-Hour Experience:")}
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-stone-600 dark:text-stone-300">
                     {DAYGLOW_EXPERIENCE_DATA.inclusions.slice(0, 6).map((inc, i) => (
                       <div key={i} className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-[#006D77] dark:text-[#83C5BE] shrink-0" />
-                        <span className="truncate">{inc}</span>
+                        <span className="truncate">{t(inc, inc)}</span>
                       </div>
                     ))}
                   </div>
@@ -119,96 +119,52 @@ export const AmenitiesPage: React.FC<AmenitiesPageProps> = ({ onOpenDayglowModal
                 {/* Pricing & Booking Card */}
                 <div className="p-6 rounded-xl bg-white dark:bg-[#131F2A] border border-stone-200 dark:border-stone-800 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
-                    <div className="text-[11px] uppercase tracking-wider text-stone-500 dark:text-stone-400 font-semibold">
-                      Exclusive Guest Rates
+                    <div className="text-[11px] font-bold text-stone-400 uppercase tracking-widest">
+                      {t('dayglowBadge', 'Signature Experience')}
                     </div>
-                    <div className="text-lg font-bold text-stone-900 dark:text-white">
-                      ₱850 <span className="text-xs text-stone-500 font-normal">/ pair (Overnight Guests)</span>
+                    <div className="font-serif text-2xl font-bold text-[#006D77] dark:text-[#83C5BE]">
+                      ₱850 <span className="text-xs text-stone-400 font-normal">({t('overnightGuestsChip', 'Overnight Guests')})</span>
                     </div>
                     <div className="text-xs text-stone-500">
-                      ₱1,200 / pair for Day Pass Visitors
+                      ₱1,200 ({t('dayVisitorsChip', 'Day Visitors')}) • {t('twoHourReservedChip', '2-Hour Reserved')}
                     </div>
                   </div>
 
-                  <div className="flex gap-2 w-full sm:w-auto">
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
                     <button
                       onClick={() => onOpenDayglowModal('overnight')}
-                      className="flex-1 sm:flex-none px-6 py-3 bg-[#E29578] hover:bg-[#d07e60] text-white text-xs uppercase tracking-wider font-bold rounded-sm shadow-sm transition cursor-pointer"
+                      className="flex-1 sm:flex-none px-5 py-2.5 bg-[#006D77] hover:bg-[#00555d] text-white text-xs uppercase tracking-wider font-bold rounded-sm shadow-sm transition cursor-pointer"
                     >
-                      Book Overnight Slot
-                    </button>
-                    <button
-                      onClick={() => onOpenDayglowModal('daypass')}
-                      className="flex-1 sm:flex-none px-5 py-3 border border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs uppercase tracking-wider font-semibold rounded-sm transition cursor-pointer"
-                    >
-                      Day Pass
+                      {t('btnBookDayglow', 'Book Dayglow Experience')}
                     </button>
                   </div>
                 </div>
               </div>
 
-              {/* Photos Collage */}
               <div className="lg:col-span-6 space-y-4">
                 <div className="aspect-16/10 rounded-2xl overflow-hidden shadow-xl border border-stone-200 dark:border-stone-800">
                   <img
                     src={RESORT_IMAGES.dayglow}
-                    alt="Clear Kayak Experience"
+                    alt="Dayglow Paddle"
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="aspect-4/3 rounded-xl overflow-hidden shadow-md border border-stone-200 dark:border-stone-800">
+                  <div className="aspect-16/10 rounded-xl overflow-hidden shadow-md border border-stone-200 dark:border-stone-800">
                     <img
                       src={RESORT_IMAGES.floatingTray}
                       alt="Floating Snack Tray"
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="aspect-4/3 rounded-xl overflow-hidden shadow-md border border-stone-200 dark:border-stone-800">
+                  <div className="aspect-16/10 rounded-xl overflow-hidden shadow-md border border-stone-200 dark:border-stone-800">
                     <img
                       src={RESORT_IMAGES.sunsetPaddleKayak}
-                      alt="Sunset Paddle Sipalay"
+                      alt="Sunset Paddle"
                       className="w-full h-full object-cover"
                     />
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Daily Schedule Slots */}
-            <div className="mt-14 pt-10 border-t border-stone-200 dark:border-stone-800">
-              <div className="text-center max-w-2xl mx-auto mb-8">
-                <h3 className="font-serif text-2xl font-normal text-stone-900 dark:text-white">
-                  Available Daily Time Slots
-                </h3>
-                <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
-                  Scheduled time slots guarantee peaceful waters and zero overcrowding.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {DAYGLOW_EXPERIENCE_DATA.timeSlots.map((slot) => (
-                  <div
-                    key={slot.id}
-                    className="p-5 rounded-xl bg-white dark:bg-[#131F2A] border border-stone-200 dark:border-stone-800 text-center"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-[#006D77]/10 dark:bg-[#83C5BE]/20 text-[#006D77] dark:text-[#83C5BE] flex items-center justify-center mx-auto mb-3">
-                      {slot.icon === 'Sun' && <Sun className="w-5 h-5" />}
-                      {slot.icon === 'Sparkles' && <Sparkles className="w-5 h-5" />}
-                      {slot.icon === 'Wind' && <Wind className="w-5 h-5" />}
-                      {slot.icon === 'Sunset' && <Sunset className="w-5 h-5" />}
-                    </div>
-                    <div className="text-xs font-bold uppercase tracking-wider text-[#006D77] dark:text-[#83C5BE]">
-                      {slot.label}
-                    </div>
-                    <div className="font-serif text-base font-semibold text-stone-900 dark:text-white mt-1">
-                      {slot.name}
-                    </div>
-                    <div className="text-[11px] text-stone-500 dark:text-stone-400 mt-1 leading-snug font-light">
-                      {slot.vibe}
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
           </div>
@@ -219,34 +175,41 @@ export const AmenitiesPage: React.FC<AmenitiesPageProps> = ({ onOpenDayglowModal
       {(activeTab === 'all' || activeTab === 'dining') && (
         <section id="dining" className="py-20 bg-white dark:bg-[#0E1720] border-b border-stone-200 dark:border-stone-800 transition-colors">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-12">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/40 text-[#006D77] dark:text-[#83C5BE] text-xs font-bold uppercase tracking-widest mb-3">
-                <Utensils className="w-3.5 h-3.5" />
-                <span>Culinary Heritage & Sunset Cocktails</span>
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/40 text-[#006D77] dark:text-[#83C5BE] text-xs font-bold uppercase tracking-widest mb-2">
+                  <Utensils className="w-3.5 h-3.5" />
+                  <span>{t('diningBadge', 'Local Flavors & Sunset Libations')}</span>
+                </div>
+                <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 dark:text-white font-normal">
+                  {t('diningMenuTitle', 'Soul Beach Cafe & Bar Menu')}
+                </h2>
+                <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
+                  {t('diningHours', 'Serving Hours: 6:30 AM – 10:00 PM Daily')}
+                </p>
               </div>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-stone-900 dark:text-white tracking-tight mb-4">
-                Soul Beach Cafe & Bar
-              </h2>
-              <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 leading-relaxed font-light">
-                Open daily from 6:30 AM to 10:00 PM. Serving authentic Negrense specialties, sunrise Silog breakfasts, fresh charcoal-grilled seafood catch, and craft tropical coolers facing the waves.
-              </p>
-            </div>
 
-            {/* Menu Category Switcher */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
-              {['Breakfast', 'Lunch', 'Dinner', 'Sunset Deck Drinks', 'Negrense Specials'].map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveMenuCategory(cat)}
-                  className={`px-4 py-2 rounded-sm text-xs uppercase tracking-wider font-bold transition cursor-pointer ${
-                    activeMenuCategory === cat
-                      ? 'bg-[#006D77] text-white shadow-sm'
-                      : 'bg-stone-100 dark:bg-[#131F2A] text-stone-700 dark:text-stone-300 hover:bg-stone-200'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+              {/* Menu Category Switcher */}
+              <div className="flex items-center gap-2 bg-stone-100 dark:bg-[#131F2A] p-1.5 rounded-lg border border-stone-200 dark:border-stone-700 overflow-x-auto no-scrollbar">
+                {[
+                  { id: 'Breakfast', label: t('catBreakfast', 'Breakfast') },
+                  { id: 'Lunch', label: t('catLunch', 'Lunch') },
+                  { id: 'Dinner', label: t('catDinner', 'Dinner') },
+                  { id: 'Bar', label: t('catBar', 'Bar & Cocktails') }
+                ].map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() => setActiveMenuCategory(c.id)}
+                    className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition cursor-pointer whitespace-nowrap ${
+                      activeMenuCategory === c.id
+                        ? 'bg-[#006D77] text-white shadow-xs'
+                        : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white'
+                    }`}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Menu Items Grid */}
@@ -310,15 +273,15 @@ export const AmenitiesPage: React.FC<AmenitiesPageProps> = ({ onOpenDayglowModal
               <div className="lg:col-span-6 space-y-5">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/40 text-[#E29578] text-xs font-bold uppercase tracking-widest">
                   <Flame className="w-3.5 h-3.5" />
-                  <span>Complimentary Evening Ritual</span>
+                  <span>{t('tabNightlyBonfire', 'Nightly Soul Bonfire')}</span>
                 </div>
 
                 <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 dark:text-white font-normal">
-                  Nightly Soul Bonfire & Beach Stargazing
+                  {t('bonfireTitle', 'Nightly Soul Bonfire & Acoustic Hours')}
                 </h2>
 
                 <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 leading-relaxed font-light">
-                  As the golden sun sets into the Sulu Sea, our beachfront comes alive with warm ember glow. Gather around the driftwood fire pit on Poblacion Beach to roast marshmallows, sip warm Negrense tablea hot chocolate, listen to soft acoustic melodies, and share travel stories under the stars.
+                  {t('bonfireDesc', 'Every evening as the sun dips below the Sulu Sea, our team lights a beachside driftwood bonfire on the golden sand. Unwind to gentle acoustic Ilonggo rhythms, roast marshmallows, and gaze at unpolluted star-filled skies.')}
                 </p>
 
                 <div className="space-y-2 text-xs text-stone-700 dark:text-stone-300">
@@ -348,13 +311,13 @@ export const AmenitiesPage: React.FC<AmenitiesPageProps> = ({ onOpenDayglowModal
             <div className="max-w-3xl mx-auto text-center space-y-4 mb-12">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/40 text-[#006D77] dark:text-[#83C5BE] text-xs font-bold uppercase tracking-widest">
                 <Heart className="w-3.5 h-3.5 text-[#E29578]" />
-                <span>Restorative Healing</span>
+                <span>{t('tabWellnessHilot', 'Wellness & Hilot')}</span>
               </div>
               <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 dark:text-white font-normal">
-                Traditional Hilot & Coastal Wellness
+                {t('wellnessTitle', 'Traditional Negrense Hilot Healing')}
               </h2>
               <p className="text-sm text-stone-600 dark:text-stone-300 font-light leading-relaxed">
-                Rejuvenate tired muscles and restore inner balance with authentic Filipino Hilot therapy performed by certified local wellness practitioners using warm virgin coconut oil and heated banana leaves.
+                {t('wellnessDesc', 'Authentic Philippine therapeutic bodywork utilizing warm virgin coconut oil, heated banana leaves, and herbal compress to ease travel fatigue and restore energy balance.')}
               </p>
             </div>
 
@@ -418,21 +381,21 @@ export const AmenitiesPage: React.FC<AmenitiesPageProps> = ({ onOpenDayglowModal
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto mb-12">
               <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 dark:text-white font-normal mb-3">
-                Complete Resort Facilities & Guest Services
+                {t('tabResortFacilities', 'Complete Resort Facilities & Guest Services')}
               </h2>
               <p className="text-sm text-stone-600 dark:text-stone-300 font-light">
-                Modern essentials carefully engineered to keep your beach holiday seamless, connected, and trouble-free.
+                {t('facilitiesStarlinkDesc', 'Modern essentials carefully engineered to keep your beach holiday seamless, connected, and trouble-free.')}
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
-                { title: 'Starlink High-Speed Wi-Fi', desc: '150+ Mbps fiber-class satellite internet covering all 12 rooms, beach daybeds, and sunset deck.', icon: Wifi },
-                { title: '24/7 Generator Backup Power', desc: 'Automatic full-power backup generator ensuring uninterrupted air conditioning and lighting at all times.', icon: ShieldCheck },
+                { title: t('facilitiesStarlink', 'Starlink High-Speed Wi-Fi'), desc: t('facilitiesStarlinkDesc', '150+ Mbps satellite internet across all rooms, dining pavilion, and beachfront daybeds.'), icon: Wifi },
+                { title: t('facilitiesGenerator', '24/7 Backup Generator'), desc: t('facilitiesGeneratorDesc', 'Automatic diesel power backup ensuring uninterrupted air-conditioning and lighting.'), icon: ShieldCheck },
                 { title: 'Beach Rinse Shower Stations', desc: 'Freshwater outdoor bamboo showers directly along the beachfront walkout for rinsing off after paddling.', icon: Waves },
                 { title: 'Scooter & Motorbike Rentals', desc: 'Reliable automatic scooters available for rent at reception to explore Sipalay’s scenic viewpoints and bays.', icon: Compass },
                 { title: 'Complimentary Beach Gear', desc: 'Snorkel sets, life jackets, beach towels, and waterproof dry bags provided freely for resort guests.', icon: Check },
-                { title: '24/7 Concierge & Security', desc: 'Round-the-clock front desk assistance, night security guards, and emergency local coordination.', icon: Heart }
+                { title: t('frontDesk247', '24/7 Concierge & Security'), desc: 'Round-the-clock front desk assistance, night security guards, and emergency local coordination.', icon: Heart }
               ].map((fac, idx) => {
                 const Icon = fac.icon;
                 return (
@@ -464,17 +427,17 @@ export const AmenitiesPage: React.FC<AmenitiesPageProps> = ({ onOpenDayglowModal
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/40 text-[#006D77] dark:text-[#83C5BE] text-xs font-bold uppercase tracking-widest mb-2">
                   <Compass className="w-3.5 h-3.5" />
-                  <span>Sipalay City Excursions</span>
+                  <span>{t('tabIslandToursDesk', 'Island Tours Desk')}</span>
                 </div>
                 <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 dark:text-white font-normal">
-                  Curated Island Hopping & Tours Desk
+                  {t('activitiesHeading', 'Resort Experiences & Coastal Tours')}
                 </h2>
               </div>
               <button
                 onClick={() => navigateTo('contact')}
                 className="px-5 py-2.5 bg-[#006D77] hover:bg-[#00555d] text-white text-xs uppercase tracking-wider font-bold rounded-sm shadow-sm transition cursor-pointer"
               >
-                Inquire With Tour Desk
+                {t('bookActivity', 'Book Activity')}
               </button>
             </div>
 
@@ -507,7 +470,7 @@ export const AmenitiesPage: React.FC<AmenitiesPageProps> = ({ onOpenDayglowModal
                         onClick={() => navigateTo('contact')}
                         className="text-xs font-bold text-[#006D77] dark:text-[#83C5BE] uppercase tracking-wider hover:underline"
                       >
-                        Book Tour →
+                        {t('bookActivity', 'Book Activity')} →
                       </button>
                     </div>
                   </div>

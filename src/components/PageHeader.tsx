@@ -12,10 +12,11 @@ interface PageHeaderProps {
 export const PageHeader: React.FC<PageHeaderProps> = ({
   title,
   subtitle,
-  badge = 'Alon & Aninag • Sipalay City',
+  badge,
   bgImage
 }) => {
-  const { navigateTo } = useResort();
+  const { navigateTo, t } = useResort();
+  const displayBadge = badge || t('resortBadgeDefault', 'Alon & Aninag • Sipalay City');
 
   return (
     <div className="relative bg-[#1A1A1A] text-white py-14 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden border-b border-stone-800">
@@ -38,7 +39,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             onClick={() => navigateTo('home')} 
             className="hover:text-[#83C5BE] transition cursor-pointer"
           >
-            Home
+            {t('breadcrumbHome', 'Home')}
           </button>
           <ChevronRight className="w-3.5 h-3.5 text-stone-600" />
           <span className="text-[#83C5BE] font-semibold">{title}</span>
@@ -47,7 +48,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         {/* Decorative Badge */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[#83C5BE] text-[11px] font-bold uppercase tracking-widest mb-3.5 shadow-sm">
           <Sparkles className="w-3 h-3 text-[#E29578]" />
-          <span>{badge}</span>
+          <span>{displayBadge}</span>
         </div>
 
         {/* Page Main Title */}

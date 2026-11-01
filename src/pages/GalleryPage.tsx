@@ -26,7 +26,7 @@ interface GalleryPhoto {
 }
 
 export const GalleryPage: React.FC = () => {
-  const { navigateTo } = useResort();
+  const { navigateTo, t } = useResort();
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [activeLightboxIndex, setActiveLightboxIndex] = useState<number | null>(null);
   const [tourHotspot, setTourHotspot] = useState<'deck' | 'beach' | 'villa' | 'lounge'>('deck');
@@ -37,7 +37,7 @@ export const GalleryPage: React.FC = () => {
       id: 'p-1',
       title: 'Golden Hour on Poblacion Shoreline',
       category: 'sunset',
-      categoryLabel: 'Beachfront & Sunset',
+      categoryLabel: t('filterSunset', 'Beachfront & Sunset'),
       image: RESORT_IMAGES.hero,
       caption: 'Alon & Aninag Boutique Resort bathed in the radiant golden reflections of the Sulu Sea sunset.'
     },
@@ -45,7 +45,7 @@ export const GalleryPage: React.FC = () => {
       id: 'p-2',
       title: 'The Aninag Dayglow Clear Kayak Experience',
       category: 'dayglow',
-      categoryLabel: 'Dayglow & Kayaks',
+      categoryLabel: t('filterDayglow', 'Dayglow & Kayaks'),
       image: RESORT_IMAGES.dayglow,
       caption: '100% transparent kayak gliding effortlessly over shallow, tranquil Poblacion Bay waters.'
     },
@@ -53,7 +53,7 @@ export const GalleryPage: React.FC = () => {
       id: 'p-3',
       title: 'Aninag Sunset Master Villa Interior',
       category: 'rooms',
-      categoryLabel: 'Rooms & Suites',
+      categoryLabel: t('filterRooms', 'Rooms & Suites'),
       image: RESORT_IMAGES.suite,
       caption: 'Handcrafted teak wood headboards, clean minimalist lines, and direct oceanfront balcony view.'
     },
@@ -61,7 +61,7 @@ export const GalleryPage: React.FC = () => {
       id: 'p-4',
       title: 'Artisanal Floating Negrense Snack Tray',
       category: 'dayglow',
-      categoryLabel: 'Dayglow & Kayaks',
+      categoryLabel: t('filterDayglow', 'Dayglow & Kayaks'),
       image: RESORT_IMAGES.floatingTray,
       caption: 'Woven bamboo floating tray served with cold-brew lemongrass-pandan tea and native Negrense delicacies.'
     },
@@ -69,7 +69,7 @@ export const GalleryPage: React.FC = () => {
       id: 'p-5',
       title: 'Sunset Viewing Deck & Acoustic Dining',
       category: 'dining',
-      categoryLabel: 'Dining & Soul Bar',
+      categoryLabel: t('filterDining', 'Dining & Soul Bar'),
       image: RESORT_IMAGES.sunsetDeck,
       caption: 'Warm bistro ambient lights, rattan canopies, and gentle sea breezes at dusk.'
     },
@@ -77,7 +77,7 @@ export const GalleryPage: React.FC = () => {
       id: 'p-6',
       title: 'Beachfront Soul Bonfire Under the Stars',
       category: 'bonfire',
-      categoryLabel: 'Nighttime Bonfire',
+      categoryLabel: t('filterBonfire', 'Nighttime Bonfire'),
       image: RESORT_IMAGES.bonfire,
       caption: 'Nightly gathering around the driftwood ember pit for toasted marshmallows and acoustic songs.'
     },
@@ -85,7 +85,7 @@ export const GalleryPage: React.FC = () => {
       id: 'p-7',
       title: 'Fresh Charcoal-Grilled Catch & Cocktails',
       category: 'dining',
-      categoryLabel: 'Dining & Soul Bar',
+      categoryLabel: t('filterDining', 'Dining & Soul Bar'),
       image: RESORT_IMAGES.dining,
       caption: 'Locally caught Sipalay seafood grilled over coconut charcoal and paired with signature coolers.'
     },
@@ -93,7 +93,7 @@ export const GalleryPage: React.FC = () => {
       id: 'p-8',
       title: 'Stand-Up Paddleboard Sunset Glide',
       category: 'dayglow',
-      categoryLabel: 'Dayglow & Kayaks',
+      categoryLabel: t('filterDayglow', 'Dayglow & Kayaks'),
       image: RESORT_IMAGES.sunsetPaddleKayak,
       caption: 'Paddling gently into the glowing horizon during our signature late afternoon session.'
     },
@@ -101,7 +101,7 @@ export const GalleryPage: React.FC = () => {
       id: 'p-9',
       title: 'Tinagong Dagat Islet Labyrinth',
       category: 'sunset',
-      categoryLabel: 'Beachfront & Sunset',
+      categoryLabel: t('filterSunset', 'Beachfront & Sunset'),
       image: RESORT_IMAGES.islets,
       caption: 'Emerald saltwater lagoons and limestone hanging bridges just 18 minutes from our resort.'
     },
@@ -109,40 +109,40 @@ export const GalleryPage: React.FC = () => {
       id: 'p-10',
       title: 'Pure Golden Sand Walkout',
       category: 'sunset',
-      categoryLabel: 'Beachfront & Sunset',
+      categoryLabel: t('filterSunset', 'Beachfront & Sunset'),
       image: RESORT_IMAGES.beachDay,
-      caption: 'Soft, golden sand immediately greeting your feet right outside your private room veranda.'
+      caption: 'The quiet beauty of Poblacion Beach at mid-day with pristine swimmable water.'
     },
     {
       id: 'p-11',
-      title: 'Marine Sanctuary Snorkeling in Sipalay',
-      category: 'dayglow',
-      categoryLabel: 'Dayglow & Kayaks',
-      image: RESORT_IMAGES.diving,
-      caption: 'Vibrant living coral gardens and tropical marine life flourishing in nearby Campomanes Bay.'
+      title: 'Barkada Glow Loft Veranda',
+      category: 'rooms',
+      categoryLabel: t('filterRooms', 'Rooms & Suites'),
+      image: RESORT_IMAGES.cottage,
+      caption: 'Spacious loft terrace equipped with daybeds and rattan chairs for stargazing.'
     },
     {
       id: 'p-12',
-      title: 'Coastal Cottage Aesthetics',
-      category: 'rooms',
-      categoryLabel: 'Rooms & Suites',
-      image: RESORT_IMAGES.cottage,
-      caption: 'Thoughtful native architectural touches celebrating the natural materials of Negros Occidental.'
+      title: 'Pristine Campomanes Bay Coral Reefs',
+      category: 'dayglow',
+      categoryLabel: t('filterDayglow', 'Dayglow & Kayaks'),
+      image: RESORT_IMAGES.diving,
+      caption: 'Underwater marine sanctuaries filled with sea turtles and living coral gardens.'
     }
   ];
 
   const categories = [
-    { id: 'all', label: 'All Photos' },
-    { id: 'rooms', label: 'Rooms & Suites' },
-    { id: 'sunset', label: 'Beachfront & Sunsets' },
-    { id: 'dayglow', label: 'Dayglow & Kayaks' },
-    { id: 'dining', label: 'Dining & Bar' },
-    { id: 'bonfire', label: 'Night Bonfire' }
+    { id: 'all', label: t('filterAllPhotos', 'All Photos') },
+    { id: 'rooms', label: t('filterRooms', 'Rooms & Suites') },
+    { id: 'sunset', label: t('filterSunset', 'Beachfront & Sunset') },
+    { id: 'dayglow', label: t('filterDayglow', 'Dayglow & Kayaks') },
+    { id: 'dining', label: t('filterDining', 'Dining & Soul Bar') },
+    { id: 'bonfire', label: t('filterBonfire', 'Nighttime Bonfire') }
   ];
 
-  const filteredPhotos = photos.filter(
-    p => activeCategory === 'all' || p.category === activeCategory
-  );
+  const filteredPhotos = activeCategory === 'all'
+    ? photos
+    : photos.filter(p => p.category === activeCategory);
 
   const openLightbox = (index: number) => {
     setActiveLightboxIndex(index);
@@ -191,9 +191,9 @@ export const GalleryPage: React.FC = () => {
     <div className="animate-fadeIn">
       {/* Page Header */}
       <PageHeader 
-        title="Resort Visual Gallery"
-        subtitle="Step into our coastal haven through authentic photography capturing golden hours, clear kayaks, intimate suites, and soulful beach memories."
-        badge="Photography & 360° Visual Tours"
+        title={t('galleryPageTitle', 'Resort Visual Journal')}
+        subtitle={t('galleryPageSubtitle', 'Glimpses of quiet dawns, clear crystal waters, crackling evening bonfires, and unforgettable golden hours on Poblacion Beach.')}
+        badge={t('galleryPageBadge', 'Photographs & 360° Virtual Tour')}
         bgImage={RESORT_IMAGES.sunsetDeck}
       />
 
@@ -218,7 +218,7 @@ export const GalleryPage: React.FC = () => {
             </div>
 
             <div className="text-xs text-stone-500 dark:text-stone-400 font-medium hidden sm:block">
-              {filteredPhotos.length} high-resolution photographs
+              {filteredPhotos.length} {t('galleryBadge', 'Captured Moments')}
             </div>
           </div>
         </div>
@@ -270,37 +270,39 @@ export const GalleryPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. 360° Virtual Tour Section */}
-      <section className="py-20 bg-white dark:bg-[#0E1720] border-b border-stone-200 dark:border-stone-800 transition-colors">
+      {/* 3. 360° Interactive Virtual Tour Feature */}
+      <section className="py-20 bg-stone-900 text-white border-b border-stone-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/40 text-[#006D77] dark:text-[#83C5BE] text-xs font-bold uppercase tracking-widest mb-3">
-              <Compass className="w-3.5 h-3.5" />
-              <span>Interactive Virtual Experience</span>
+          <div className="text-center max-w-3xl mx-auto mb-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-[#83C5BE] text-xs font-bold uppercase tracking-widest mb-3 border border-white/15">
+              <Sparkles className="w-3.5 h-3.5 text-[#E29578]" />
+              <span>{t('virtualTourBadge', 'Interactive 360° Virtual Tour')}</span>
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-stone-900 dark:text-white tracking-tight mb-4">
-              Explore Alon & Aninag in 360°
+            <h2 className="font-serif text-3xl sm:text-5xl font-normal text-white tracking-tight mb-3">
+              {t('virtualTourTitle', 'Step Onto Our Beachfront Virtually')}
             </h2>
-            <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 font-light">
-              Click the hotspots below to experience panoramic viewpoints across the resort before your arrival.
+            <p className="text-sm text-stone-300 font-light max-w-xl mx-auto">
+              {t('virtualTourDesc', 'Explore our 12 boutique rooms, sunset dining pavilion, and pristine beachfront from anywhere in the world.')}
             </p>
           </div>
 
-          <div className="rounded-2xl overflow-hidden border border-stone-200 dark:border-stone-800 shadow-2xl relative bg-stone-900">
-            {/* Viewport Frame */}
-            <div className="relative aspect-16/9 sm:aspect-21/9 overflow-hidden">
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-stone-700 max-w-5xl mx-auto bg-black">
+            {/* 360 View Window */}
+            <div className="relative aspect-16/9 overflow-hidden">
               <img
                 src={tourSpots[tourHotspot].image}
                 alt={tourSpots[tourHotspot].name}
-                className="w-full h-full object-cover transition-all duration-700 scale-102"
+                className="w-full h-full object-cover scale-105 animate-subtle-pan"
               />
+
+              {/* Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 pointer-events-none" />
 
-              {/* Top View Title & Audio */}
+              {/* Top Controls Overlay */}
               <div className="absolute top-4 left-4 right-4 flex items-center justify-between text-white">
                 <div className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-semibold border border-white/20">
                   <Compass className="w-3.5 h-3.5 text-[#83C5BE] animate-spin-slow" />
-                  <span>360° Viewing: {tourSpots[tourHotspot].name}</span>
+                  <span>360°: {tourSpots[tourHotspot].name}</span>
                 </div>
 
                 <button
@@ -326,9 +328,6 @@ export const GalleryPage: React.FC = () => {
 
             {/* Hotspot Switcher Buttons */}
             <div className="bg-stone-950 p-4 border-t border-stone-800 flex flex-wrap items-center justify-center gap-2">
-              <span className="text-xs text-stone-400 font-bold uppercase tracking-wider mr-2 hidden sm:inline">
-                Jump to Viewpoint:
-              </span>
               {[
                 { id: 'deck', label: '🌅 Sunset Deck' },
                 { id: 'beach', label: '🏖️ Poblacion Beach Shore' },
@@ -359,17 +358,17 @@ export const GalleryPage: React.FC = () => {
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/40 text-[#006D77] dark:text-[#83C5BE] text-xs font-bold uppercase tracking-widest mb-2">
                 <Camera className="w-3 h-3 text-[#E29578]" />
-                <span>#GlowAtAlon Moments</span>
+                <span>{t('guestMemoriesBadge', 'Guest Memories & Social Echoes')}</span>
               </div>
               <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 dark:text-white font-normal">
-                Captured by Guests & Travelers
+                {t('guestMemoriesTitle', 'Captured Through the Eyes of Our Guests')}
               </h2>
             </div>
             <button
               onClick={() => navigateTo('booking')}
               className="px-6 py-3 bg-[#006D77] hover:bg-[#00555d] text-white text-xs uppercase tracking-wider font-bold rounded-sm shadow-sm transition cursor-pointer"
             >
-              Plan Your Sipalay Trip
+              {t('btnBookGetaway', 'Book Your Getaway')}
             </button>
           </div>
 
@@ -440,7 +439,7 @@ export const GalleryPage: React.FC = () => {
             {/* Caption & Counter */}
             <div className="mt-4 text-center text-white max-w-xl space-y-1">
               <div className="text-[11px] text-[#83C5BE] font-bold uppercase tracking-widest">
-                {filteredPhotos[activeLightboxIndex].categoryLabel} • {activeLightboxIndex + 1} of {filteredPhotos.length}
+                {filteredPhotos[activeLightboxIndex].categoryLabel} • {activeLightboxIndex + 1} / {filteredPhotos.length}
               </div>
               <h3 className="font-serif text-xl sm:text-2xl font-normal">
                 {filteredPhotos[activeLightboxIndex].title}

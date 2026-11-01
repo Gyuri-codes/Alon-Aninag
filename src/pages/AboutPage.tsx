@@ -18,31 +18,31 @@ import {
 } from 'lucide-react';
 
 export const AboutPage: React.FC = () => {
-  const { navigateTo } = useResort();
+  const { navigateTo, t } = useResort();
 
   const brandPillars = [
     {
-      title: 'Warm Negrense Hospitality',
-      subtitle: 'Pag-amoma kag Pag-ulikid',
-      desc: 'Genuine, unhurried warmth from our local Sipalay team. Every guest is welcomed like family returning home to the sea.',
+      title: t('pillar1Title', 'Warm Negrense Hospitality'),
+      subtitle: t('pillar1Sub', 'Pag-amoma kag Pag-ulikid'),
+      desc: t('pillar1Desc', 'Genuine, unhurried warmth from our local Sipalay team. Every guest is welcomed like family returning home to the sea.'),
       icon: Heart
     },
     {
-      title: 'Minimalist Wood & White Aesthetic',
-      subtitle: 'Calm & Restful Architecture',
-      desc: 'Natural teak and mahogany woods, breathable organic cotton, open sea-facing verandas, and clutter-free peaceful spaces.',
+      title: t('pillar2Title', 'Minimalist Wood & White Aesthetic'),
+      subtitle: t('pillar2Sub', 'Calm & Restful Architecture'),
+      desc: t('pillar2Desc', 'Natural teak and mahogany woods, breathable organic cotton, open sea-facing verandas, and clutter-free peaceful spaces.'),
       icon: Sparkles
     },
     {
-      title: 'Intimate 12-Room Exclusivity',
-      subtitle: 'Zero Overcrowding Guarantee',
-      desc: 'With only 12 boutique rooms, our shoreline and daybeds remain quiet, intimate, and deeply private even in peak season.',
+      title: t('pillar3Title', 'Intimate 12-Room Exclusivity'),
+      subtitle: t('pillar3Sub', 'Zero Overcrowding Guarantee'),
+      desc: t('pillar3Desc', 'With only 12 boutique rooms, our shoreline and daybeds remain quiet, intimate, and deeply private even in peak season.'),
       icon: ShieldCheck
     },
     {
-      title: 'Sustainable Coastal Stewardship',
-      subtitle: 'Caring for Poblacion Bay',
-      desc: 'Coral-safe non-motorized watersports, ceramic refillable toiletries, locally grown farm ingredients, and beach cleanups.',
+      title: t('pillar4Title', 'Sustainable Coastal Stewardship'),
+      subtitle: t('pillar4Sub', 'Caring for Poblacion Bay'),
+      desc: t('pillar4Desc', 'Coral-safe non-motorized watersports, ceramic refillable toiletries, locally grown farm ingredients, and beach cleanups.'),
       icon: Leaf
     }
   ];
@@ -51,9 +51,9 @@ export const AboutPage: React.FC = () => {
     <div className="animate-fadeIn">
       {/* Page Header */}
       <PageHeader 
-        title="Our Story & Soulful Concept"
-        subtitle="Where the gentle rhythm of the sea meets warm Negrense hospitality on Poblacion Beach, Sipalay City."
-        badge="About Alon & Aninag Boutique Resort"
+        title={t('aboutTitle', 'Our Story & Soulful Concept')}
+        subtitle={t('aboutSubtitle', 'Where the gentle rhythm of the sea meets warm Negrense hospitality on Poblacion Beach, Sipalay City.')}
+        badge={t('aboutBadge', 'About Alon & Aninag Boutique Resort')}
         bgImage={RESORT_IMAGES.hero}
       />
 
@@ -64,27 +64,27 @@ export const AboutPage: React.FC = () => {
             <div className="lg:col-span-6 space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/40 text-[#006D77] dark:text-[#83C5BE] border border-teal-200/60 dark:border-teal-800/60 text-xs font-bold uppercase tracking-widest">
                 <Waves className="w-3.5 h-3.5 text-[#006D77] dark:text-[#83C5BE]" />
-                <span>The Story of Our Name</span>
+                <span>{t('aboutNameBadge', 'The Story of Our Name')}</span>
               </div>
 
               <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-stone-900 dark:text-white tracking-tight leading-tight">
-                Two Words. One Beachfront Sanctuary.
+                {t('aboutNameTitle', 'Two Words. One Beachfront Sanctuary.')}
               </h2>
 
               <p className="text-stone-600 dark:text-stone-300 text-sm sm:text-base leading-relaxed font-light">
-                In Hiligaynon and Tagalog, <strong>"Alon"</strong> means the ocean wave—the eternal ebb and flow of water that washes away the fatigue of city life and invites travelers to slow down and breathe.
+                {t('aboutAlon', 'In Hiligaynon and Tagalog, "Alon" means the ocean wave—the eternal ebb and flow of water that washes away the fatigue of city life and invites travelers to slow down and breathe.')}
               </p>
 
               <p className="text-stone-600 dark:text-stone-300 text-sm sm:text-base leading-relaxed font-light">
-                <strong>"Aninag"</strong> signifies gentle light, glimmer, and translucent reflection—like the golden sunset casting its radiant amber glow over Poblacion Bay, and the inner glow rekindled when the mind finally finds peace.
+                {t('aboutAninag', '"Aninag" signifies gentle light, glimmer, and translucent reflection—like the golden sunset casting its radiant amber glow over Poblacion Bay, and the inner glow rekindled when the mind finally finds peace.')}
               </p>
 
               <div className="p-6 rounded-xl bg-white dark:bg-[#131F2A] border border-stone-200 dark:border-stone-800 shadow-sm space-y-3">
                 <div className="font-serif italic text-lg sm:text-xl text-[#006D77] dark:text-[#83C5BE]">
-                  "Where Waves Rest and Souls Glow"
+                  "{t('aboutMotto', 'Where Waves Rest and Souls Glow')}"
                 </div>
                 <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed font-light">
-                  Our motto is a promise to every traveler who arrives in Sipalay: you are not just checking into a room; you are finding a restorative haven by the sea.
+                  {t('aboutMottoDesc', 'Our motto is a promise to every traveler who arrives in Sipalay: you are not just checking into a room; you are finding a restorative haven by the sea.')}
                 </p>
               </div>
             </div>
@@ -101,10 +101,10 @@ export const AboutPage: React.FC = () => {
                   </div>
                   <div className="p-4 rounded-xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-900/50 text-center">
                     <div className="font-serif text-2xl font-bold text-[#006D77] dark:text-[#83C5BE]">
-                      12 Rooms
+                      {t('statRoomsTitle', '12 Rooms')}
                     </div>
                     <div className="text-[11px] uppercase tracking-wider text-stone-600 dark:text-stone-400 font-semibold mt-0.5">
-                      Intimate Exclusivity
+                      {t('statRoomsSub', 'Intimate Exclusivity')}
                     </div>
                   </div>
                 </div>
@@ -112,10 +112,10 @@ export const AboutPage: React.FC = () => {
                 <div className="space-y-4 pt-8">
                   <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-center">
                     <div className="font-serif text-2xl font-bold text-[#E29578]">
-                      0 Meters
+                      {t('statMetersTitle', '0 Meters')}
                     </div>
                     <div className="text-[11px] uppercase tracking-wider text-stone-600 dark:text-stone-400 font-semibold mt-0.5">
-                      Direct Sand Walkout
+                      {t('statMetersSub', 'Direct Sand Walkout')}
                     </div>
                   </div>
                   <div className="aspect-3/4 rounded-xl overflow-hidden shadow-lg border border-stone-200 dark:border-stone-800">
@@ -142,13 +142,13 @@ export const AboutPage: React.FC = () => {
                 <Compass className="w-6 h-6" />
               </div>
               <div className="text-xs uppercase tracking-widest font-bold text-[#006D77] dark:text-[#83C5BE] mb-2">
-                Our Vision
+                {t('visionTitle', 'Our Vision')}
               </div>
               <h3 className="font-serif text-2xl sm:text-3xl font-normal text-stone-900 dark:text-white mb-4">
-                To Be the Preeminent Soulful Coastal Retreat of Western Visayas
+                {t('visionHeading', 'To Be the Preeminent Soulful Coastal Retreat of Western Visayas')}
               </h3>
               <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed font-light">
-                To be recognized as the premier boutique beachfront destination in Sipalay City and the Negros Island Region—celebrated for harmonious architectural simplicity, deeply authentic Negrense hospitality, mindful guest experiences, and sustainable community empowerment.
+                {t('visionText', 'To be recognized as the premier boutique beachfront destination in Sipalay City and the Negros Island Region—celebrated for harmonious architectural simplicity, deeply authentic Negrense hospitality, mindful guest experiences, and sustainable community empowerment.')}
               </p>
             </div>
 
@@ -158,13 +158,13 @@ export const AboutPage: React.FC = () => {
                 <Sun className="w-6 h-6" />
               </div>
               <div className="text-xs uppercase tracking-widest font-bold text-[#E29578] mb-2">
-                Our Mission
+                {t('missionTitle', 'Our Mission')}
               </div>
               <h3 className="font-serif text-2xl sm:text-3xl font-normal text-stone-900 dark:text-white mb-4">
-                Crafting Unhurried Moments That Restore Body & Spirit
+                {t('missionHeading', 'Crafting Unhurried Moments That Restore Body & Spirit')}
               </h3>
               <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed font-light">
-                We are committed to delivering genuine, personalized hospitality through 12 intimate sea-facing rooms, curating innovative daytime experiences like the Aninag Dayglow paddle, showcasing local culinary heritage at our beachside cafe, and safeguarding our coastal waters for generations of travelers to come.
+                {t('missionText', 'We are committed to delivering genuine, personalized hospitality through 12 intimate sea-facing rooms, curating innovative daytime experiences like the Aninag Dayglow paddle, showcasing local culinary heritage at our beachside cafe, and safeguarding our coastal waters for generations of travelers to come.')}
               </p>
             </div>
           </div>
@@ -177,13 +177,13 @@ export const AboutPage: React.FC = () => {
           <div className="text-center max-w-3xl mx-auto mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 text-xs font-semibold uppercase tracking-wider mb-3">
               <Sparkles className="w-3.5 h-3.5 text-[#006D77] dark:text-[#83C5BE]" />
-              Guiding Principles
+              {t('pillarsBadge', 'Guiding Principles')}
             </div>
             <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-stone-900 dark:text-white tracking-tight mb-4">
-              The Four Pillars of Alon & Aninag
+              {t('pillarsHeading', 'The Four Pillars of Alon & Aninag')}
             </h2>
             <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 leading-relaxed font-light">
-              Every detail—from the thread count of our organic cotton bedding to the design of our transparent kayaks—is shaped by these foundational commitments.
+              {t('pillarsSub', 'Every detail—from the thread count of our organic cotton bedding to the design of our transparent kayaks—is shaped by these foundational commitments.')}
             </p>
           </div>
 
@@ -224,18 +224,18 @@ export const AboutPage: React.FC = () => {
               <div className="space-y-2">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/40 text-[#006D77] dark:text-[#83C5BE] text-xs font-bold uppercase tracking-widest">
                   <GraduationCap className="w-4 h-4" />
-                  <span>Strategic Planning Foundation</span>
+                  <span>{t('academicBadge', 'Strategic Planning Foundation')}</span>
                 </div>
                 <h3 className="font-serif text-2xl sm:text-3xl text-stone-900 dark:text-white font-normal">
-                  Bachelor of Science in Hospitality Management (BSHM - 4B)
+                  {t('academicCourse', 'Bachelor of Science in Hospitality Management (BSHM - 4B)')}
                 </h3>
                 <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 font-light">
-                  Strategic Management • Group Application Project: New Product Development for Alon & Aninag Boutique Resort
+                  {t('academicSubject', 'Strategic Management • Group Application Project: New Product Development for Alon & Aninag Boutique Resort')}
                 </p>
               </div>
 
               <div className="px-4 py-2 rounded-lg bg-[#006D77] text-white text-xs font-bold uppercase tracking-widest">
-                Strategic Decision: GO Rollout
+                {t('academicDecision', 'Strategic Decision: GO Rollout')}
               </div>
             </div>
 
@@ -272,29 +272,29 @@ export const AboutPage: React.FC = () => {
             <div className="lg:col-span-6 space-y-5">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs font-semibold uppercase tracking-wider">
                 <MapPin className="w-3.5 h-3.5 text-[#E29578]" />
-                The Jewel of the South
+                <span>{t('sipalaySpotlightBadge', 'Destination Spotlight')}</span>
               </div>
               <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 dark:text-white font-normal">
-                Why Sipalay City & Poblacion Beach?
+                {t('sipalaySpotlightTitle', 'Why Poblacion Beach, Sipalay City?')}
               </h2>
               <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed font-light">
-                Known as the "Jewel of Sugarlandia South," Sipalay City is blessed with rolling emerald limestone islets, secret coves, and pristine diving reefs. 
+                {t('sipalaySpotlightP1', 'Often hailed as the "Jewel of Southern Negros", Sipalay is blessed with limestone karst hills reminiscent of Coron and El Nido, pristine diving waters, and emerald lagoons. Poblacion Beach offers the rare luxury of a calm, swimmable sandy bay right beside town conveniences.')}
               </p>
               <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed font-light">
-                Unlike remote beaches that require long boat transfers, <strong>Poblacion Beach</strong> offers the rare luxury of direct road accessibility, calm swimming waters year-round, and the vibrant culture of Sipalay City within a few minutes' walk.
+                {t('sipalaySpotlightP2', 'Unlike overdeveloped tourist destinations, Sipalay maintains its unhurried pace. Fishermen still launch wooden bancas at dawn, and sunsets paint the Sulu Sea in shades of lavender, gold, and peach without loud nightlife crowds.')}
               </p>
               <div className="pt-2 flex flex-wrap gap-4">
                 <button
                   onClick={() => navigateTo('rooms')}
                   className="px-6 py-3 bg-[#006D77] hover:bg-[#00555d] text-white text-xs sm:text-sm uppercase tracking-wider font-bold rounded-sm shadow-sm transition cursor-pointer"
                 >
-                  Explore Our 12 Rooms
+                  {t('gwRoomsAction', 'Explore Rooms')}
                 </button>
                 <button
                   onClick={() => navigateTo('booking')}
                   className="px-6 py-3 border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200 text-xs sm:text-sm uppercase tracking-wider font-semibold rounded-sm transition cursor-pointer"
                 >
-                  Reserve Your Stay
+                  {t('gwBookingAction', 'Reserve Your Stay')}
                 </button>
               </div>
             </div>

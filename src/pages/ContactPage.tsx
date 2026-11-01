@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 
 export const ContactPage: React.FC = () => {
-  const { addNotification, navigateTo } = useResort();
+  const { addNotification, navigateTo, t } = useResort();
 
   const [formName, setFormName] = useState('');
   const [formEmail, setFormEmail] = useState('');
@@ -39,8 +39,8 @@ export const ContactPage: React.FC = () => {
 
     setIsSubmitted(true);
     addNotification(
-      'Inquiry Dispatched',
-      `Thank you, ${formName}! Our Sipalay concierge team will respond to ${formEmail} within 2 hours.`,
+      t('inquiryDispatched', 'Inquiry Dispatched'),
+      `${t('thankYou', 'Thank you')}, ${formName}! ${t('inquiryResponseTime', 'Our Sipalay concierge team will respond to')} ${formEmail} ${t('withinTwoHours', 'within 2 hours.')}`,
       'alert'
     );
 
@@ -55,28 +55,28 @@ export const ContactPage: React.FC = () => {
 
   const faqs = [
     {
-      q: 'What are the official check-in and check-out times?',
-      a: 'Standard check-in begins at 2:00 PM, and check-out is at 12:00 PM. Early check-in or late check-out is accommodated based on availability. You are welcome to store your luggage at the front desk and relax on our beachfront daybeds or enjoy Soul Beach Cafe while your room is prepared.'
+      q: t('faqQ1', 'What are the official check-in and check-out times?'),
+      a: t('faqA1', 'Standard check-in begins at 2:00 PM, and check-out is at 12:00 PM. Early check-in or late check-out is accommodated based on availability. You are welcome to store your luggage at the front desk and relax on our beachfront daybeds or enjoy Soul Beach Cafe while your room is prepared.')
     },
     {
-      q: 'How fast and reliable is the internet connection for remote work?',
-      a: 'We provide complimentary high-speed Starlink satellite Wi-Fi (averaging 150+ Mbps) covering all 12 rooms, private verandas, and the sunset dining deck. Our automatic backup diesel generator ensures uninterrupted power and connectivity 24/7.'
+      q: t('faqQ2', 'How fast and reliable is the internet connection for remote work?'),
+      a: t('faqA2', 'We provide complimentary high-speed Starlink satellite Wi-Fi (averaging 150+ Mbps) covering all 12 rooms, private verandas, and the sunset dining deck. Our automatic backup diesel generator ensures uninterrupted power and connectivity 24/7.')
     },
     {
-      q: 'How do non-staying day visitors access the resort and Dayglow experience?',
-      a: 'Day visitors are warmly welcomed to book the Aninag Dayglow & Paddle Experience (₱1,200/pair) or dine at Soul Beach Cafe. We recommend reserving time slots in advance online or by calling our concierge to ensure exclusive uncrowded water access.'
+      q: t('faqQ3', 'How do non-staying day visitors access the resort and Dayglow experience?'),
+      a: t('faqA3', 'Day visitors are warmly welcomed to book the Aninag Dayglow & Paddle Experience (₱1,200/pair) or dine at Soul Beach Cafe. We recommend reserving time slots in advance online or by calling our concierge to ensure exclusive uncrowded water access.')
     },
     {
-      q: 'Are pets allowed at Alon & Aninag?',
-      a: 'Yes! We are a pet-friendly boutique sanctuary. Well-behaved fur babies are welcome in our ground-level Alon Oceanfront Suites and outdoor dining areas. Please let us know in advance during booking so we can prepare pet bowls and towels.'
+      q: t('faqQ4', 'Are pets allowed at Alon & Aninag?'),
+      a: t('faqA4', 'Yes! We are a pet-friendly boutique sanctuary. Well-behaved fur babies are welcome in our ground-level Alon Oceanfront Suites and outdoor dining areas. Please let us know in advance during booking so we can prepare pet bowls and towels.')
     },
     {
-      q: 'What payment methods do you accept at the resort?',
-      a: 'We accept GCash, Maya, Visa, Mastercard, JCB, direct Philippine bank transfers (BDO, BPI), and cash at the front desk. Sipalay City also has local bank ATMs within a 5-minute walk from our resort.'
+      q: t('faqQ5', 'What payment methods do you accept at the resort?'),
+      a: t('faqA5', 'We accept GCash, Maya, Visa, Mastercard, JCB, direct Philippine bank transfers (BDO, BPI), and cash at the front desk. Sipalay City also has local bank ATMs within a 5-minute walk from our resort.')
     },
     {
-      q: 'What is the resort cancellation and date modification policy?',
-      a: 'Cancellations made 7 or more days prior to your scheduled check-in date receive a 100% full refund of any deposit paid. For typhoon weather warnings (Signal #1 or higher), date rebooking is complimentary with no penalty.'
+      q: t('faqQ6', 'What is the resort cancellation and date modification policy?'),
+      a: t('faqA6', 'Cancellations made 7 or more days prior to your scheduled check-in date receive a 100% full refund of any deposit paid. For typhoon weather warnings (Signal #1 or higher), date rebooking is complimentary with no penalty.')
     }
   ];
 
@@ -84,9 +84,9 @@ export const ContactPage: React.FC = () => {
     <div className="animate-fadeIn">
       {/* Page Header */}
       <PageHeader 
-        title="Contact Us & Travel Guide"
-        subtitle="Located along Poblacion Beach, Sipalay City. Reach out for room bookings, Dayglow passes, private van shuttles, or general questions."
-        badge="24/7 Front Desk & Concierge Hotline"
+        title={t('contactPageTitle', 'Connect With Our Beachfront Concierge')}
+        subtitle={t('contactPageSubtitle', 'Inquiries, bespoke bookings, airport transfers, and directions to our sanctuary on Poblacion Beach, Sipalay City.')}
+        badge={t('contactPageBadge', '24/7 Front Desk & Concierge Hotline')}
         bgImage={RESORT_IMAGES.hero}
       />
 
@@ -101,18 +101,18 @@ export const ContactPage: React.FC = () => {
                   <Phone className="w-5 h-5" />
                 </div>
                 <h4 className="font-serif text-lg font-semibold text-stone-900 dark:text-white mb-1">
-                  Phone & Mobile
+                  {t('cardPhoneTitle', 'Phone & Mobile')}
                 </h4>
                 <p className="text-xs text-stone-500 font-light mb-3">
-                  Direct call, SMS, or WhatsApp
+                  {t('cardPhoneDesc', 'Direct call, SMS, or WhatsApp')}
                 </p>
                 <div className="text-xs sm:text-sm font-bold text-stone-900 dark:text-white space-y-1">
                   <div>+63 917 582 2566</div>
-                  <div className="text-stone-500 font-normal">(034) 473-2026 (Landline)</div>
+                  <div className="text-stone-500 font-normal">(034) 473-2026 ({t('landline', 'Landline')})</div>
                 </div>
               </div>
               <div className="pt-4 mt-4 border-t border-stone-100 dark:border-stone-800 text-[11px] text-teal-600 dark:text-teal-400 font-semibold">
-                Available 24 Hours / 7 Days
+                {t('frontDesk247', 'Available 24 Hours / 7 Days')}
               </div>
             </div>
 
@@ -123,10 +123,10 @@ export const ContactPage: React.FC = () => {
                   <Mail className="w-5 h-5" />
                 </div>
                 <h4 className="font-serif text-lg font-semibold text-stone-900 dark:text-white mb-1">
-                  Email Concierge
+                  {t('cardEmailTitle', 'Email Concierge')}
                 </h4>
                 <p className="text-xs text-stone-500 font-light mb-3">
-                  Inquiries, bookings & buyouts
+                  {t('cardEmailDesc', 'Inquiries, bookings & buyouts')}
                 </p>
                 <div className="text-xs sm:text-sm font-bold text-stone-900 dark:text-white space-y-1">
                   <div className="truncate">stay@alonaninag-resort.ph</div>
@@ -134,7 +134,7 @@ export const ContactPage: React.FC = () => {
                 </div>
               </div>
               <div className="pt-4 mt-4 border-t border-stone-100 dark:border-stone-800 text-[11px] text-teal-600 dark:text-teal-400 font-semibold">
-                Average reply time: under 2 hrs
+                {t('replyTime', 'Average reply time: under 2 hrs')}
               </div>
             </div>
 
@@ -145,13 +145,13 @@ export const ContactPage: React.FC = () => {
                   <MapPin className="w-5 h-5" />
                 </div>
                 <h4 className="font-serif text-lg font-semibold text-stone-900 dark:text-white mb-1">
-                  Resort Location
+                  {t('cardLocationTitle', 'Resort Location')}
                 </h4>
                 <p className="text-xs text-stone-500 font-light mb-3">
-                  Poblacion Beachfront
+                  {t('poblacionBeachfront', 'Poblacion Beachfront')}
                 </p>
                 <div className="text-xs text-stone-800 dark:text-stone-200 font-medium leading-relaxed">
-                  Poblacion Beach (near Jazz Inn & Baywalk), Sipalay City, Negros Occidental 6111
+                  {t('resortAddress', 'Poblacion Beach (near Jazz Inn & Baywalk), Sipalay City, Negros Occidental 6111')}
                 </div>
               </div>
               <div className="pt-4 mt-4 border-t border-stone-100 dark:border-stone-800 text-[11px] text-teal-600 dark:text-teal-400 font-semibold">
@@ -166,19 +166,19 @@ export const ContactPage: React.FC = () => {
                   <Clock className="w-5 h-5" />
                 </div>
                 <h4 className="font-serif text-lg font-semibold text-stone-900 dark:text-white mb-1">
-                  Operating Hours
+                  {t('cardHoursTitle', 'Operating Hours')}
                 </h4>
                 <p className="text-xs text-stone-500 font-light mb-3">
-                  Front desk & Soul Cafe
+                  {t('cardHoursDesc', 'Front desk & Soul Cafe')}
                 </p>
                 <div className="text-xs text-stone-800 dark:text-stone-200 font-medium space-y-1">
-                  <div><strong>Front Desk:</strong> 24 Hours / 7 Days</div>
-                  <div><strong>Soul Beach Cafe:</strong> 6:30 AM - 10 PM</div>
-                  <div><strong>Dayglow Paddle:</strong> 8 AM - 5:30 PM</div>
+                  <div><strong>{t('frontDeskLabel', 'Front Desk')}:</strong> {t('hours247', '24 Hours / 7 Days')}</div>
+                  <div><strong>{t('soulCafeLabel', 'Soul Beach Cafe')}:</strong> 6:30 AM - 10 PM</div>
+                  <div><strong>{t('dayglowPaddleLabel', 'Dayglow Paddle')}:</strong> 8 AM - 5:30 PM</div>
                 </div>
               </div>
               <div className="pt-4 mt-4 border-t border-stone-100 dark:border-stone-800 text-[11px] text-teal-600 dark:text-teal-400 font-semibold">
-                Night security on duty
+                {t('nightSecurity', 'Night security on duty')}
               </div>
             </div>
           </div>
@@ -193,13 +193,13 @@ export const ContactPage: React.FC = () => {
             <div className="lg:col-span-6 bg-[#F8F5F2] dark:bg-[#131F2A] p-8 sm:p-10 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm space-y-6">
               <div>
                 <div className="text-xs font-bold uppercase tracking-widest text-[#006D77] dark:text-[#83C5BE] mb-1">
-                  Send a Direct Message
+                  {t('sendDirectMsg', 'Send a Direct Message')}
                 </div>
                 <h3 className="font-serif text-2xl sm:text-3xl font-normal text-stone-900 dark:text-white">
-                  How Can We Help You?
+                  {t('formHeading', 'How Can We Help You?')}
                 </h3>
                 <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 font-light mt-1">
-                  Whether you have questions about room availability, airport shuttle bookings, or special event buyouts, we will respond promptly.
+                  {t('formDesc', 'Whether you have questions about room availability, airport shuttle bookings, or special event buyouts, we will respond promptly.')}
                 </p>
               </div>
 
@@ -207,7 +207,7 @@ export const ContactPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1">
-                      Full Name *
+                      {t('formFullName', 'Full Name')} *
                     </label>
                     <input
                       type="text"
@@ -220,7 +220,7 @@ export const ContactPage: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1">
-                      Email Address *
+                      {t('formEmailAddress', 'Email Address')} *
                     </label>
                     <input
                       type="email"
@@ -236,7 +236,7 @@ export const ContactPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1">
-                      Phone / Mobile
+                      {t('formPhoneNumber', 'Phone / Mobile')}
                     </label>
                     <input
                       type="tel"
@@ -248,30 +248,30 @@ export const ContactPage: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1">
-                      Inquiry Category
+                      {t('formSubject', 'Inquiry Category')}
                     </label>
                     <select
                       value={formSubject}
                       onChange={(e) => setFormSubject(e.target.value)}
                       className="w-full px-3 py-2 rounded-sm border border-stone-300 dark:border-stone-700 bg-white dark:bg-[#0E1720] text-xs text-stone-900 dark:text-white focus:outline-none focus:border-[#006D77]"
                     >
-                      <option value="General Inquiry">General Question</option>
-                      <option value="Room Booking">Room Booking / Dates</option>
-                      <option value="Dayglow Pass">Aninag Dayglow Pass</option>
-                      <option value="Resort Buyout">Private Event / 12-Room Buyout</option>
-                      <option value="Airport Shuttle">Airport Van Transfer Request</option>
+                      <option value="General Inquiry">{t('formSubjectGeneral', 'General Question')}</option>
+                      <option value="Room Booking">{t('formSubjectBooking', 'Room Booking / Dates')}</option>
+                      <option value="Dayglow Pass">{t('formSubjectDayglow', 'Aninag Dayglow Pass')}</option>
+                      <option value="Resort Buyout">{t('formSubjectBuyout', 'Private Event / 12-Room Buyout')}</option>
+                      <option value="Airport Shuttle">{t('formSubjectTransfer', 'Airport Van Transfer Request')}</option>
                     </select>
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1">
-                    Your Message *
+                    {t('formMessage', 'Your Message')} *
                   </label>
                   <textarea
                     value={formMessage}
                     onChange={(e) => setFormMessage(e.target.value)}
-                    placeholder="Tell us about your travel dates, party size, or any specific requests..."
+                    placeholder={t('formMessagePlaceholder', 'Tell us about your travel dates, party size, or any specific requests...')}
                     rows={4}
                     className="w-full px-4 py-2.5 rounded-sm border border-stone-300 dark:border-stone-700 bg-white dark:bg-[#0E1720] text-xs text-stone-900 dark:text-white focus:outline-none focus:border-[#006D77]"
                     required
@@ -286,12 +286,12 @@ export const ContactPage: React.FC = () => {
                   {isSubmitted ? (
                     <>
                       <Check className="w-4 h-4" />
-                      <span>Message Sent! Our team will contact you shortly.</span>
+                      <span>{t('msgSentSuccess', 'Message Sent! Our team will contact you shortly.')}</span>
                     </>
                   ) : (
                     <>
                       <Send className="w-4 h-4" />
-                      <span>Send Inquiry to Concierge</span>
+                      <span>{t('btnSendMessage', 'Send Inquiry to Concierge')}</span>
                     </>
                   )}
                 </button>
@@ -313,10 +313,10 @@ export const ContactPage: React.FC = () => {
                 <div className="absolute bottom-4 left-4 right-4 bg-white/95 dark:bg-[#131F2A]/95 backdrop-blur-md p-4 rounded-xl border border-stone-200 dark:border-stone-800 shadow-lg text-xs">
                   <div className="flex items-center gap-2 text-[#006D77] dark:text-[#83C5BE] font-bold">
                     <MapPin className="w-4 h-4 shrink-0" />
-                    <span>Alon & Aninag Boutique Resort Frontage</span>
+                    <span>{t('resortFrontage', 'Alon & Aninag Boutique Resort Frontage')}</span>
                   </div>
                   <p className="text-stone-500 dark:text-stone-400 mt-1">
-                    Direct beachfront on Poblacion Beach. 5 minutes from Sipalay City Public Terminal.
+                    {t('resortFrontageDesc', 'Direct beachfront on Poblacion Beach. 5 minutes from Sipalay City Public Terminal.')}
                   </p>
                 </div>
               </div>
@@ -324,24 +324,24 @@ export const ContactPage: React.FC = () => {
               {/* Nearby Landmarks Card */}
               <div className="p-6 rounded-2xl bg-[#F8F5F2] dark:bg-[#131F2A] border border-stone-200 dark:border-stone-800 space-y-3">
                 <h4 className="font-serif text-base font-semibold text-stone-900 dark:text-white">
-                  Walking Distance & Nearby Landmarks
+                  {t('nearbyLandmarks', 'Walking Distance & Nearby Landmarks')}
                 </h4>
                 <div className="grid grid-cols-2 gap-3 text-xs text-stone-600 dark:text-stone-300 font-light">
                   <div className="flex items-center gap-1.5">
                     <span className="text-[#006D77] font-bold">•</span>
-                    <span>Poblacion Beach Sand: <strong>0 meters</strong></span>
+                    <span>{t('beachSand', 'Poblacion Beach Sand')}: <strong>0 {t('meters', 'meters')}</strong></span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-[#006D77] font-bold">•</span>
-                    <span>Sipalay Baywalk: <strong>2 mins walk</strong></span>
+                    <span>{t('baywalkWalk', 'Sipalay Baywalk')}: <strong>2 {t('minsWalk', 'mins walk')}</strong></span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-[#006D77] font-bold">•</span>
-                    <span>Jazz Inn: <strong>Next door</strong></span>
+                    <span>{t('jazzInnNext', 'Jazz Inn')}: <strong>{t('nextDoor', 'Next door')}</strong></span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-[#006D77] font-bold">•</span>
-                    <span>City Public Terminal: <strong>5 mins ride</strong></span>
+                    <span>{t('terminalRide', 'City Public Terminal')}: <strong>5 {t('minsRide', 'mins ride')}</strong></span>
                   </div>
                 </div>
               </div>
@@ -356,13 +356,13 @@ export const ContactPage: React.FC = () => {
           <div className="text-center max-w-3xl mx-auto mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 text-xs font-semibold uppercase tracking-wider mb-3">
               <Compass className="w-3.5 h-3.5 text-[#006D77] dark:text-[#83C5BE]" />
-              Transit Directions
+              {t('directionsBadge', 'Transit Directions')}
             </div>
             <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-stone-900 dark:text-white tracking-tight mb-4">
-              How to Get to Alon & Aninag
+              {t('directionsTitle', 'How to Get to Alon & Aninag')}
             </h2>
             <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 leading-relaxed font-light">
-              Sipalay City is easily reached via direct flights to either Bacolod or Dumaguete, followed by a scenic coastal road trip along the South National Highway.
+              {t('directionsDesc', 'Sipalay City is easily reached via direct flights to either Bacolod or Dumaguete, followed by a scenic coastal road trip along the South National Highway.')}
             </p>
           </div>
 
@@ -374,18 +374,18 @@ export const ContactPage: React.FC = () => {
                   <Plane className="w-6 h-6" />
                 </div>
                 <div className="text-xs font-bold uppercase tracking-wider text-[#006D77] dark:text-[#83C5BE]">
-                  Via Bacolod City (BCD)
+                  {t('fromBacolodTitle', 'Via Bacolod City (BCD)')}
                 </div>
                 <h3 className="font-serif text-xl font-normal text-stone-900 dark:text-white">
-                  Bacolod-Silay Airport • 3.5–4 Hours
+                  Bacolod-Silay Airport • 3.5–4 {t('hours', 'Hours')}
                 </h3>
                 <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 font-light leading-relaxed">
-                  Fly into Bacolod-Silay Airport. Head to Bacolod South Ceres Terminal and take an air-conditioned Ceres Liner bus direct to Sipalay (departures every 30 mins). Alternatively, request our private resort van shuttle (₱3,800).
+                  {t('fromBacolodText', 'Fly into Bacolod-Silay Airport. Head to Bacolod South Ceres Terminal and take an air-conditioned Ceres Liner bus direct to Sipalay (departures every 30 mins). Alternatively, request our private resort van shuttle (₱3,800).')}
                 </p>
               </div>
 
               <div className="pt-4 mt-6 border-t border-stone-100 dark:border-stone-800 text-xs text-stone-500">
-                Scenic countryside route passing Kabankalan and Ilog.
+                {t('bacolodRouteNote', 'Scenic countryside route passing Kabankalan and Ilog.')}
               </div>
             </div>
 
@@ -396,18 +396,18 @@ export const ContactPage: React.FC = () => {
                   <Car className="w-6 h-6" />
                 </div>
                 <div className="text-xs font-bold uppercase tracking-wider text-[#E29578]">
-                  Via Dumaguete City (DGT)
+                  {t('fromDumagueteTitle', 'Via Dumaguete City (DGT)')}
                 </div>
                 <h3 className="font-serif text-xl font-normal text-stone-900 dark:text-white">
-                  Dumaguete-Sibulan Airport • ~3.5 Hours
+                  Dumaguete-Sibulan Airport • ~3.5 {t('hours', 'Hours')}
                 </h3>
                 <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 font-light leading-relaxed">
-                  Fly into Dumaguete-Sibulan Airport. Board a Ceres bus bound for Hinoba-an or Sipalay via Bayawan City. The route traverses the rugged coastline of Southern Negros with panoramic sea views throughout.
+                  {t('fromDumagueteText', 'Fly into Dumaguete-Sibulan Airport. Board a Ceres bus bound for Hinoba-an or Sipalay via Bayawan City. The route traverses the rugged coastline of Southern Negros with panoramic sea views throughout.')}
                 </p>
               </div>
 
               <div className="pt-4 mt-6 border-t border-stone-100 dark:border-stone-800 text-xs text-stone-500">
-                Private airport van pick-up is also available upon request.
+                {t('dumagueteRouteNote', 'Private airport van pick-up is also available upon request.')}
               </div>
             </div>
 
@@ -418,18 +418,18 @@ export const ContactPage: React.FC = () => {
                   <Bus className="w-6 h-6" />
                 </div>
                 <div className="text-xs font-bold uppercase tracking-wider text-[#006D77] dark:text-[#83C5BE]">
-                  Local Arrival in Sipalay
+                  {t('localArrivalTitle', 'Local Arrival in Sipalay')}
                 </div>
                 <h3 className="font-serif text-xl font-normal text-stone-900 dark:text-white">
-                  Sipalay Public Terminal • 5 Mins
+                  Sipalay Public Terminal • 5 {t('mins', 'Mins')}
                 </h3>
                 <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 font-light leading-relaxed">
-                  Upon arriving at the Sipalay City Ceres Terminal, hire a local motorized tricycle (₱15–₱20 per passenger) and ask for <strong>"Alon & Aninag Resort sa Poblacion Beach, tupad sang Jazz Inn."</strong> The driver will drop you right at our front entrance.
+                  {t('localArrivalText', 'Upon arriving at the Sipalay City Ceres Terminal, hire a local motorized tricycle (₱15–₱20 per passenger) and ask for "Alon & Aninag Resort sa Poblacion Beach, tupad sang Jazz Inn." The driver will drop you right at our front entrance.')}
                 </p>
               </div>
 
               <div className="pt-4 mt-6 border-t border-stone-100 dark:border-stone-800 text-xs text-stone-500">
-                Paved road access all the way to our beach entrance.
+                {t('sipalayRoadNote', 'Paved road access all the way to our beach entrance.')}
               </div>
             </div>
           </div>
@@ -442,13 +442,13 @@ export const ContactPage: React.FC = () => {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/40 text-[#006D77] dark:text-[#83C5BE] text-xs font-bold uppercase tracking-widest mb-3">
               <HelpCircle className="w-3.5 h-3.5" />
-              <span>Guest Clarity</span>
+              <span>{t('faqBadge', 'Guest Clarity')}</span>
             </div>
             <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 dark:text-white font-normal mb-3">
-              Frequently Asked Questions
+              {t('faqTitle', 'Frequently Asked Questions')}
             </h2>
             <p className="text-sm text-stone-600 dark:text-stone-300 font-light">
-              Clear answers regarding bookings, arrival, internet speeds, and resort guidelines.
+              {t('faqSub', 'Clear answers regarding bookings, arrival, internet speeds, and resort guidelines.')}
             </p>
           </div>
 
@@ -485,13 +485,13 @@ export const ContactPage: React.FC = () => {
           {/* Bottom booking prompt */}
           <div className="mt-12 text-center pt-8 border-t border-stone-200 dark:border-stone-800">
             <p className="text-xs sm:text-sm text-stone-500 mb-4">
-              Have another question not answered here? Call our 24/7 front desk at <strong>+63 917 582 2566</strong>
+              {t('haveQuestionPrompt', 'Have another question not answered here? Call our 24/7 front desk at')} <strong>+63 917 582 2566</strong>
             </p>
             <button
               onClick={() => navigateTo('booking')}
               className="px-6 py-3 bg-[#006D77] hover:bg-[#00555d] text-white text-xs uppercase tracking-wider font-bold rounded-sm shadow-sm transition cursor-pointer"
             >
-              Ready to Book? Reserve Online Now
+              {t('btnBookNowPrompt', 'Ready to Book? Reserve Online Now')}
             </button>
           </div>
         </div>

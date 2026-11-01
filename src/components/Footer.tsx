@@ -137,7 +137,7 @@ export const Footer: React.FC<{ onOpenAdmin: () => void }> = ({ onOpenAdmin }) =
               </li>
               <li>
                 <button onClick={() => navigateTo('rooms')} className="hover:text-white transition cursor-pointer text-left text-[#E29578] font-semibold">
-                  12-Room Resort Buyout
+                  {t('buyoutTitle', '12-Room Resort Buyout')}
                 </button>
               </li>
             </ul>
@@ -146,32 +146,32 @@ export const Footer: React.FC<{ onOpenAdmin: () => void }> = ({ onOpenAdmin }) =
           {/* Column 3: Features & Experiences */}
           <div>
             <h4 className="font-serif text-xs font-bold uppercase tracking-widest text-[#83C5BE] mb-4">
-              Resort Features
+              {t('resortFeaturesTitle', 'Resort Features')}
             </h4>
             <ul className="space-y-2.5 text-xs text-stone-400">
               <li>
                 <button onClick={() => navigateTo('amenities')} className="hover:text-white transition cursor-pointer text-left">
-                  Aninag Dayglow & Paddle ✨
+                  {t('dayglowPaddle', 'Aninag Dayglow & Paddle ✨')}
                 </button>
               </li>
               <li>
                 <button onClick={() => navigateTo('amenities')} className="hover:text-white transition cursor-pointer text-left">
-                  Soul Beach Cafe & Bar
+                  {t('soulBeachCafe', 'Soul Beach Cafe & Bar')}
                 </button>
               </li>
               <li>
                 <button onClick={() => navigateTo('amenities')} className="hover:text-white transition cursor-pointer text-left">
-                  Nightly Soul Bonfire
+                  {t('nightlyBonfire', 'Nightly Soul Bonfire')}
                 </button>
               </li>
               <li>
                 <button onClick={() => navigateTo('amenities')} className="hover:text-white transition cursor-pointer text-left">
-                  Hilot Healing Massage
+                  {t('hilotMassage', 'Hilot Healing Massage')}
                 </button>
               </li>
               <li>
                 <button onClick={() => navigateTo('gallery')} className="hover:text-white transition cursor-pointer text-left">
-                  360° Virtual Tour
+                  {t('virtualTour360', '360° Virtual Tour')}
                 </button>
               </li>
             </ul>
@@ -180,22 +180,22 @@ export const Footer: React.FC<{ onOpenAdmin: () => void }> = ({ onOpenAdmin }) =
           {/* Column 4: Quick Navigation & Help */}
           <div>
             <h4 className="font-serif text-xs font-bold uppercase tracking-widest text-[#83C5BE] mb-4">
-              Quick Navigation
+              {t('quickNavTitle', 'Quick Navigation')}
             </h4>
             <ul className="space-y-2.5 text-xs text-stone-400">
               <li>
                 <button onClick={() => navigateTo('about')} className="hover:text-white transition cursor-pointer text-left">
-                  About Us & Concept
+                  {t('aboutUsConcept', 'About Us & Concept')}
                 </button>
               </li>
               <li>
                 <button onClick={() => navigateTo('booking')} className="hover:text-white transition cursor-pointer text-left text-[#83C5BE] font-bold">
-                  Book a Room Online
+                  {t('bookRoomOnline', 'Book a Room Online')}
                 </button>
               </li>
               <li>
                 <button onClick={() => navigateTo('contact')} className="hover:text-white transition cursor-pointer text-left">
-                  Contact & Directions
+                  {t('contactDirections', 'Contact & Directions')}
                 </button>
               </li>
               <li>

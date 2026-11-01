@@ -289,8 +289,8 @@ export const Header: React.FC<{
               )}
             </div>
 
-            {/* Language Selector (hidden on small mobile header, in drawer) */}
-            <div className="relative hidden sm:block">
+            {/* Language Selector (accessible on mobile & desktop) */}
+            <div className="relative">
               <button
                 onClick={() => {
                   setIsLangDropdownOpen(!isLangDropdownOpen);

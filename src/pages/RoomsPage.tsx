@@ -21,17 +21,17 @@ import {
 } from 'lucide-react';
 
 export const RoomsPage: React.FC = () => {
-  const { formatPrice, navigateTo, searchQuery } = useResort();
+  const { formatPrice, navigateTo, searchQuery, t } = useResort();
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [selectedRoomModal, setSelectedRoomModal] = useState<Room | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
 
   const categories = [
-    { id: 'all', label: 'All 12 Beachfront Rooms', count: 12 },
-    { id: 'Villa', label: 'Sunset Master Villas', count: 3 },
-    { id: 'Suite', label: 'Oceanfront Suites', count: 4 },
-    { id: 'Loft', label: 'Barkada Lofts', count: 2 },
-    { id: 'Deluxe', label: 'Soul Deluxe Rooms', count: 3 }
+    { id: 'all', label: t('allRoomsTab', 'All 12 Beachfront Rooms'), count: 12 },
+    { id: 'Villa', label: t('villasTab', 'Sunset Master Villas'), count: 3 },
+    { id: 'Suite', label: t('suitesTab', 'Oceanfront Suites'), count: 4 },
+    { id: 'Loft', label: t('loftsTab', 'Barkada Lofts'), count: 2 },
+    { id: 'Deluxe', label: t('deluxeTab', 'Soul Deluxe Rooms'), count: 3 }
   ];
 
   const filteredRooms = ROOMS_DATA.filter((room) => {
@@ -51,9 +51,9 @@ export const RoomsPage: React.FC = () => {
     <div className="animate-fadeIn">
       {/* Page Header */}
       <PageHeader 
-        title="Boutique Accommodations"
-        subtitle="12 intimate, sea-facing sanctuaries crafted with warm natural wood, crisp white linens, and direct access to Poblacion Beach."
-        badge="12 Beachfront Rooms & Suites"
+        title={t('roomsPageTitle', 'Boutique Accommodations')}
+        subtitle={t('roomsPageSubtitle', '12 intimate, sea-facing sanctuaries crafted with warm natural wood, crisp white linens, and direct access to Poblacion Beach.')}
+        badge={t('roomsPageBadge', '12 Beachfront Rooms & Suites')}
         bgImage={RESORT_IMAGES.suite}
       />
 
@@ -83,7 +83,7 @@ export const RoomsPage: React.FC = () => {
             </div>
 
             <div className="text-xs text-stone-500 dark:text-stone-400 font-medium hidden sm:block">
-              Showing <strong>{filteredRooms.length}</strong> of 12 rooms available
+              {t('showingRooms', 'Showing')} <strong>{filteredRooms.length}</strong> {t('ofRoomsAvailable', 'of 12 rooms available')}
             </div>
           </div>
         </div>
@@ -109,12 +109,12 @@ export const RoomsPage: React.FC = () => {
                   {/* View Type Badge */}
                   <div className="absolute top-4 left-4 bg-black/65 backdrop-blur-md text-white text-[11px] px-3 py-1 rounded-sm font-medium flex items-center gap-1.5 border border-white/20 uppercase tracking-wider">
                     <Eye className="w-3.5 h-3.5 text-[#83C5BE]" />
-                    <span>{room.view}</span>
+                    <span>{t(room.view, room.view)}</span>
                   </div>
 
                   {/* Available Units Badge */}
                   <div className="absolute top-4 right-4 bg-[#E29578] text-white text-[11px] px-3 py-1 rounded-sm font-bold uppercase tracking-wider shadow-sm">
-                    {room.availableUnits} of {room.totalUnits} Units Available
+                    {room.availableUnits} / {room.totalUnits} {t('unitsAvailable', 'Units Available')}
                   </div>
                 </div>
 
@@ -149,7 +149,7 @@ export const RoomsPage: React.FC = () => {
                     <div className="grid grid-cols-3 gap-2 py-3 px-4 rounded-lg bg-stone-50 dark:bg-[#0E1720] border border-stone-200 dark:border-stone-800 mb-6 text-xs text-stone-700 dark:text-stone-300">
                       <div className="flex items-center gap-1.5">
                         <Users className="w-4 h-4 text-[#006D77] dark:text-[#83C5BE] shrink-0" />
-                        <span>Up to {room.capacity.maxTotal} Guests</span>
+                        <span>{t('upToGuests', 'Up to')} {room.capacity.maxTotal} {t('guestsCount', 'Guests')}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Bed className="w-4 h-4 text-[#006D77] dark:text-[#83C5BE] shrink-0" />
@@ -157,20 +157,20 @@ export const RoomsPage: React.FC = () => {
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Maximize className="w-4 h-4 text-[#006D77] dark:text-[#83C5BE] shrink-0" />
-                        <span>{room.sizeSqM} sq.m</span>
+                        <span>{room.sizeSqM} {t('sqMeters', 'sq.m')}</span>
                       </div>
                     </div>
 
                     {/* Signature Inclusions */}
                     <div className="space-y-2 mb-6">
                       <div className="text-[11px] uppercase tracking-wider font-bold text-stone-500 dark:text-stone-400">
-                        Inclusions & Highlights:
+                        {t('inclusionsHighlights', 'Inclusions & Highlights:')}
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {room.features.slice(0, 4).map((feat, idx) => (
                           <div key={idx} className="flex items-center gap-2 text-xs text-stone-600 dark:text-stone-300 font-light">
                             <Check className="w-3.5 h-3.5 text-[#006D77] dark:text-[#83C5BE] shrink-0" />
-                            <span className="truncate">{feat}</span>
+                            <span className="truncate">{t(feat, feat)}</span>
                           </div>
                         ))}
                       </div>
@@ -181,16 +181,16 @@ export const RoomsPage: React.FC = () => {
                   <div className="pt-6 border-t border-stone-200 dark:border-stone-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
                       <div className="text-[11px] text-stone-500 dark:text-stone-400 uppercase tracking-wider">
-                        Starting from
+                        {t('startingFrom', 'Starting from')}
                       </div>
                       <div className="flex items-baseline gap-1">
                         <span className="font-serif text-2xl sm:text-3xl font-bold text-[#006D77] dark:text-[#83C5BE]">
                           {formatPrice(room.pricePHP)}
                         </span>
-                        <span className="text-xs text-stone-500 dark:text-stone-400">/ night</span>
+                        <span className="text-xs text-stone-500 dark:text-stone-400">{t('perNightLabel', '/ night')}</span>
                       </div>
                       <div className="text-[10px] text-stone-400">
-                        Includes breakfast for 2 & high-speed Wi-Fi
+                        {t('includesBreakfast', 'Includes breakfast for 2 & high-speed Wi-Fi')}
                       </div>
                     </div>
 
@@ -199,14 +199,14 @@ export const RoomsPage: React.FC = () => {
                         onClick={() => setSelectedRoomModal(room)}
                         className="flex-1 sm:flex-none px-4 py-2.5 border border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200 text-xs uppercase tracking-wider font-semibold rounded-sm transition cursor-pointer"
                       >
-                        Details & Photos
+                        {t('viewRoomDetailsBtn', 'View Details')}
                       </button>
                       <button
                         onClick={() => handleBookRoom(room.id)}
                         className="flex-1 sm:flex-none px-5 py-2.5 bg-[#006D77] hover:bg-[#00555d] text-white text-xs uppercase tracking-wider font-bold rounded-sm shadow-sm transition cursor-pointer flex items-center justify-center gap-1.5"
                       >
                         <Calendar className="w-3.5 h-3.5" />
-                        <span>Book Room</span>
+                        <span>{t('reserveNowBtn', 'Reserve Now')}</span>
                       </button>
                     </div>
                   </div>
@@ -222,21 +222,21 @@ export const RoomsPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
             <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 dark:text-white font-normal mb-3">
-              Standard Across Every Room
+              {t('inclusionsHighlights', 'Inclusions & Highlights:')}
             </h2>
             <p className="text-sm text-stone-600 dark:text-stone-300 font-light">
-              Regardless of your selected suite, every guest at Alon & Aninag enjoys these complimentary boutique comforts.
+              {t('heroDescription', 'An intimate 12-room beachfront retreat on the golden sands of Poblacion Beach.')}
             </p>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-center">
             {[
-              { icon: Coffee, title: 'Complimentary Breakfast', desc: 'Authentic Negrense Silog & fresh fruits' },
-              { icon: Wifi, title: 'Starlink Wi-Fi (150+ Mbps)', desc: 'High-speed remote work stability' },
-              { icon: Bed, title: 'Organic Cotton Bedding', desc: '300-thread count breathable sheets' },
-              { icon: ShieldCheck, title: '24/7 Security & Power', desc: 'Continuous generator standby' },
-              { icon: Sparkles, title: 'Artisan Bath Essentials', desc: 'Organic cold-pressed coconut oil' },
-              { icon: Eye, title: 'Direct Sea Breezes', desc: '0-meter step out to golden sand' }
+              { icon: Coffee, title: t('catBreakfast', 'Breakfast'), desc: t('includesBreakfast', 'Includes breakfast for 2') },
+              { icon: Wifi, title: t('facilitiesStarlink', 'Starlink Wi-Fi'), desc: '150+ Mbps' },
+              { icon: Bed, title: t('pillar2Title', 'Organic Bedding'), desc: '300-thread count' },
+              { icon: ShieldCheck, title: t('facilitiesGenerator', '24/7 Security & Power'), desc: 'Generator standby' },
+              { icon: Sparkles, title: t('wellnessTitle', 'Artisan Bath Essentials'), desc: 'Virgin coconut oil' },
+              { icon: Eye, title: t('statMetersSub', 'Direct Sand Walkout'), desc: '0-meter step out' }
             ].map((item, idx) => {
               const Icon = item.icon;
               return (
@@ -262,20 +262,20 @@ export const RoomsPage: React.FC = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-[#FFDDD2] text-xs font-bold uppercase tracking-widest">
             <Sparkles className="w-3.5 h-3.5 text-[#E29578]" />
-            <span>Private Events & Celebrations</span>
+            <span>{t('dayglowBadge', 'Signature Sipalay Coastal Experience')}</span>
           </div>
           <h2 className="font-serif text-3xl sm:text-4xl font-normal tracking-tight">
-            Exclusive 12-Room Resort Buyout
+            {t('buyoutTitle', 'Planning a Family Reunion, Wedding, or Group Retreat?')}
           </h2>
           <p className="text-sm sm:text-base text-teal-100 max-w-2xl mx-auto font-light leading-relaxed">
-            Have the entire resort, private beachfront, sunset deck, and dedicated team entirely to your party. Ideal for intimate beach weddings, family reunions, creative team offsites, and wellness retreats (capacity for up to 34 overnight guests).
+            {t('buyoutDesc', 'Reserve all 12 rooms of Alon & Aninag for complete resort exclusivity. Accommodate up to 36 guests with dedicated beachfront staff, private dining, and customized acoustic bonfires.')}
           </p>
           <div className="pt-2">
             <button
               onClick={() => navigateTo('contact')}
               className="px-6 py-3 bg-white text-[#006D77] hover:bg-stone-100 font-bold text-xs sm:text-sm uppercase tracking-wider rounded-sm shadow-md transition cursor-pointer"
             >
-              Inquire About Resort Buyout
+              {t('inquireBuyoutBtn', 'Inquire Exclusive Buyout')}
             </button>
           </div>
         </div>
@@ -289,7 +289,7 @@ export const RoomsPage: React.FC = () => {
             <div className="sticky top-0 z-10 bg-white/95 dark:bg-[#131F2A]/95 backdrop-blur-md p-4 sm:p-6 border-b border-stone-200 dark:border-stone-800 flex items-center justify-between">
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-widest text-[#006D77] dark:text-[#83C5BE]">
-                  {selectedRoomModal.category} • {selectedRoomModal.view}
+                  {selectedRoomModal.category} • {t(selectedRoomModal.view, selectedRoomModal.view)}
                 </span>
                 <h3 className="font-serif text-2xl font-normal text-stone-900 dark:text-white">
                   {selectedRoomModal.name}
@@ -334,7 +334,7 @@ export const RoomsPage: React.FC = () => {
               {/* Full Description */}
               <div>
                 <h4 className="font-serif text-base font-semibold text-stone-900 dark:text-white mb-2">
-                  Room Narrative & Ambience
+                  {t('modalRoomOverview', 'Room Overview')}
                 </h4>
                 <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed font-light">
                   {selectedRoomModal.description}
@@ -344,13 +344,13 @@ export const RoomsPage: React.FC = () => {
               {/* Full Features List */}
               <div>
                 <h4 className="font-serif text-base font-semibold text-stone-900 dark:text-white mb-2">
-                  Key Amenities & Appointments
+                  {t('modalFeatures', 'Key Features')}
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-stone-700 dark:text-stone-300">
                   {selectedRoomModal.features.map((f, i) => (
                     <div key={i} className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-[#006D77] dark:text-[#83C5BE] shrink-0" />
-                      <span>{f}</span>
+                      <span>{t(f, f)}</span>
                     </div>
                   ))}
                 </div>
@@ -359,9 +359,9 @@ export const RoomsPage: React.FC = () => {
               {/* Modal Booking CTA */}
               <div className="pt-4 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between">
                 <div>
-                  <div className="text-[11px] text-stone-500 uppercase tracking-wider">Nightly Rate</div>
+                  <div className="text-[11px] text-stone-500 uppercase tracking-wider">{t('startingFrom', 'Starting from')}</div>
                   <div className="font-serif text-2xl font-bold text-[#006D77] dark:text-[#83C5BE]">
-                    {formatPrice(selectedRoomModal.pricePHP)} <span className="text-xs text-stone-400 font-normal">/ night</span>
+                    {formatPrice(selectedRoomModal.pricePHP)} <span className="text-xs text-stone-400 font-normal">{t('perNightLabel', '/ night')}</span>
                   </div>
                 </div>
 
@@ -373,7 +373,7 @@ export const RoomsPage: React.FC = () => {
                   }}
                   className="px-6 py-3 bg-[#006D77] hover:bg-[#00555d] text-white text-xs uppercase tracking-wider font-bold rounded-sm shadow-sm transition cursor-pointer"
                 >
-                  Proceed to Book This Room
+                  {t('reserveNowBtn', 'Reserve Now')}
                 </button>
               </div>
             </div>

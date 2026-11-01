@@ -33,44 +33,53 @@ export const HomePage: React.FC<HomePageProps> = ({
   const gatewayCards = [
     {
       id: 'rooms',
-      title: 'Boutique Accommodations',
-      subtitle: '12 Cozy Rooms Facing the Sea',
-      desc: 'Wake up to the soft lull of waves. Handcrafted local wood, crisp organic linens, and private oceanfront verandas.',
+      title: t('gwRoomsTitle', 'Boutique Accommodations'),
+      subtitle: t('gwRoomsSub', '12 Cozy Rooms Facing the Sea'),
+      desc: t('gwRoomsDesc', 'Wake up to the soft lull of waves. Handcrafted local wood, crisp organic linens, and private oceanfront verandas.'),
       image: RESORT_IMAGES.suite,
       icon: Bed,
-      badge: '12 Beachfront Units',
-      actionText: 'Explore Rooms'
+      badge: t('gwRoomsBadge', '12 Beachfront Units'),
+      actionText: t('gwRoomsAction', 'Explore Rooms')
     },
     {
       id: 'amenities',
-      title: 'Features & Amenities',
-      subtitle: 'From Dayglow Paddle to Soul Bonfires',
-      desc: 'Signature clear kayak rentals, floating Negrense snack trays, oceanview dining, sunset bonfires, and Hilot massage.',
+      title: t('gwAmenitiesTitle', 'Features & Amenities'),
+      subtitle: t('gwAmenitiesSub', 'From Dayglow Paddle to Soul Bonfires'),
+      desc: t('gwAmenitiesDesc', 'Signature clear kayak rentals, floating Negrense snack trays, oceanview dining, sunset bonfires, and Hilot massage.'),
       image: RESORT_IMAGES.dayglow,
       icon: Sparkles,
-      badge: 'Signature Experiences',
-      actionText: 'View Amenities'
+      badge: t('gwAmenitiesBadge', 'Signature Experiences'),
+      actionText: t('gwAmenitiesAction', 'View Amenities')
     },
     {
       id: 'gallery',
-      title: 'Resort Visual Gallery',
-      subtitle: 'Photographs & 360° Virtual Tours',
-      desc: 'Immerse yourself in our coastal aesthetics, golden hour glow over Poblacion Bay, and candid guest memories.',
+      title: t('gwGalleryTitle', 'Resort Visual Gallery'),
+      subtitle: t('gwGallerySub', 'Photographs & 360° Virtual Tours'),
+      desc: t('gwGalleryDesc', 'Immerse yourself in our coastal aesthetics, golden hour glow over Poblacion Bay, and candid guest memories.'),
       image: RESORT_IMAGES.sunsetDeck,
       icon: ImageIcon,
-      badge: 'High-Res & 360° Views',
-      actionText: 'Browse Gallery'
+      badge: t('gwGalleryBadge', 'High-Res & 360° Views'),
+      actionText: t('gwGalleryAction', 'Browse Gallery')
     },
     {
       id: 'booking',
-      title: 'Reservations & Booking',
-      subtitle: 'Direct Booking with Instant Voucher',
-      desc: 'Check live room availability, select curated travel add-ons, and secure your Sipalay beachfront getaway instantly.',
+      title: t('gwBookingTitle', 'Reservations & Booking'),
+      subtitle: t('gwBookingSub', 'Direct Booking with Instant Voucher'),
+      desc: t('gwBookingDesc', 'Check live room availability, select curated travel add-ons, and secure your Sipalay beachfront getaway instantly.'),
       image: RESORT_IMAGES.bonfire,
       icon: Calendar,
-      badge: 'Best Rate Guarantee',
-      actionText: 'Reserve Your Stay'
+      badge: t('gwBookingBadge', 'Best Rate Guarantee'),
+      actionText: t('gwBookingAction', 'Reserve Your Stay')
     }
+  ];
+
+  const highlights = [
+    t('hlDirectSand', '0-meter direct walkout to Poblacion Beach sand'),
+    t('hl12Rooms', 'Only 12 intimate, non-crowded boutique rooms'),
+    t('hlDayglow', 'Signature Dayglow Clear Kayak & Floating Tray'),
+    t('hlBonfire', 'Nightly acoustic soul bonfires under the stars'),
+    t('hlWifi', 'Complimentary high-speed Starlink Wi-Fi (150+ Mbps)'),
+    t('hlHospitality', '100% locally sourced Negrense dining & hospitality')
   ];
 
   return (
@@ -89,31 +98,24 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/40 text-[#006D77] dark:text-[#83C5BE] border border-teal-200/60 dark:border-teal-800/60 text-xs font-bold uppercase tracking-widest">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>The Alon & Aninag Philosophy</span>
+                <span>{t('homePhilosophyBadge', 'The Alon & Aninag Philosophy')}</span>
               </div>
 
               <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-stone-900 dark:text-white tracking-tight leading-tight">
-                Where Waves Rest and Souls Glow
+                {t('homePhilosophyTitle', 'Where Waves Rest and Souls Glow')}
               </h2>
 
               <p className="text-stone-600 dark:text-stone-300 text-sm sm:text-base leading-relaxed font-light">
-                Nestled directly upon the soft golden shoreline of Poblacion Beach in Sipalay City, <strong>Alon & Aninag</strong> was born from a simple, soulful belief: true luxury is space, unhurried time, and the gentle rhythm of the sea.
+                {t('homeStoryP1', 'Nestled directly upon the soft golden shoreline of Poblacion Beach in Sipalay City, Alon & Aninag was born from a simple, soulful belief: true luxury is space, unhurried time, and the gentle rhythm of the sea.')}
               </p>
 
               <p className="text-stone-600 dark:text-stone-300 text-sm sm:text-base leading-relaxed font-light">
-                With only <strong>12 thoughtfully crafted rooms</strong>, our boutique retreat honors warm teak wood craftsmanship, crisp white natural linens, authentic Negrense warmth, and minimal ecological impact. Here, days begin with clear kayak glides across turquoise bay waters and culminate with soulful beachfront bonfires beneath starlit skies.
+                {t('homeStoryP2', 'With only 12 thoughtfully crafted rooms, our boutique retreat honors warm teak wood craftsmanship, crisp white natural linens, authentic Negrense warmth, and minimal ecological impact. Here, days begin with clear kayak glides across turquoise bay waters and culminate with soulful beachfront bonfires beneath starlit skies.')}
               </p>
 
               {/* Highlights Bullet List */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                {[
-                  '0-meter direct walkout to Poblacion Beach sand',
-                  'Only 12 intimate, non-crowded boutique rooms',
-                  'Signature Dayglow Clear Kayak & Floating Tray',
-                  'Nightly acoustic soul bonfires under the stars',
-                  'Complimentary high-speed Starlink Wi-Fi (150+ Mbps)',
-                  '100% locally sourced Negrense dining & hospitality'
-                ].map((item, idx) => (
+                {highlights.map((item, idx) => (
                   <div key={idx} className="flex items-center gap-2.5 text-xs sm:text-sm text-stone-700 dark:text-stone-300">
                     <span className="w-4 h-4 rounded-full bg-[#006D77]/15 dark:bg-[#83C5BE]/20 text-[#006D77] dark:text-[#83C5BE] flex items-center justify-center shrink-0">
                       <Check className="w-2.5 h-2.5" />
@@ -129,7 +131,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onClick={() => navigateTo('about')}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-[#006D77] hover:bg-[#00555d] text-white text-xs sm:text-sm uppercase tracking-wider font-bold rounded-sm shadow-sm transition cursor-pointer"
                 >
-                  <span>Read Our Full Story & Concept</span>
+                  <span>{t('btnReadStory', 'Read Our Full Story & Concept')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
                 <button
@@ -137,7 +139,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   className="inline-flex items-center gap-2 px-5 py-3 border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200 text-xs sm:text-sm uppercase tracking-wider font-semibold rounded-sm transition cursor-pointer"
                 >
                   <MapPin className="w-3.5 h-3.5 text-[#006D77] dark:text-[#83C5BE]" />
-                  <span>Getting to Sipalay</span>
+                  <span>{t('btnGettingSipalay', 'Getting to Sipalay')}</span>
                 </button>
               </div>
             </div>
@@ -160,15 +162,15 @@ export const HomePage: React.FC<HomePageProps> = ({
                     </div>
                     <div>
                       <div className="text-xs text-stone-500 dark:text-stone-400 font-semibold uppercase tracking-wider">
-                        Sipalay Sunset Hour
+                        {t('sunsetHourLabel', 'Sipalay Sunset Hour')}
                       </div>
                       <div className="font-serif text-lg font-bold text-stone-900 dark:text-white">
-                        {weather.sunsetTime} Daily
+                        {weather.sunsetTime} {t('dailyLabel', 'Daily')}
                       </div>
                     </div>
                   </div>
                   <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-2">
-                    Golden hour reflections on Poblacion Bay accompanied by gentle acoustic rhythms.
+                    {t('sunsetHourDesc', 'Golden hour reflections on Poblacion Bay accompanied by gentle acoustic rhythms.')}
                   </p>
                 </div>
               </div>
@@ -183,13 +185,13 @@ export const HomePage: React.FC<HomePageProps> = ({
           <div className="text-center max-w-3xl mx-auto mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 text-xs font-semibold uppercase tracking-wider mb-3">
               <Compass className="w-3.5 h-3.5 text-[#006D77] dark:text-[#83C5BE]" />
-              Explore Every Feature on its Own Dedicated Page
+              {t('homeGatewaysBadge', 'Explore Every Feature on its Own Dedicated Page')}
             </div>
             <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-stone-900 dark:text-white tracking-tight mb-4">
-              Your Complete Resort Journey
+              {t('homeGatewaysTitle', 'Your Complete Resort Journey')}
             </h2>
             <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 leading-relaxed font-light">
-              We have organized each aspect of Alon & Aninag into designated, focused pages. Click any section below or use the top menu to view individual layouts and details.
+              {t('homeGatewaysSub', 'We have organized each aspect of Alon & Aninag into designated, focused pages. Click any section below or use the top menu to view individual layouts and details.')}
             </p>
           </div>
 
@@ -258,30 +260,30 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="relative max-w-2xl space-y-5">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-[#FFDDD2] text-xs font-bold uppercase tracking-widest border border-white/20">
                 <Sparkles className="w-3.5 h-3.5 text-[#E29578]" />
-                <span>Featured Daytime Innovation</span>
+                <span>{t('homeDayglowBadge', 'Featured Daytime Innovation')}</span>
               </div>
 
               <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-white leading-tight">
-                The Aninag Dayglow & Paddle Experience
+                {t('homeDayglowTitle', 'The Aninag Dayglow & Paddle Experience')}
               </h2>
 
               <p className="font-serif italic text-base sm:text-lg text-[#FFDDD2]">
-                "Paddle. Relax. Capture the Glow."
+                "{t('homeDayglowTagline', 'Paddle. Relax. Capture the Glow.')}"
               </p>
 
               <p className="text-xs sm:text-sm text-stone-200 leading-relaxed font-light">
-                Glide over Poblacion Bay in 100% transparent clear kayaks and stand-up paddleboards with perimeter glow, paired with an artisanal floating woven tray of Negrense cold-brew tea, fresh tropical fruits, and shaded beachfront daybed lounge.
+                {t('homeDayglowDesc', 'Glide over Poblacion Bay in 100% transparent clear kayaks and stand-up paddleboards with perimeter glow, paired with an artisanal floating woven tray of Negrense cold-brew tea, fresh tropical fruits, and shaded beachfront daybed lounge.')}
               </p>
 
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <span className="px-3 py-1.5 rounded-sm bg-white/20 backdrop-blur-md text-xs font-semibold text-white">
-                  ₱850 / pair (Overnight Guests)
+                  {t('overnightGuestsChip', '₱850 / pair (Overnight Guests)')}
                 </span>
                 <span className="px-3 py-1.5 rounded-sm bg-white/20 backdrop-blur-md text-xs font-semibold text-white">
-                  ₱1,200 / pair (Day Visitors)
+                  {t('dayVisitorsChip', '₱1,200 / pair (Day Visitors)')}
                 </span>
                 <span className="px-3 py-1.5 rounded-sm bg-[#E29578] text-white text-xs font-bold uppercase tracking-wider">
-                  2-Hour Reserved Experience
+                  {t('twoHourReservedChip', '2-Hour Reserved Experience')}
                 </span>
               </div>
 
@@ -290,13 +292,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onClick={() => onOpenDayglowModal('overnight')}
                   className="px-6 py-3 bg-[#E29578] hover:bg-[#d07e60] text-white text-xs sm:text-sm uppercase tracking-wider font-bold rounded-sm shadow-md transition cursor-pointer"
                 >
-                  Book Dayglow Experience
+                  {t('btnBookDayglow', 'Book Dayglow Experience')}
                 </button>
                 <button
                   onClick={() => navigateTo('amenities')}
                   className="px-6 py-3 bg-white/15 hover:bg-white/25 border border-white/30 text-white text-xs sm:text-sm uppercase tracking-wider font-semibold rounded-sm transition cursor-pointer"
                 >
-                  View All Features & Amenities
+                  {t('btnViewAmenities', 'View All Features & Amenities')}
                 </button>
               </div>
             </div>
@@ -311,17 +313,17 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/40 text-[#006D77] dark:text-[#83C5BE] text-xs font-bold uppercase tracking-widest mb-2">
                 <Heart className="w-3 h-3 text-[#E29578]" />
-                <span>Guest Echoes & Memories</span>
+                <span>{t('homeReviewsBadge', 'Guest Echoes & Memories')}</span>
               </div>
               <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 dark:text-white font-normal">
-                Loved by Travelers Seeking Soul & Serenity
+                {t('homeReviewsTitle', 'Loved by Travelers Seeking Soul & Serenity')}
               </h2>
             </div>
             <button
               onClick={() => navigateTo('booking')}
               className="px-5 py-2.5 bg-[#006D77] hover:bg-[#00555d] text-white text-xs uppercase tracking-wider font-bold rounded-sm shadow-sm transition cursor-pointer"
             >
-              Book Your Getaway
+              {t('btnBookGetaway', 'Book Your Getaway')}
             </button>
           </div>
 
@@ -358,23 +360,23 @@ export const HomePage: React.FC<HomePageProps> = ({
       <section className="py-16 bg-[#006D77] text-white text-center">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <h2 className="font-serif text-3xl sm:text-4xl font-normal mb-3 tracking-tight">
-            Ready to Awaken Where the Waves Rest?
+            {t('homeCtaTitle', 'Ready to Awaken Where the Waves Rest?')}
           </h2>
           <p className="text-sm sm:text-base text-teal-100 max-w-xl mx-auto mb-8 font-light">
-            Plan your intimate staycation, weekend getaway, or creative retreat on Poblacion Beach, Sipalay City.
+            {t('homeCtaSub', 'Plan your intimate staycation, weekend getaway, or creative retreat on Poblacion Beach, Sipalay City.')}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <button
               onClick={() => navigateTo('booking')}
               className="px-7 py-3.5 bg-white text-[#006D77] hover:bg-stone-100 font-bold text-xs sm:text-sm uppercase tracking-wider rounded-sm shadow-lg transition cursor-pointer"
             >
-              Book Now • Best Rate Guaranteed
+              {t('btnBookGuaranteed', 'Book Now • Best Rate Guaranteed')}
             </button>
             <button
               onClick={() => navigateTo('contact')}
               className="px-6 py-3.5 bg-transparent hover:bg-white/10 border border-white text-white font-semibold text-xs sm:text-sm uppercase tracking-wider rounded-sm transition cursor-pointer"
             >
-              Contact Front Desk Concierge
+              {t('btnContactConcierge', 'Contact Front Desk Concierge')}
             </button>
           </div>
         </div>
