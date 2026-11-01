@@ -113,6 +113,7 @@ interface ResortContextType {
   setSearchQuery: (query: string) => void;
   currentSection: string;
   setCurrentSection: (section: string) => void;
+  navigateTo: (pageId: string, options?: { roomId?: string; scrollToTop?: boolean }) => void;
   userCoords: { lat: number; lng: number } | null;
   requestUserLocation: () => Promise<boolean>;
   distanceToResortKm: number | null;
@@ -435,12 +436,52 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [language, setLanguage] = useState<LanguageCode>(() => {
     return (safeGetItem('alon_aninag_language') as LanguageCode) || 'en';
   });
-  const [currentSection, setCurrentSection] = useState<string>('home');
+  const [currentSection, setCurrentSection] = useState<string>(() => {
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const hash = window.location.hash.replace('#', '').trim().toLowerCase();
+      const valid = ['home', 'about', 'rooms', 'amenities', 'gallery', 'booking', 'contact'];
+      if (valid.includes(hash)) return hash;
+    }
+    return 'home';
+  });
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isOfflineMode, setIsOfflineMode] = useState<boolean>(false);
   const [isOfflineModalOpen, setIsOfflineModalOpen] = useState<boolean>(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
   const [isSupportTyping, setIsSupportTyping] = useState<boolean>(false);
+
+  const navigateTo = (pageId: string, options?: { roomId?: string; scrollToTop?: boolean }) => {
+    const valid = ['home', 'about', 'rooms', 'amenities', 'gallery', 'booking', 'contact'];
+    const target = valid.includes(pageId) ? pageId : 'home';
+    setCurrentSection(target);
+    if (options?.roomId) {
+      setActiveBookingModalRoomId(options.roomId);
+    }
+    if (typeof window !== 'undefined') {
+      try {
+        window.history.pushState(null, '', `#${target}`);
+      } catch {
+        window.location.hash = `#${target}`;
+      }
+      if (options?.scrollToTop !== false) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  };
+
+  useEffect(() => {
+    const handleHash = () => {
+      if (typeof window !== 'undefined') {
+        const hash = window.location.hash.replace('#', '').trim().toLowerCase();
+        const valid = ['home', 'about', 'rooms', 'amenities', 'gallery', 'booking', 'contact'];
+        if (valid.includes(hash)) {
+          setCurrentSection(hash);
+        }
+      }
+    };
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
 
   // Dark Mode State
   const [darkMode, setDarkModeState] = useState<boolean>(() => {
@@ -745,7 +786,9 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const openBookingModal = (roomId?: string) => {
-    setActiveBookingModalRoomId(roomId || ROOMS_DATA[0].id);
+    const targetRoomId = roomId || ROOMS_DATA[0].id;
+    setActiveBookingModalRoomId(targetRoomId);
+    navigateTo('booking', { roomId: targetRoomId });
   };
 
   const closeBookingModal = () => {
@@ -1018,6 +1061,7 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setSearchQuery,
         currentSection,
         setCurrentSection,
+        navigateTo,
         userCoords,
         requestUserLocation,
         distanceToResortKm

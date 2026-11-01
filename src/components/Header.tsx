@@ -53,6 +53,7 @@ export const Header: React.FC<{
     distanceToResortKm,
     currentSection,
     setCurrentSection,
+    navigateTo,
     darkMode,
     toggleDarkMode
   } = useResort();
@@ -66,24 +67,17 @@ export const Header: React.FC<{
 
   const navItems = [
     { id: 'home', label: t('navHome', 'Home') },
-    { id: 'dayglow', label: `${t('navExperiences', 'Dayglow & Kayak')} ✨` },
-    { id: 'rooms', label: t('navRooms', 'Rooms & Suites') },
-    { id: 'dining', label: t('navDining', 'Dining & Bar') },
-    { id: 'activities', label: t('navActivities', 'Activities & Tours') },
+    { id: 'about', label: t('navAbout', 'About Us') },
+    { id: 'rooms', label: t('navRooms', 'Accommodation') },
+    { id: 'amenities', label: t('navAmenities', 'Features & Amenities') },
     { id: 'gallery', label: t('navGallery', 'Gallery') },
-    { id: 'competitors', label: t('navMap', 'Competitors & Map') },
-    { id: 'reviews', label: t('navReviews', 'Reviews') },
-    { id: 'loyalty', label: t('navLoyalty', 'Glow Club') },
-    { id: 'about', label: t('navAbout', 'About') }
+    { id: 'booking', label: t('navBooking', 'Booking') },
+    { id: 'contact', label: t('navContact', 'Contact Us') }
   ];
 
   const handleNavClick = (id: string) => {
-    setCurrentSection(id);
+    navigateTo(id);
     setIsMobileMenuOpen(false);
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
   };
 
   const languagesList: { code: LanguageCode; label: string; flag: string }[] = [

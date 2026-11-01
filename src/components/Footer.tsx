@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export const Footer: React.FC<{ onOpenAdmin: () => void }> = ({ onOpenAdmin }) => {
-  const { openOfflineModal, addNotification, weather, t } = useResort();
+  const { openOfflineModal, addNotification, weather, t, navigateTo } = useResort();
   const [newsletterEmail, setNewsletterEmail] = useState<string>('');
   const [subscribed, setSubscribed] = useState<boolean>(false);
 
@@ -72,8 +72,11 @@ export const Footer: React.FC<{ onOpenAdmin: () => void }> = ({ onOpenAdmin }) =
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Brand Column */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-sm bg-[#006D77] text-white flex items-center justify-center font-bold text-lg">
+            <div 
+              onClick={() => navigateTo('home')} 
+              className="flex items-center gap-3 cursor-pointer group"
+            >
+              <div className="w-10 h-10 rounded-sm bg-[#006D77] text-white flex items-center justify-center font-bold text-lg group-hover:bg-[#00555d] transition">
                 🌊
               </div>
               <div>
@@ -101,7 +104,7 @@ export const Footer: React.FC<{ onOpenAdmin: () => void }> = ({ onOpenAdmin }) =
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-[#83C5BE] shrink-0" />
-                <span>stay@alonaninag-sipalay.ph</span>
+                <span>stay@alonaninag-resort.ph</span>
               </div>
             </div>
           </div>
@@ -112,34 +115,89 @@ export const Footer: React.FC<{ onOpenAdmin: () => void }> = ({ onOpenAdmin }) =
               {t('accommodationsTitle', 'Accommodations')}
             </h4>
             <ul className="space-y-2.5 text-xs text-stone-400">
-              <li><a href="#rooms" className="hover:text-white transition">Aninag Master Villa</a></li>
-              <li><a href="#rooms" className="hover:text-white transition">Alon Sunset Suite</a></li>
-              <li><a href="#rooms" className="hover:text-white transition">Amihan Deluxe Garden</a></li>
-              <li><a href="#rooms" className="hover:text-white transition">Baybayin Beachfront Cottage</a></li>
-              <li><a href="#rooms" className="hover:text-white transition">12-Room Resort Buyout</a></li>
+              <li>
+                <button onClick={() => navigateTo('rooms')} className="hover:text-white transition cursor-pointer text-left">
+                  Aninag Master Villa (₱3,200)
+                </button>
+              </li>
+              <li>
+                <button onClick={() => navigateTo('rooms')} className="hover:text-white transition cursor-pointer text-left">
+                  Alon Oceanfront Suite (₱2,600)
+                </button>
+              </li>
+              <li>
+                <button onClick={() => navigateTo('rooms')} className="hover:text-white transition cursor-pointer text-left">
+                  Barkada Glow Loft (₱3,500)
+                </button>
+              </li>
+              <li>
+                <button onClick={() => navigateTo('rooms')} className="hover:text-white transition cursor-pointer text-left">
+                  Soul Deluxe Queen (₱1,800)
+                </button>
+              </li>
+              <li>
+                <button onClick={() => navigateTo('rooms')} className="hover:text-white transition cursor-pointer text-left text-[#E29578] font-semibold">
+                  12-Room Resort Buyout
+                </button>
+              </li>
             </ul>
           </div>
 
-          {/* Column 3: Experiences */}
+          {/* Column 3: Features & Experiences */}
           <div>
             <h4 className="font-serif text-xs font-bold uppercase tracking-widest text-[#83C5BE] mb-4">
-              {t('experiencesTitle', 'Experiences')}
+              Resort Features
             </h4>
             <ul className="space-y-2.5 text-xs text-stone-400">
-              <li><a href="#map" className="hover:text-white transition">Tinagong Dagat Islets</a></li>
-              <li><a href="#map" className="hover:text-white transition">Campomanes Wreck Diving</a></li>
-              <li><a href="#activities" className="hover:text-white transition">Nightly Acoustic Bonfires</a></li>
-              <li><a href="#dining" className="hover:text-white transition">Sunset Deck Negrense Dining</a></li>
-              <li><a href="#loyalty" className="hover:text-white transition">Glow Club Loyalty Rewards</a></li>
+              <li>
+                <button onClick={() => navigateTo('amenities')} className="hover:text-white transition cursor-pointer text-left">
+                  Aninag Dayglow & Paddle ✨
+                </button>
+              </li>
+              <li>
+                <button onClick={() => navigateTo('amenities')} className="hover:text-white transition cursor-pointer text-left">
+                  Soul Beach Cafe & Bar
+                </button>
+              </li>
+              <li>
+                <button onClick={() => navigateTo('amenities')} className="hover:text-white transition cursor-pointer text-left">
+                  Nightly Soul Bonfire
+                </button>
+              </li>
+              <li>
+                <button onClick={() => navigateTo('amenities')} className="hover:text-white transition cursor-pointer text-left">
+                  Hilot Healing Massage
+                </button>
+              </li>
+              <li>
+                <button onClick={() => navigateTo('gallery')} className="hover:text-white transition cursor-pointer text-left">
+                  360° Virtual Tour
+                </button>
+              </li>
             </ul>
           </div>
 
-          {/* Column 4: Quick Access & Utilities */}
+          {/* Column 4: Quick Navigation & Help */}
           <div>
             <h4 className="font-serif text-xs font-bold uppercase tracking-widest text-[#83C5BE] mb-4">
-              {t('travelUtilities', 'Travel Utilities')}
+              Quick Navigation
             </h4>
             <ul className="space-y-2.5 text-xs text-stone-400">
+              <li>
+                <button onClick={() => navigateTo('about')} className="hover:text-white transition cursor-pointer text-left">
+                  About Us & Concept
+                </button>
+              </li>
+              <li>
+                <button onClick={() => navigateTo('booking')} className="hover:text-white transition cursor-pointer text-left text-[#83C5BE] font-bold">
+                  Book a Room Online
+                </button>
+              </li>
+              <li>
+                <button onClick={() => navigateTo('contact')} className="hover:text-white transition cursor-pointer text-left">
+                  Contact & Directions
+                </button>
+              </li>
               <li>
                 <button
                   onClick={openOfflineModal}
@@ -150,19 +208,9 @@ export const Footer: React.FC<{ onOpenAdmin: () => void }> = ({ onOpenAdmin }) =
                 </button>
               </li>
               <li>
-                <a href="#map" className="hover:text-white transition">
-                  {t('interactiveMap', 'Interactive Sipalay Map')}
-                </a>
-              </li>
-              <li>
-                <a href="#reviews" className="hover:text-white transition">
-                  #GlowAtAlon Guest Wall
-                </a>
-              </li>
-              <li>
                 <button
                   onClick={onOpenAdmin}
-                  className="flex items-center gap-1.5 text-[#E29578] hover:underline transition cursor-pointer font-semibold"
+                  className="flex items-center gap-1.5 text-[#E29578] hover:underline transition cursor-pointer font-semibold pt-1"
                 >
                   <Lock className="w-3 h-3" />
                   <span>{t('staffPortal', 'Staff / Manager Portal')}</span>
