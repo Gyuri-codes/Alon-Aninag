@@ -13,11 +13,12 @@ import {
   WifiOff, 
   Heart, 
   Lock,
-  Waves
+  Waves,
+  Presentation
 } from 'lucide-react';
 
 export const Footer: React.FC<{ onOpenAdmin: () => void }> = ({ onOpenAdmin }) => {
-  const { openOfflineModal, addNotification, weather, t, navigateTo } = useResort();
+  const { openOfflineModal, addNotification, weather, t, navigateTo, openPresentation } = useResort();
   const [newsletterEmail, setNewsletterEmail] = useState<string>('');
   const [subscribed, setSubscribed] = useState<boolean>(false);
 
@@ -90,7 +91,7 @@ export const Footer: React.FC<{ onOpenAdmin: () => void }> = ({ onOpenAdmin }) =
             </div>
 
             <p className="text-xs sm:text-sm text-stone-400 leading-relaxed max-w-sm">
-              "{t('whereWavesRest', 'Where Waves Rest and Souls Glow')}." {t('footerDescription', 'An intimate 12-room beachfront retreat on the golden sands of Poblacion Beach, Sipalay City, Negros Occidental.')}
+              "{t('whereWavesRest', 'Where Waves Rest and Souls Glow')}." {t('footerDescription', 'An intimate 20-room beachfront retreat on the golden sands of Poblacion Beach, Sipalay City, Negros Occidental.')}
             </p>
 
             <div className="pt-2 text-xs text-stone-400 space-y-2">
@@ -137,7 +138,7 @@ export const Footer: React.FC<{ onOpenAdmin: () => void }> = ({ onOpenAdmin }) =
               </li>
               <li>
                 <button onClick={() => navigateTo('rooms')} className="hover:text-white transition cursor-pointer text-left text-[#E29578] font-semibold">
-                  {t('buyoutTitle', '12-Room Resort Buyout')}
+                  {t('buyoutTitle', '20-Room Resort Buyout')}
                 </button>
               </li>
             </ul>
@@ -171,7 +172,7 @@ export const Footer: React.FC<{ onOpenAdmin: () => void }> = ({ onOpenAdmin }) =
               </li>
               <li>
                 <button onClick={() => navigateTo('gallery')} className="hover:text-white transition cursor-pointer text-left">
-                  {t('virtualTour360', '360° Virtual Tour')}
+                  {t('photoGalleryLink', 'Resort Photo Gallery')}
                 </button>
               </li>
             </ul>
@@ -205,6 +206,15 @@ export const Footer: React.FC<{ onOpenAdmin: () => void }> = ({ onOpenAdmin }) =
                 >
                   <WifiOff className="w-3.5 h-3.5 text-[#83C5BE]" />
                   <span>{t('offlineItineraryGuide', 'Offline Itinerary & Guide')}</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => openPresentation(1)}
+                  className="flex items-center gap-1.5 text-[#83C5BE] hover:underline transition cursor-pointer text-left font-semibold"
+                >
+                  <Presentation className="w-3.5 h-3.5 text-[#83C5BE]" />
+                  <span>12-Slide Presentation Mode</span>
                 </button>
               </li>
               <li>

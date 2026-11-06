@@ -108,6 +108,15 @@ interface ResortContextType {
   toggleDarkMode: () => void;
   setDarkMode: (dark: boolean) => void;
 
+  // 12-Slide BSHM Presentation Mode
+  isPresentationMode: boolean;
+  currentSlide: number;
+  openPresentation: (slideNumber?: number) => void;
+  closePresentation: () => void;
+  setSlide: (slideNumber: number) => void;
+  nextSlide: () => void;
+  prevSlide: () => void;
+
   // Search & Navigation
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -450,7 +459,90 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
   const [isSupportTyping, setIsSupportTyping] = useState<boolean>(false);
 
+  // 12-Slide BSHM Presentation Mode State
+  const [isPresentationMode, setIsPresentationMode] = useState<boolean>(() => {
+    if (typeof window !== 'undefined' && window.location.hash.toLowerCase().startsWith('#presentation')) {
+      return true;
+    }
+    return false;
+  });
+  const [currentSlide, setCurrentSlide] = useState<number>(() => {
+    if (typeof window !== 'undefined' && window.location.hash.toLowerCase().startsWith('#presentation')) {
+      const parts = window.location.hash.split('/');
+      const num = parseInt(parts[1], 10);
+      if (!isNaN(num) && num >= 1 && num <= 12) return num;
+    }
+    return 1;
+  });
+
+  const openPresentation = (slideNumber: number = 1) => {
+    const valid = Math.max(1, Math.min(12, slideNumber));
+    setCurrentSlide(valid);
+    setIsPresentationMode(true);
+    if (typeof window !== 'undefined') {
+      try {
+        window.history.pushState(null, '', `#presentation/${valid}`);
+      } catch {
+        window.location.hash = `#presentation/${valid}`;
+      }
+    }
+  };
+
+  const closePresentation = () => {
+    setIsPresentationMode(false);
+    if (typeof window !== 'undefined') {
+      try {
+        window.history.pushState(null, '', `#${currentSection}`);
+      } catch {
+        window.location.hash = `#${currentSection}`;
+      }
+    }
+  };
+
+  const setSlide = (slideNumber: number) => {
+    const valid = Math.max(1, Math.min(12, slideNumber));
+    setCurrentSlide(valid);
+    if (typeof window !== 'undefined') {
+      try {
+        window.history.pushState(null, '', `#presentation/${valid}`);
+      } catch {
+        window.location.hash = `#presentation/${valid}`;
+      }
+    }
+  };
+
+  const nextSlide = () => {
+    setCurrentSlide(prev => {
+      const next = prev < 12 ? prev + 1 : 1;
+      if (typeof window !== 'undefined') {
+        try {
+          window.history.pushState(null, '', `#presentation/${next}`);
+        } catch {
+          window.location.hash = `#presentation/${next}`;
+        }
+      }
+      return next;
+    });
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide(prev => {
+      const prevNum = prev > 1 ? prev - 1 : 12;
+      if (typeof window !== 'undefined') {
+        try {
+          window.history.pushState(null, '', `#presentation/${prevNum}`);
+        } catch {
+          window.location.hash = `#presentation/${prevNum}`;
+        }
+      }
+      return prevNum;
+    });
+  };
+
   const navigateTo = (pageId: string, options?: { roomId?: string; scrollToTop?: boolean }) => {
+    if (isPresentationMode) {
+      setIsPresentationMode(false);
+    }
     const valid = ['home', 'about', 'rooms', 'amenities', 'gallery', 'booking', 'contact'];
     const target = valid.includes(pageId) ? pageId : 'home';
     setCurrentSection(target);
@@ -472,10 +564,20 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     const handleHash = () => {
       if (typeof window !== 'undefined') {
-        const hash = window.location.hash.replace('#', '').trim().toLowerCase();
+        const raw = window.location.hash.replace('#', '').trim().toLowerCase();
+        if (raw.startsWith('presentation')) {
+          setIsPresentationMode(true);
+          const parts = raw.split('/');
+          const num = parseInt(parts[1], 10);
+          if (!isNaN(num) && num >= 1 && num <= 12) {
+            setCurrentSlide(num);
+          }
+          return;
+        }
+        setIsPresentationMode(false);
         const valid = ['home', 'about', 'rooms', 'amenities', 'gallery', 'booking', 'contact'];
-        if (valid.includes(hash)) {
-          setCurrentSection(hash);
+        if (valid.includes(raw)) {
+          setCurrentSection(raw);
         }
       }
     };
@@ -1064,6 +1166,13 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         darkMode,
         toggleDarkMode,
         setDarkMode,
+        isPresentationMode,
+        currentSlide,
+        openPresentation,
+        closePresentation,
+        setSlide,
+        nextSlide,
+        prevSlide,
         searchQuery,
         setSearchQuery,
         currentSection,

@@ -31,7 +31,7 @@ export const RESORT_INFO = {
   shortName: 'Alon & Aninag',
   tagline: 'Where Waves Rest and Souls Glow',
   alternativeTagline: 'Rest. Glow. Repeat.',
-  concept: 'Boutique beachfront retreat in Poblacion Beach, Sipalay City • Affordable, aesthetic, soulful • 12 cozy rooms facing the sea • Perfect for young travelers, couples, and small families',
+  concept: 'Boutique beachfront retreat in Poblacion Beach, Sipalay City • Affordable, aesthetic, soulful • 20 cozy rooms facing the sea • Perfect for young travelers, couples, and small families',
   location: {
     address: 'Poblacion Beach (near Jazz Inn / Sunset Baywalk), Sipalay City, Negros Occidental 6111, Philippines',
     coordinates: { lat: 9.7523, lng: 122.4042 },
@@ -50,7 +50,7 @@ export const RESORT_INFO = {
     }
   },
   stats: {
-    totalRooms: 12,
+    totalRooms: 20,
     beachfrontDistance: '0 meters (Direct Sand Walkout)',
     satisfactionRate: '99.4%',
     verifiedReviews: 348
@@ -163,7 +163,7 @@ export const DAYGLOW_EXPERIENCE_DATA = {
   ],
   differentiation: [
     { title: 'Warm Local Hospitality', desc: 'Attentive, friendly Negrense beach hosts who personalize your paddle and take professional-grade couple/barkada photos.' },
-    { title: 'Quiet & Uncrowded Beachfront', desc: 'With only 12 resort rooms and strict booking slots, our shoreline never suffers from the commercial chaos of larger tourist beaches.' },
+    { title: 'Quiet & Uncrowded Beachfront', desc: 'With only 20 resort rooms and strict booking slots, our shoreline never suffers from the commercial chaos of larger tourist beaches.' },
     { title: 'Affordable Native Aesthetic', desc: 'Minimalist bamboo, woven rattan, and clean oceanfront lines that look effortlessly premium without luxury price inflation.' },
     { title: 'Complete Day-to-Sunset Flow', desc: 'Seamlessly transition from morning paddle to afternoon tea, sunset watching at Aninag Deck, and cozy evening bonfire circles.' }
   ],
@@ -192,7 +192,7 @@ export const DAYGLOW_EXPERIENCE_DATA = {
       { name: 'Cris Remitar', role: 'Financial Analysis & Pricing Strategy' },
       { name: 'Judy Ann Tromata', role: 'Marketing Mix & Promotional Campaign' }
     ],
-    strategicRationale: 'Monetizes daytime beachfront hours for a 12-room boutique resort without capital-intensive room expansion, fulfilling young travelers’ demand for photogenic, slow-travel coastal experiences.',
+    strategicRationale: 'Monetizes daytime beachfront hours for a 20-room boutique resort without capital-intensive room expansion, fulfilling young travelers’ demand for photogenic, slow-travel coastal experiences.',
     managementDecision: 'GO — Proceed with Full Rollout'
   }
 };
@@ -219,8 +219,8 @@ export const ROOMS_DATA: Room[] = [
     ],
     amenities: ['Oceanfront Balcony', 'High-Speed Wi-Fi', 'Rain Shower', 'Daily Housekeeping', 'Breakfast for 2', 'Welcome Fresh Buko Drink', 'Smart TV with Netflix'],
     images: [suiteImg, heroImg, sunsetDeckImg],
-    availableUnits: 2,
-    totalUnits: 3,
+    availableUnits: 3,
+    totalUnits: 5,
     rating: 4.98,
     reviewCount: 114,
     featured: true
@@ -245,8 +245,8 @@ export const ROOMS_DATA: Room[] = [
     ],
     amenities: ['Beach Walkout', 'Fast Wi-Fi', 'Hot Rain Shower', 'Complimentary Breakfast', 'Mini Fridge', 'Work Nook', 'Beach Towels & Tote Bag'],
     images: [heroImg, suiteImg, diningImg],
-    availableUnits: 3,
-    totalUnits: 4,
+    availableUnits: 4,
+    totalUnits: 6,
     rating: 4.95,
     reviewCount: 92,
     featured: true
@@ -271,8 +271,8 @@ export const ROOMS_DATA: Room[] = [
     ],
     amenities: ['Sleeps up to 5', 'Double Vanity', 'High-Speed Wi-Fi', 'Board Games & Cards', 'Breakfast for 4 Included', 'Bluetooth Sound Speaker', 'Filtered Drinking Water'],
     images: [bonfireImg, suiteImg, sunsetDeckImg],
-    availableUnits: 1,
-    totalUnits: 2,
+    availableUnits: 3,
+    totalUnits: 4,
     rating: 4.92,
     reviewCount: 78,
     featured: true
@@ -297,8 +297,8 @@ export const ROOMS_DATA: Room[] = [
     ],
     amenities: ['Air Conditioning', 'Free Wi-Fi', 'Hot Shower', 'Morning Coffee/Tablea', 'Eco-friendly Toiletries', 'Luggage Bench'],
     images: [suiteImg, heroImg, diningImg],
-    availableUnits: 2,
-    totalUnits: 3,
+    availableUnits: 4,
+    totalUnits: 5,
     rating: 4.90,
     reviewCount: 64,
     featured: false
@@ -1230,11 +1230,11 @@ export const FAQ_DATA = [
   },
   {
     question: 'Is there reliable Wi-Fi and mobile signal at the resort?',
-    answer: 'Yes! We have high-speed Starlink Satellite Internet throughout all 12 rooms, the sunset deck, and the beachfront dining area with speeds averaging 150+ Mbps. Mobile signal for Globe, Smart, and DITO is strong along Poblacion Beach.'
+    answer: 'Yes! We have high-speed Starlink Satellite Internet throughout all 20 rooms, the sunset deck, and the beachfront dining area with speeds averaging 150+ Mbps. Mobile signal for Globe, Smart, and DITO is strong along Poblacion Beach.'
   },
   {
     question: 'Are walk-ins accepted?',
-    answer: 'Yes, walk-in guests are always warmly welcomed at our front desk! However, because we only have 12 intimate rooms, we strongly recommend reserving in advance, especially for weekend getaways and peak holiday seasons.'
+    answer: 'Yes, walk-in guests are always warmly welcomed at our front desk! However, because we only have 20 intimate rooms, we strongly recommend reserving in advance, especially for weekend getaways and peak holiday seasons.'
   }
 ];
 

@@ -145,10 +145,10 @@ export const AdminDashboard: React.FC<{ onClose: () => void }> = ({ onClose }) =
               <BedDouble className="w-4 h-4 text-[#508991]" />
             </div>
             <div className="font-serif text-2xl sm:text-3xl font-bold text-[#2C241D] dark:text-white">
-              91.6%
+              75.0%
             </div>
             <span className="text-[11px] text-[#508991] dark:text-[#83C5BE] font-semibold mt-1 block">
-              11 of 12 Boutique Rooms Occupied
+              15 of 20 Boutique Rooms Occupied
             </span>
           </div>
 
@@ -166,12 +166,12 @@ export const AdminDashboard: React.FC<{ onClose: () => void }> = ({ onClose }) =
           </div>
         </div>
 
-        {/* 12-Room Inventory Live Status Grid */}
+        {/* 20-Room Inventory Live Status Grid */}
         <div className="bg-white dark:bg-[#131F2A] rounded-3xl p-6 border border-[#E5DAC4] dark:border-stone-800 shadow-xs">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-serif text-lg font-bold text-[#2C241D] dark:text-white">
-                Room Inventory & Housekeeping Status (12 Rooms Total)
+                Room Inventory & Housekeeping Status (20 Rooms Total)
               </h3>
               <p className="text-xs text-[#8C7B68] dark:text-stone-400">Real-time room occupancy and turn-down status</p>
             </div>

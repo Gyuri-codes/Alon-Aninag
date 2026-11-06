@@ -60,7 +60,7 @@ export const ContactPage: React.FC = () => {
     },
     {
       q: t('faqQ2', 'How fast and reliable is the internet connection for remote work?'),
-      a: t('faqA2', 'We provide complimentary high-speed Starlink satellite Wi-Fi (averaging 150+ Mbps) covering all 12 rooms, private verandas, and the sunset dining deck. Our automatic backup diesel generator ensures uninterrupted power and connectivity 24/7.')
+      a: t('faqA2', 'We provide complimentary high-speed Starlink satellite Wi-Fi (averaging 150+ Mbps) covering all 20 rooms, private verandas, and the sunset dining deck. Our automatic backup diesel generator ensures uninterrupted power and connectivity 24/7.')
     },
     {
       q: t('faqQ3', 'How do non-staying day visitors access the resort and Dayglow experience?'),
@@ -258,7 +258,7 @@ export const ContactPage: React.FC = () => {
                       <option value="General Inquiry">{t('formSubjectGeneral', 'General Question')}</option>
                       <option value="Room Booking">{t('formSubjectBooking', 'Room Booking / Dates')}</option>
                       <option value="Dayglow Pass">{t('formSubjectDayglow', 'Aninag Dayglow Pass')}</option>
-                      <option value="Resort Buyout">{t('formSubjectBuyout', 'Private Event / 12-Room Buyout')}</option>
+                      <option value="Resort Buyout">{t('formSubjectBuyout', 'Private Event / 20-Room Buyout')}</option>
                       <option value="Airport Shuttle">{t('formSubjectTransfer', 'Airport Van Transfer Request')}</option>
                     </select>
                   </div>

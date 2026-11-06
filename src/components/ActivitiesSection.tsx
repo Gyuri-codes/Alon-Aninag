@@ -140,7 +140,7 @@ export const ActivitiesSection: React.FC<ActivitiesSectionProps> = ({ onOpenDayg
               Say "I Do" as the Sipalay Sun Melts into the Sea
             </h3>
             <p className="text-xs sm:text-sm text-[#E0D5C1] leading-relaxed mb-6">
-              Full resort buyout for up to 36 guests across our 12 beachfront rooms. We arrange custom bamboo arch floral arrangements, Negrense acoustic live band, beach bonfires, lantern releases, and private boat trips.
+              Full resort buyout for up to 55 guests across our 20 beachfront rooms. We arrange custom bamboo arch floral arrangements, Negrense acoustic live band, beach bonfires, lantern releases, and private boat trips.
             </p>
             <div className="flex flex-wrap items-center gap-4">
               <button

@@ -27,11 +27,11 @@ export const RoomsPage: React.FC = () => {
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
 
   const categories = [
-    { id: 'all', label: t('allRoomsTab', 'All 12 Beachfront Rooms'), count: 12 },
-    { id: 'Villa', label: t('villasTab', 'Sunset Master Villas'), count: 3 },
-    { id: 'Suite', label: t('suitesTab', 'Oceanfront Suites'), count: 4 },
-    { id: 'Loft', label: t('loftsTab', 'Barkada Lofts'), count: 2 },
-    { id: 'Deluxe', label: t('deluxeTab', 'Soul Deluxe Rooms'), count: 3 }
+    { id: 'all', label: t('allRoomsTab', 'All 20 Beachfront Rooms'), count: 20 },
+    { id: 'Villa', label: t('villasTab', 'Sunset Master Villas'), count: 5 },
+    { id: 'Suite', label: t('suitesTab', 'Oceanfront Suites'), count: 6 },
+    { id: 'Loft', label: t('loftsTab', 'Barkada Lofts'), count: 4 },
+    { id: 'Deluxe', label: t('deluxeTab', 'Soul Deluxe Rooms'), count: 5 }
   ];
 
   const filteredRooms = ROOMS_DATA.filter((room) => {
@@ -52,8 +52,8 @@ export const RoomsPage: React.FC = () => {
       {/* Page Header */}
       <PageHeader 
         title={t('roomsPageTitle', 'Boutique Accommodations')}
-        subtitle={t('roomsPageSubtitle', '12 intimate, sea-facing sanctuaries crafted with warm natural wood, crisp white linens, and direct access to Poblacion Beach.')}
-        badge={t('roomsPageBadge', '12 Beachfront Rooms & Suites')}
+        subtitle={t('roomsPageSubtitle', '20 intimate, sea-facing sanctuaries crafted with warm natural wood, crisp white linens, and direct access to Poblacion Beach.')}
+        badge={t('roomsPageBadge', '20 Total Rooms')}
         bgImage={RESORT_IMAGES.suite}
       />
 
@@ -83,7 +83,7 @@ export const RoomsPage: React.FC = () => {
             </div>
 
             <div className="text-xs text-stone-500 dark:text-stone-400 font-medium hidden sm:block">
-              {t('showingRooms', 'Showing')} <strong>{filteredRooms.length}</strong> {t('ofRoomsAvailable', 'of 12 rooms available')}
+              {t('showingRooms', 'Showing')} <strong>{filteredRooms.length}</strong> {t('ofRoomsAvailable', 'of 20 rooms available')}
             </div>
           </div>
         </div>
@@ -217,7 +217,7 @@ export const RoomsPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. Inclusions Standard Across All 12 Rooms */}
+      {/* 3. Inclusions Standard Across All 20 Rooms */}
       <section className="py-20 bg-white dark:bg-[#0E1720] border-b border-stone-200 dark:border-stone-800 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
@@ -225,7 +225,7 @@ export const RoomsPage: React.FC = () => {
               {t('inclusionsHighlights', 'Inclusions & Highlights:')}
             </h2>
             <p className="text-sm text-stone-600 dark:text-stone-300 font-light">
-              {t('heroDescription', 'An intimate 12-room beachfront retreat on the golden sands of Poblacion Beach.')}
+              {t('heroDescription', 'An intimate 20-room beachfront retreat on the golden sands of Poblacion Beach.')}
             </p>
           </div>
 
@@ -268,7 +268,7 @@ export const RoomsPage: React.FC = () => {
             {t('buyoutTitle', 'Planning a Family Reunion, Wedding, or Group Retreat?')}
           </h2>
           <p className="text-sm sm:text-base text-teal-100 max-w-2xl mx-auto font-light leading-relaxed">
-            {t('buyoutDesc', 'Reserve all 12 rooms of Alon & Aninag for complete resort exclusivity. Accommodate up to 36 guests with dedicated beachfront staff, private dining, and customized acoustic bonfires.')}
+            {t('buyoutDesc', 'Reserve all 20 rooms of Alon & Aninag for complete resort exclusivity. Accommodate up to 55 guests with dedicated beachfront staff, private dining, and customized acoustic bonfires.')}
           </p>
           <div className="pt-2">
             <button

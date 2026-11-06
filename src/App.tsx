@@ -18,12 +18,17 @@ import { OfflineItineraryModal } from './components/OfflineItineraryModal';
 import { LiveChatWidget } from './components/LiveChatWidget';
 import { AuthModal } from './components/AuthModal';
 import { AdminDashboard } from './components/AdminDashboard';
+import { PresentationMode } from './components/PresentationMode';
 import { WifiOff } from 'lucide-react';
 
 const ResortAppContent: React.FC = () => {
-  const { isOfflineMode, toggleOfflineMode, currentSection } = useResort();
+  const { 
+    isOfflineMode, 
+    toggleOfflineMode, 
+    currentSection,
+    isPresentationMode
+  } = useResort();
   const [isAdminOpen, setIsAdminOpen] = useState<boolean>(false);
-  const [isVirtualTourOpen, setIsVirtualTourOpen] = useState<boolean>(false);
   const [isDayglowModalOpen, setIsDayglowModalOpen] = useState<boolean>(false);
   const [dayglowGuestType, setDayglowGuestType] = useState<'overnight' | 'daypass'>('overnight');
 
@@ -54,12 +59,16 @@ const ResortAppContent: React.FC = () => {
       default:
         return (
           <HomePage 
-            onOpenVirtualTour={() => setIsVirtualTourOpen(true)}
             onOpenDayglowModal={handleOpenDayglowModal}
           />
         );
     }
   };
+
+  // Presentation Mode: Dedicated full-screen 12-slide presentation
+  if (isPresentationMode) {
+    return <PresentationMode />;
+  }
 
   return (
     <div className="min-h-screen bg-[#F8F5F2] dark:bg-[#0B131A] text-[#2D3436] dark:text-[#E2E8F0] font-sans antialiased selection:bg-[#006D77] selection:text-white transition-colors duration-200 flex flex-col justify-between">

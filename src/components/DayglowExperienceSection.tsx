@@ -491,7 +491,7 @@ export const DayglowExperienceSection: React.FC<DayglowExperienceSectionProps> =
               Why Our Dayglow Cannot Be Replicated
             </h3>
             <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed">
-              Competitors can purchase similar kayaks or boards, but they cannot replicate our genuine Negrense hospitality culture, our 12-room quiet beachfront sanctuary, and the seamless transition into the sunset bonfire.
+              Competitors can purchase similar kayaks or boards, but they cannot replicate our genuine Negrense hospitality culture, our 20-room quiet beachfront sanctuary, and the seamless transition into the sunset bonfire.
             </p>
             <div className="pt-2">
               <button

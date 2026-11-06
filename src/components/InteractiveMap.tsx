@@ -97,7 +97,7 @@ export const InteractiveMap: React.FC = () => {
   const ourResort = {
     name: 'Alon & Aninag Boutique Beach Resort',
     location: 'Poblacion Beach (near Jazz Inn), Sipalay City, 6113 Negros Occidental, Philippines',
-    category: '12-Room Boutique Beachfront Sanctuary',
+    category: '20-Room Boutique Beachfront Sanctuary',
     distanceKm: 0,
     travelTime: 'Town Center Beachfront',
     mapPin: { leftPercent: 70, topPercent: 44, x: 420, y: 207 },
@@ -363,7 +363,7 @@ export const InteractiveMap: React.FC = () => {
                   <g 
                     transform="translate(420, 207)" 
                     className="cursor-pointer"
-                    onClick={() => addNotification('Alon & Aninag', 'You are viewing our 12-room boutique sanctuary on Poblacion Beach.', 'alert')}
+                    onClick={() => addNotification('Alon & Aninag', 'You are viewing our 20-room boutique sanctuary on Poblacion Beach.', 'alert')}
                   >
                     <circle r="16" fill="#006D77" stroke="#FFFFFF" strokeWidth="3" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.3))" />
                     <text x="0" y="4" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="bold">✨</text>
@@ -555,7 +555,7 @@ export const InteractiveMap: React.FC = () => {
                 <Award className="w-4 h-4 text-[#006D77] dark:text-[#83C5BE] shrink-0 mt-0.5" />
                 <div className="text-xs text-[#006D77] dark:text-[#83C5BE]">
                   <strong className="block text-stone-900 dark:text-white font-medium">Why Alon & Aninag Stands Apart:</strong>
-                  Intimate 12-room boutique setting with uncrowded sands, beachfront sunset acoustics, and exclusive Dayglow clear kayak experiences on Poblacion Beach.
+                  Intimate 20-room boutique setting with uncrowded sands, beachfront sunset acoustics, and exclusive Dayglow clear kayak experiences on Poblacion Beach.
                 </div>
               </div>
             </div>

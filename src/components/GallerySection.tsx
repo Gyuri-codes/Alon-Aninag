@@ -6,11 +6,9 @@ import {
   Volume2, 
   VolumeX, 
   Maximize2, 
-  Play, 
   X, 
   ChevronLeft, 
-  ChevronRight,
-  Compass
+  ChevronRight
 } from 'lucide-react';
 
 interface GalleryItem {
@@ -21,15 +19,10 @@ interface GalleryItem {
   caption: string;
 }
 
-export const GallerySection: React.FC<{
-  isVirtualTourOpen: boolean;
-  onCloseVirtualTour: () => void;
-  onOpenVirtualTour: () => void;
-}> = ({ isVirtualTourOpen, onCloseVirtualTour, onOpenVirtualTour }) => {
+export const GallerySection: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
   const [isOceanAudioPlaying, setIsOceanAudioPlaying] = useState<boolean>(false);
-  const [tourHotspot, setTourHotspot] = useState<string>('deck');
 
   const galleryItems: GalleryItem[] = [
     {
@@ -162,7 +155,7 @@ export const GallerySection: React.FC<{
               Visual Sanctuary
             </div>
             <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2C241D] dark:text-white tracking-tight mb-2">
-              Resort Gallery & 360° Virtual Tour
+              Resort Visual Gallery
             </h2>
             <p className="text-xs sm:text-sm text-[#6B5A48] dark:text-stone-300">
               Wood & white aesthetics, warm golden lights, and the soulful ambiance of Poblacion Beach.
@@ -181,14 +174,6 @@ export const GallerySection: React.FC<{
             >
               {isOceanAudioPlaying ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-[#8C7B68] dark:text-stone-400" />}
               <span>{isOceanAudioPlaying ? 'Ocean Sound: ON' : 'Play Ambient Waves'}</span>
-            </button>
-
-            <button
-              onClick={onOpenVirtualTour}
-              className="px-5 py-2.5 rounded-full bg-[#2C241D] dark:bg-[#006D77] hover:bg-[#1E1712] dark:hover:bg-[#00555d] text-white text-xs font-bold transition shadow-md cursor-pointer flex items-center gap-2"
-            >
-              <Play className="w-3.5 h-3.5 text-[#E4A853] fill-[#E4A853]" />
-              <span>Launch 360° Tour</span>
             </button>
           </div>
         </div>
@@ -281,121 +266,6 @@ export const GallerySection: React.FC<{
               <p className="text-xs text-white/80 max-w-xl mx-auto mt-1">
                 {filteredItems[selectedPhotoIndex].caption}
               </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 360° Virtual Tour Interactive Modal */}
-      {isVirtualTourOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-md animate-fadeIn">
-          <div className="bg-[#1A140E] text-white rounded-3xl max-w-5xl w-full max-h-[92vh] overflow-hidden border border-[#524436] shadow-2xl relative flex flex-col">
-            {/* Tour Header */}
-            <div className="p-4 sm:p-5 bg-black/60 border-b border-white/10 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-[#E4A853] text-[#2C241D] flex items-center justify-center font-bold">
-                  🧭
-                </div>
-                <div>
-                  <h3 className="font-serif text-base sm:text-lg font-bold">
-                    Alon Aninag 360° Interactive Virtual Tour
-                  </h3>
-                  <p className="text-xs text-white/60">
-                    Explore our beachfront paradise in Poblacion Beach, Sipalay
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={toggleOceanSound}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition ${
-                    isOceanAudioPlaying ? 'bg-[#508991] text-white' : 'bg-white/10 hover:bg-white/20 text-white/80'
-                  }`}
-                >
-                  <Volume2 className="w-3.5 h-3.5" />
-                  <span>{isOceanAudioPlaying ? 'Waves Active' : 'Sound'}</span>
-                </button>
-
-                <button
-                  onClick={onCloseVirtualTour}
-                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Tour Viewport */}
-            <div className="relative flex-1 min-h-[420px] bg-black overflow-hidden flex items-center justify-center">
-              <img
-                src={
-                  tourHotspot === 'deck' ? RESORT_IMAGES.sunsetDeck :
-                  tourHotspot === 'room' ? RESORT_IMAGES.suite :
-                  tourHotspot === 'bonfire' ? RESORT_IMAGES.bonfire :
-                  tourHotspot === 'dining' ? RESORT_IMAGES.dining : RESORT_IMAGES.hero
-                }
-                alt="360 Tour View"
-                referrerPolicy="no-referrer"
-                className="w-full h-full object-cover animate-subtle-pan"
-              />
-
-              {/* Hotspot Pins on the 360 Stage */}
-              {tourHotspot === 'deck' && (
-                <>
-                  <button
-                    onClick={() => setTourHotspot('bonfire')}
-                    className="absolute bottom-24 left-[35%] bg-black/70 hover:bg-[#E4A853] text-white hover:text-black px-3 py-1.5 rounded-full text-xs font-bold border border-white/40 shadow-xl transition cursor-pointer flex items-center gap-1.5 animate-bounce"
-                  >
-                    🔥 <span>Step to Beach Bonfire</span>
-                  </button>
-
-                  <button
-                    onClick={() => setTourHotspot('room')}
-                    className="absolute top-28 right-[30%] bg-black/70 hover:bg-[#E4A853] text-white hover:text-black px-3 py-1.5 rounded-full text-xs font-bold border border-white/40 shadow-xl transition cursor-pointer flex items-center gap-1.5"
-                  >
-                    🛏️ <span>Enter Sunset Villa</span>
-                  </button>
-                </>
-              )}
-
-              {tourHotspot === 'room' && (
-                <button
-                  onClick={() => setTourHotspot('deck')}
-                  className="absolute bottom-16 right-[40%] bg-black/70 hover:bg-[#E4A853] text-white hover:text-black px-3 py-1.5 rounded-full text-xs font-bold border border-white/40 shadow-xl transition cursor-pointer flex items-center gap-1.5"
-                >
-                  🌅 <span>Walk onto Sunset Balcony</span>
-                </button>
-              )}
-
-              {/* Compass overlay */}
-              <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20 text-xs flex items-center gap-2">
-                <Compass className="w-4 h-4 text-[#E4A853] animate-spin-slow" />
-                <span>Facing West (Sunset Horizon • Poblacion Beach)</span>
-              </div>
-            </div>
-
-            {/* Tour Hotspot Navigation Tabs */}
-            <div className="p-3.5 bg-black/80 border-t border-white/10 flex items-center justify-center gap-2 overflow-x-auto">
-              {[
-                { id: 'deck', label: 'Sunset Deck & Bar' },
-                { id: 'room', label: 'Aninag Master Villa' },
-                { id: 'bonfire', label: 'Beachfront Bonfire' },
-                { id: 'dining', label: 'Local Negrense Dining' },
-                { id: 'beach', label: 'Resort Beachfront' }
-              ].map((spot) => (
-                <button
-                  key={spot.id}
-                  onClick={() => setTourHotspot(spot.id)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap ${
-                    tourHotspot === spot.id
-                      ? 'bg-[#E4A853] text-[#2C241D] shadow-md'
-                      : 'bg-white/10 hover:bg-white/20 text-white/80'
-                  }`}
-                >
-                  {spot.label}
-                </button>
-              ))}
             </div>
           </div>
         </div>

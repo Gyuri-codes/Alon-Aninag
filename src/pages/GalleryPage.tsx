@@ -8,9 +8,6 @@ import {
   X, 
   ChevronLeft, 
   ChevronRight, 
-  Compass, 
-  Volume2, 
-  VolumeX, 
   Heart, 
   Eye,
   Camera
@@ -29,8 +26,6 @@ export const GalleryPage: React.FC = () => {
   const { navigateTo, t } = useResort();
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [activeLightboxIndex, setActiveLightboxIndex] = useState<number | null>(null);
-  const [tourHotspot, setTourHotspot] = useState<'deck' | 'beach' | 'villa' | 'lounge'>('deck');
-  const [isAudioPlaying, setIsAudioPlaying] = useState<boolean>(false);
 
   const photos: GalleryPhoto[] = [
     {
@@ -164,36 +159,13 @@ export const GalleryPage: React.FC = () => {
     }
   };
 
-  const tourSpots = {
-    deck: {
-      name: 'Sunset Viewing Deck',
-      desc: 'Perched 3 meters above the shoreline with uninterrupted panoramic views of Poblacion Bay.',
-      image: RESORT_IMAGES.sunsetDeck
-    },
-    beach: {
-      name: 'Poblacion Beach Frontage',
-      desc: '0-meter sand walkout where transparent kayaks and daybeds rest on golden sands.',
-      image: RESORT_IMAGES.hero
-    },
-    villa: {
-      name: 'Aninag Master Villa Veranda',
-      desc: 'Private wooden terrace with handwoven hammock facing the setting sun.',
-      image: RESORT_IMAGES.suite
-    },
-    lounge: {
-      name: 'Driftwood Bonfire Pit',
-      desc: 'Gathering circle for evening acoustic jamming and warm Negrense hot chocolate.',
-      image: RESORT_IMAGES.bonfire
-    }
-  };
-
   return (
     <div className="animate-fadeIn">
       {/* Page Header */}
       <PageHeader 
         title={t('galleryPageTitle', 'Resort Visual Journal')}
         subtitle={t('galleryPageSubtitle', 'Glimpses of quiet dawns, clear crystal waters, crackling evening bonfires, and unforgettable golden hours on Poblacion Beach.')}
-        badge={t('galleryPageBadge', 'Photographs & 360° Virtual Tour')}
+        badge={t('galleryPageBadge', 'Photographs & Visual Moments')}
         bgImage={RESORT_IMAGES.sunsetDeck}
       />
 
@@ -270,88 +242,7 @@ export const GalleryPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. 360° Interactive Virtual Tour Feature */}
-      <section className="py-20 bg-stone-900 text-white border-b border-stone-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-[#83C5BE] text-xs font-bold uppercase tracking-widest mb-3 border border-white/15">
-              <Sparkles className="w-3.5 h-3.5 text-[#E29578]" />
-              <span>{t('virtualTourBadge', 'Interactive 360° Virtual Tour')}</span>
-            </div>
-            <h2 className="font-serif text-3xl sm:text-5xl font-normal text-white tracking-tight mb-3">
-              {t('virtualTourTitle', 'Step Onto Our Beachfront Virtually')}
-            </h2>
-            <p className="text-sm text-stone-300 font-light max-w-xl mx-auto">
-              {t('virtualTourDesc', 'Explore our 12 boutique rooms, sunset dining pavilion, and pristine beachfront from anywhere in the world.')}
-            </p>
-          </div>
-
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-stone-700 max-w-5xl mx-auto bg-black">
-            {/* 360 View Window */}
-            <div className="relative aspect-16/9 overflow-hidden">
-              <img
-                src={tourSpots[tourHotspot].image}
-                alt={tourSpots[tourHotspot].name}
-                className="w-full h-full object-cover scale-105 animate-subtle-pan"
-              />
-
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 pointer-events-none" />
-
-              {/* Top Controls Overlay */}
-              <div className="absolute top-4 left-4 right-4 flex items-center justify-between text-white">
-                <div className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-semibold border border-white/20">
-                  <Compass className="w-3.5 h-3.5 text-[#83C5BE] animate-spin-slow" />
-                  <span>360°: {tourSpots[tourHotspot].name}</span>
-                </div>
-
-                <button
-                  onClick={() => setIsAudioPlaying(!isAudioPlaying)}
-                  className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-semibold border border-white/20 cursor-pointer hover:bg-black/80 transition"
-                  title="Toggle coastal ocean breeze audio"
-                >
-                  {isAudioPlaying ? <Volume2 className="w-3.5 h-3.5 text-[#83C5BE]" /> : <VolumeX className="w-3.5 h-3.5 text-stone-400" />}
-                  <span className="hidden sm:inline">{isAudioPlaying ? 'Ocean Waves: Active' : 'Sound: Off'}</span>
-                </button>
-              </div>
-
-              {/* Bottom Hotspot Description */}
-              <div className="absolute bottom-6 left-6 right-6 text-white max-w-xl">
-                <h3 className="font-serif text-xl sm:text-2xl font-normal mb-1">
-                  {tourSpots[tourHotspot].name}
-                </h3>
-                <p className="text-xs sm:text-sm text-stone-300 font-light">
-                  {tourSpots[tourHotspot].desc}
-                </p>
-              </div>
-            </div>
-
-            {/* Hotspot Switcher Buttons */}
-            <div className="bg-stone-950 p-4 border-t border-stone-800 flex flex-wrap items-center justify-center gap-2">
-              {[
-                { id: 'deck', label: '🌅 Sunset Deck' },
-                { id: 'beach', label: '🏖️ Poblacion Beach Shore' },
-                { id: 'villa', label: '🛏️ Master Villa Veranda' },
-                { id: 'lounge', label: '🔥 Evening Bonfire Circle' }
-              ].map((spot) => (
-                <button
-                  key={spot.id}
-                  onClick={() => setTourHotspot(spot.id as any)}
-                  className={`px-4 py-2 rounded-sm text-xs font-semibold uppercase tracking-wider transition cursor-pointer ${
-                    tourHotspot === spot.id
-                      ? 'bg-[#006D77] text-white shadow-sm'
-                      : 'bg-stone-900 text-stone-300 hover:bg-stone-800 border border-stone-800'
-                  }`}
-                >
-                  {spot.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. Guest UGC Polaroids */}
+      {/* 3. Guest UGC Polaroids */}
       <section className="py-20 bg-[#F8F5F2] dark:bg-[#0B131A] transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12">

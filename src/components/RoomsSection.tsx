@@ -25,7 +25,7 @@ export const RoomsSection: React.FC = () => {
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
 
   const categories = [
-    { id: 'all', label: t('allRooms', 'All 12 Beachfront Rooms') },
+    { id: 'all', label: t('allRooms', 'All 20 Beachfront Rooms') },
     { id: 'Villa', label: t('villasMaster', 'Villas & Master') },
     { id: 'Suite', label: t('suites', 'Suites') },
     { id: 'Loft', label: t('barkadaLofts', 'Barkada Lofts') },
@@ -51,7 +51,7 @@ export const RoomsSection: React.FC = () => {
             {t('intimateAccommodations', 'Intimate Boutique Accommodations')}
           </div>
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-stone-900 dark:text-white tracking-tight mb-4 font-normal">
-            {t('roomsFacingSea', '12 Cozy Rooms Facing the Sea')}
+            {t('roomsFacingSea', '20 Cozy Rooms Facing the Sea')}
           </h2>
           <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 leading-relaxed">
             {t('roomsDescription', 'Every room at Alon Aninag is crafted with warm teak wood, crisp white linens, and natural rattan elements. Designed to let you wake up to the rhythm of Poblacion Beach and rest your soul at sunset.')}

@@ -19,7 +19,8 @@ import {
   Sparkles,
   Phone,
   Bookmark,
-  Check
+  Check,
+  Presentation
 } from 'lucide-react';
 import { CURRENCY_RATES } from '../data/resortData';
 import { CurrencyCode, LanguageCode } from '../types';
@@ -55,7 +56,8 @@ export const Header: React.FC<{
     setCurrentSection,
     navigateTo,
     darkMode,
-    toggleDarkMode
+    toggleDarkMode,
+    openPresentation
   } = useResort();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -471,6 +473,16 @@ export const Header: React.FC<{
               )}
             </div>
 
+            {/* Presentation Mode Launch Button */}
+            <button
+              onClick={() => openPresentation(1)}
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-sm border border-teal-600/30 dark:border-teal-400/30 bg-teal-50 dark:bg-teal-950/50 hover:bg-[#006D77] hover:text-white dark:hover:bg-[#006D77] text-[#006D77] dark:text-[#83C5BE] transition cursor-pointer text-xs uppercase tracking-wider font-bold shadow-xs shrink-0"
+              title="Open 12-Slide Resort Presentation Mode"
+            >
+              <Presentation className="w-3.5 h-3.5" />
+              <span className="hidden lg:inline">Presentation</span>
+            </button>
+
             {/* Primary Book Now CTA Button - Responsive */}
             <button
               onClick={() => openBookingModal()}
@@ -526,7 +538,19 @@ export const Header: React.FC<{
             ))}
           </div>
 
-          <div className="pt-3 border-t border-stone-200 dark:border-stone-800 flex flex-wrap gap-2">
+          <div className="pt-3 border-t border-stone-200 dark:border-stone-800 space-y-2">
+            <button
+              onClick={() => {
+                openPresentation(1);
+                setIsMobileMenuOpen(false);
+              }}
+              className="w-full py-2.5 px-3 bg-gradient-to-r from-teal-50 to-teal-100/70 dark:from-teal-950/60 dark:to-teal-900/40 rounded-md border border-teal-300 dark:border-teal-700 text-xs font-bold text-[#006D77] dark:text-[#83C5BE] flex items-center justify-center gap-2 uppercase tracking-wider shadow-xs cursor-pointer"
+            >
+              <Presentation className="w-4 h-4 text-[#006D77] dark:text-[#83C5BE]" />
+              <span>12-Slide Presentation Mode</span>
+            </button>
+
+            <div className="flex flex-wrap gap-2">
             <button
               onClick={() => {
                 if (onOpenMyBookings) {
@@ -552,6 +576,7 @@ export const Header: React.FC<{
               {t('offlineItinerary', 'Offline Guide')}
             </button>
           </div>
+        </div>
 
           {/* Quick Mobile Language Switcher */}
           <div className="pt-2 border-t border-stone-100 dark:border-stone-800">

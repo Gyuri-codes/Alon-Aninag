@@ -20,12 +20,10 @@ import {
 } from 'lucide-react';
 
 interface HomePageProps {
-  onOpenVirtualTour: () => void;
   onOpenDayglowModal: (guestType?: 'overnight' | 'daypass') => void;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({
-  onOpenVirtualTour,
   onOpenDayglowModal
 }) => {
   const { navigateTo, weather, t } = useResort();
@@ -34,11 +32,11 @@ export const HomePage: React.FC<HomePageProps> = ({
     {
       id: 'rooms',
       title: t('gwRoomsTitle', 'Boutique Accommodations'),
-      subtitle: t('gwRoomsSub', '12 Cozy Rooms Facing the Sea'),
+      subtitle: t('gwRoomsSub', '20 Cozy Rooms Facing the Sea'),
       desc: t('gwRoomsDesc', 'Wake up to the soft lull of waves. Handcrafted local wood, crisp organic linens, and private oceanfront verandas.'),
       image: RESORT_IMAGES.suite,
       icon: Bed,
-      badge: t('gwRoomsBadge', '12 Beachfront Units'),
+      badge: t('gwRoomsBadge', '20 Beachfront Units'),
       actionText: t('gwRoomsAction', 'Explore Rooms')
     },
     {
@@ -54,11 +52,11 @@ export const HomePage: React.FC<HomePageProps> = ({
     {
       id: 'gallery',
       title: t('gwGalleryTitle', 'Resort Visual Gallery'),
-      subtitle: t('gwGallerySub', 'Photographs & 360° Virtual Tours'),
+      subtitle: t('gwGallerySub', 'Photographs & Resort Highlights'),
       desc: t('gwGalleryDesc', 'Immerse yourself in our coastal aesthetics, golden hour glow over Poblacion Bay, and candid guest memories.'),
       image: RESORT_IMAGES.sunsetDeck,
       icon: ImageIcon,
-      badge: t('gwGalleryBadge', 'High-Res & 360° Views'),
+      badge: t('gwGalleryBadge', 'High-Resolution Gallery'),
       actionText: t('gwGalleryAction', 'Browse Gallery')
     },
     {
@@ -75,7 +73,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   const highlights = [
     t('hlDirectSand', '0-meter direct walkout to Poblacion Beach sand'),
-    t('hl12Rooms', 'Only 12 intimate, non-crowded boutique rooms'),
+    t('hl12Rooms', 'Only 20 intimate, non-crowded boutique rooms'),
     t('hlDayglow', 'Signature Dayglow Clear Kayak & Floating Tray'),
     t('hlBonfire', 'Nightly acoustic soul bonfires under the stars'),
     t('hlWifi', 'Complimentary high-speed Starlink Wi-Fi (150+ Mbps)'),
@@ -86,7 +84,6 @@ export const HomePage: React.FC<HomePageProps> = ({
     <div className="animate-fadeIn">
       {/* 1. Hero Section & Quick Availability Search */}
       <Hero 
-        onOpenVirtualTour={onOpenVirtualTour}
         onOpenDayglowModal={onOpenDayglowModal}
       />
 
@@ -110,7 +107,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               </p>
 
               <p className="text-stone-600 dark:text-stone-300 text-sm sm:text-base leading-relaxed font-light">
-                {t('homeStoryP2', 'With only 12 thoughtfully crafted rooms, our boutique retreat honors warm teak wood craftsmanship, crisp white natural linens, authentic Negrense warmth, and minimal ecological impact. Here, days begin with clear kayak glides across turquoise bay waters and culminate with soulful beachfront bonfires beneath starlit skies.')}
+                {t('homeStoryP2', 'With only 20 thoughtfully crafted rooms, our boutique retreat honors warm teak wood craftsmanship, crisp white natural linens, authentic Negrense warmth, and minimal ecological impact. Here, days begin with clear kayak glides across turquoise bay waters and culminate with soulful beachfront bonfires beneath starlit skies.')}
               </p>
 
               {/* Highlights Bullet List */}
@@ -374,7 +371,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             </button>
             <button
               onClick={() => navigateTo('contact')}
-              className="px-6 py-3.5 bg-transparent hover:bg-white/10 border border-white text-white font-semibold text-xs sm:text-sm uppercase tracking-wider rounded-sm transition cursor-pointer"
+              className="px-6 py-3.5 bg-transparent hover:bg-white/10 border border-white/30 text-white font-semibold text-xs sm:text-sm uppercase tracking-wider rounded-sm transition cursor-pointer"
             >
               {t('btnContactConcierge', 'Contact Front Desk Concierge')}
             </button>

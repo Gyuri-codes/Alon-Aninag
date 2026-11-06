@@ -11,16 +11,15 @@ import {
   Flame, 
   Coffee, 
   ArrowRight,
-  Play,
   CheckCircle2,
-  Sunset
+  Sunset,
+  Presentation
 } from 'lucide-react';
 
 export const Hero: React.FC<{
-  onOpenVirtualTour?: () => void;
   onOpenDayglowModal?: (guestType?: 'overnight' | 'daypass') => void;
-}> = ({ onOpenVirtualTour, onOpenDayglowModal }) => {
-  const { openBookingModal, formatPrice, t } = useResort();
+}> = ({ onOpenDayglowModal }) => {
+  const { openBookingModal, formatPrice, t, openPresentation } = useResort();
 
   // Booking widget form state
   const todayStr = new Date().toISOString().split('T')[0];
@@ -82,7 +81,7 @@ export const Hero: React.FC<{
           </h1>
 
           <p className="text-sm sm:text-base text-stone-200 max-w-2xl font-light leading-relaxed mb-8">
-            {t('heroDescription', 'An intimate 12-room beachfront retreat on the golden sands of Poblacion Beach. Warm wood & white aesthetics, peaceful sunsets, soul bonfires, and genuine Negrense hospitality.')}
+            {t('heroDescription', 'An intimate 20-room beachfront retreat on the golden sands of Poblacion Beach. Warm wood & white aesthetics, peaceful sunsets, soul bonfires, and genuine Negrense hospitality.')}
           </p>
 
           {/* New Product Promotional Card: The Aninag Dayglow & Paddle Experience */}
@@ -109,7 +108,7 @@ export const Hero: React.FC<{
               {t('dayglowDesc', 'Transparent kayaks, stand-up paddleboards, aesthetic floating Negrense cold-brew tea and snack tray, and reserved beachfront daybed. "Where Waves Rest and Souls Glow."')}
             </p>
 
-            {/* Requested 3 CTAs */}
+            {/* Requested CTAs */}
             <div className="flex flex-wrap items-center gap-2.5 mt-4 pt-3 border-t border-white/15">
               <button
                 type="button"
@@ -125,6 +124,16 @@ export const Hero: React.FC<{
               >
                 <span>{t('bookDayglow', 'Book Dayglow Experience')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => openPresentation(1)}
+                className="px-3.5 py-2 bg-gradient-to-r from-teal-700/80 to-[#006D77] hover:from-teal-600 hover:to-[#00555d] text-white border border-teal-400/40 rounded-sm text-xs font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 shadow-sm"
+                title="View 12-Slide Resort Presentation Mode"
+              >
+                <Presentation className="w-3.5 h-3.5 text-[#83C5BE]" />
+                <span>Presentation (12 Slides)</span>
               </button>
 
               <a
@@ -168,21 +177,6 @@ export const Hero: React.FC<{
             >
               <span>{t('bookNow', 'Book Now')}</span>
               <ArrowRight className="w-4 h-4" />
-            </button>
-
-            <button
-              onClick={() => {
-                if (onOpenVirtualTour) {
-                  onOpenVirtualTour();
-                } else {
-                  const section = document.getElementById('gallery') || document.getElementById('virtual-tour') || document.getElementById('experiences');
-                  section?.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
-              className="px-6 py-3.5 rounded-sm bg-white/15 hover:bg-white/25 text-white backdrop-blur-md border border-white/30 font-semibold text-xs sm:text-sm uppercase tracking-wider transition cursor-pointer flex items-center gap-2"
-            >
-              <Play className="w-4 h-4 text-[#83C5BE] fill-[#83C5BE]" />
-              <span>{t('virtualTour', '360° Virtual Tour')}</span>
             </button>
           </div>
         </div>
@@ -267,7 +261,7 @@ export const Hero: React.FC<{
               onChange={(e) => setSelectedRoomCategory(e.target.value)}
               className="w-full px-2 py-2 text-xs sm:text-sm font-semibold bg-transparent border-0 text-stone-800 dark:text-stone-100 focus:ring-0 focus:outline-hidden cursor-pointer"
             >
-              <option value="all" className="dark:bg-[#131F2A] dark:text-stone-100">{t('allRooms', 'All 12 Beachfront Rooms')}</option>
+              <option value="all" className="dark:bg-[#131F2A] dark:text-stone-100">{t('allRooms', 'All 20 Beachfront Rooms')}</option>
               <option value="villa" className="dark:bg-[#131F2A] dark:text-stone-100">Aninag Master Villa (₱3,200)</option>
               <option value="suite" className="dark:bg-[#131F2A] dark:text-stone-100">Alon Cozy Suite (₱2,600)</option>
               <option value="loft" className="dark:bg-[#131F2A] dark:text-stone-100">Barkada Glow Loft (₱3,500)</option>
@@ -292,7 +286,7 @@ export const Hero: React.FC<{
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#006D77] dark:bg-[#83C5BE] animate-ping" />
             <span className="font-semibold text-stone-900 dark:text-white">{t('liveAvailability', 'Live Availability')}:</span>
-            <span className="truncate">{t('roomsAvailableNote', '3 of 12 rooms available for upcoming dates.')}</span>
+            <span className="truncate">{t('roomsAvailableNote', '5 of 20 rooms available for upcoming dates.')}</span>
           </div>
           <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[11px] text-stone-500 dark:text-stone-400">
             <span className="flex items-center gap-1">
