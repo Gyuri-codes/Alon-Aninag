@@ -25,26 +25,16 @@ export const RoomsSection: React.FC = () => {
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
 
   const categories = [
-    { id: 'all', label: t('allAccommodationsTab', 'All 24 Accommodations') },
-    { id: 'beachfront', label: t('allRooms', 'All 20 Beachfront Rooms') },
-    { id: 'Villa', label: t('villasMaster', 'Sunset Master Villas (6)') },
-    { id: 'Suite', label: t('suites', 'Oceanfront Suites (8)') },
+    { id: 'all', label: t('allAccommodationsTab', 'All Accommodations (24)') },
+    { id: 'Villa', label: t('villasMaster', 'Sunset Master Villas (5)') },
+    { id: 'Suite', label: t('suites', 'Oceanfront Suites (4)') },
     { id: 'Deluxe', label: t('deluxeRooms', 'Soul Deluxe Rooms (6)') },
-    { id: 'Loft', label: t('barkadaLoftsStandard', 'Barkada Lofts — 4 Standard Rooms') }
+    { id: 'Standard', label: t('standardRoomsCategory', 'Standard Rooms (5)') },
+    { id: 'Loft', label: t('barkadaLoftsCategory', 'Barkada Lofts (4)') }
   ];
 
   const filteredRooms = ROOMS_DATA.filter((room) => {
-    let matchesCategory = true;
-    if (activeCategory === 'all') {
-      matchesCategory = true;
-    } else if (activeCategory === 'beachfront') {
-      matchesCategory = room.roomClassification === 'Beachfront';
-    } else if (activeCategory === 'Loft' || activeCategory === 'Standard') {
-      matchesCategory = room.roomClassification === 'Standard' || room.category === 'Standard' || room.category === 'Loft';
-    } else {
-      matchesCategory = room.category === activeCategory;
-    }
-
+    const matchesCategory = activeCategory === 'all' || room.category === activeCategory;
     const matchesSearch = !searchQuery || 
       room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       room.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -62,10 +52,10 @@ export const RoomsSection: React.FC = () => {
             {t('intimateAccommodations', 'Intimate Boutique Accommodations • 24 Units Total')}
           </div>
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-stone-900 dark:text-white tracking-tight mb-4 font-normal">
-            {t('roomsFacingSea', '20 Beachfront Rooms & 4 Standard Lofts')}
+            {t('roomsFacingSea', '24 Boutique Accommodations by the Sea')}
           </h2>
           <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 leading-relaxed">
-            {t('roomsDescription', 'Every room at Alon Aninag is crafted with warm teak wood, crisp white linens, and natural rattan elements. Featuring 20 sea-facing beachfront rooms and 4 spacious standard lofts designed to wake up to the rhythm of Poblacion Beach and rest your soul at sunset.')}
+            {t('roomsDescription', 'Every room at Alon Aninag is crafted with warm teak wood, crisp white linens, and natural rattan elements. Featuring 24 accommodations across 5 distinctive categories designed to let you wake up to the rhythm of Poblacion Beach and rest your soul at sunset.')}
           </p>
         </div>
 
@@ -133,7 +123,7 @@ export const RoomsSection: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span className="text-[11px] uppercase font-bold tracking-widest text-[#006D77] dark:text-[#83C5BE]">
-                      {room.displayCategory || (room.category === 'Standard' || room.category === 'Loft' ? 'Barkada Lofts — 4 Standard Rooms' : `${room.category} • Beachfront`)}
+                      {room.displayCategory || room.name}
                     </span>
                     <div className="flex items-center gap-1 text-xs font-bold text-stone-800 dark:text-stone-200">
                       <span className="text-[#E29578]">★</span>

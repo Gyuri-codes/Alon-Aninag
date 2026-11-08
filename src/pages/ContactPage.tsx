@@ -60,7 +60,7 @@ export const ContactPage: React.FC = () => {
     },
     {
       q: t('faqQ2', 'How fast and reliable is the internet connection for remote work?'),
-      a: t('faqA2', 'We provide complimentary high-speed Starlink satellite Wi-Fi (averaging 150+ Mbps) covering all 24 rooms (20 beachfront sanctuaries and 4 standard lofts), private verandas, and the sunset dining deck. Our automatic backup diesel generator ensures uninterrupted power and connectivity 24/7.')
+      a: t('faqA2', 'We provide complimentary high-speed Starlink satellite Wi-Fi (averaging 150+ Mbps) covering all 24 boutique accommodations across our 5 categories, private verandas, and the sunset dining deck. Our automatic backup diesel generator ensures uninterrupted power and connectivity 24/7.')
     },
     {
       q: t('faqQ3', 'How do non-staying day visitors access the resort and Dayglow experience?'),

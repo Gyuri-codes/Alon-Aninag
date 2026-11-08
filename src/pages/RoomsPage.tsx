@@ -28,25 +28,15 @@ export const RoomsPage: React.FC = () => {
 
   const categories = [
     { id: 'all', label: t('allAccommodationsTab', 'All Accommodations (24)'), count: 24 },
-    { id: 'beachfront', label: t('allRoomsTab', 'All 20 Beachfront Rooms'), count: 20 },
-    { id: 'Villa', label: t('villasTab', 'Sunset Master Villas'), count: 6 },
-    { id: 'Suite', label: t('suitesTab', 'Oceanfront Suites'), count: 8 },
+    { id: 'Villa', label: t('villasTab', 'Sunset Master Villas'), count: 5 },
+    { id: 'Suite', label: t('suitesTab', 'Oceanfront Suites'), count: 4 },
     { id: 'Deluxe', label: t('deluxeTab', 'Soul Deluxe Rooms'), count: 6 },
-    { id: 'Loft', label: t('loftsTab', 'Barkada Lofts — 4 Standard Rooms'), count: 4 }
+    { id: 'Standard', label: t('standardRoomsTab', 'Standard Rooms'), count: 5 },
+    { id: 'Loft', label: t('loftsTab', 'Barkada Lofts'), count: 4 }
   ];
 
   const filteredRooms = ROOMS_DATA.filter((room) => {
-    let matchesCategory = true;
-    if (activeCategory === 'all') {
-      matchesCategory = true;
-    } else if (activeCategory === 'beachfront') {
-      matchesCategory = room.roomClassification === 'Beachfront';
-    } else if (activeCategory === 'Loft' || activeCategory === 'Standard') {
-      matchesCategory = room.roomClassification === 'Standard' || room.category === 'Standard' || room.category === 'Loft';
-    } else {
-      matchesCategory = room.category === activeCategory;
-    }
-
+    const matchesCategory = activeCategory === 'all' || room.category === activeCategory;
     const matchesSearch = !searchQuery || 
       room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       room.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -63,8 +53,8 @@ export const RoomsPage: React.FC = () => {
       {/* Page Header */}
       <PageHeader 
         title={t('roomsPageTitle', 'Boutique Accommodations')}
-        subtitle={t('roomsPageSubtitle', '20 intimate sea-facing beachfront sanctuaries and 4 standard loft accommodations crafted with warm natural wood, crisp white linens, and direct access to Poblacion Beach.')}
-        badge={t('roomsPageBadge', '20 Beachfront Rooms • 4 Standard Rooms (24 Total Units)')}
+        subtitle={t('roomsPageSubtitle', '24 intimate boutique sanctuaries and lofts crafted with warm natural wood, crisp white linens, and direct access to Poblacion Beach.')}
+        badge={t('roomsPageBadge', '24 Total Accommodations (5 Categories)')}
         bgImage={RESORT_IMAGES.suite}
       />
 
@@ -94,17 +84,13 @@ export const RoomsPage: React.FC = () => {
             </div>
 
             <div className="text-xs text-stone-500 dark:text-stone-400 font-medium hidden sm:block">
-              {activeCategory === 'beachfront' ? (
+              {activeCategory === 'all' ? (
                 <>
-                  {t('showingBeachfrontRooms', 'Showing')} <strong>3 {t('beachfrontCategories', 'beachfront categories')}</strong> ({t('beachfrontUnitsTotal', '20 units total')})
-                </>
-              ) : activeCategory === 'Loft' || activeCategory === 'Standard' ? (
-                <>
-                  {t('showingStandardRooms', 'Showing')} <strong>{t('loftsTab', 'Barkada Lofts — 4 Standard Rooms')}</strong>
+                  {t('showingAllAccommodations', 'Showing all 5 categories (24 units total)')}
                 </>
               ) : (
                 <>
-                  {t('showingRooms', 'Showing')} <strong>{filteredRooms.length} {t('categoriesLabel', 'categories')}</strong> ({t('totalUnitsDesc', '24 units: 20 beachfront + 4 standard')})
+                  {t('showingCategoryUnits', 'Showing category')} • <strong>{filteredRooms[0]?.totalUnits || 0} {t('unitsAvailable', 'units')}</strong>
                 </>
               )}
             </div>
@@ -147,7 +133,7 @@ export const RoomsPage: React.FC = () => {
                     {/* Header & Category */}
                     <div className="flex items-center justify-between gap-2 mb-2">
                       <span className="text-xs font-bold uppercase tracking-widest text-[#006D77] dark:text-[#83C5BE]">
-                        {room.displayCategory || (room.category === 'Standard' || room.category === 'Loft' ? 'Barkada Lofts — 4 Standard Rooms' : `${room.category} • Beachfront`)}
+                        {room.displayCategory || room.name}
                       </span>
                       <div className="flex items-center gap-1 text-amber-500 text-xs font-bold">
                         <Star className="w-3.5 h-3.5 fill-current" />
@@ -240,7 +226,7 @@ export const RoomsPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. Inclusions Standard Across All 20 Rooms */}
+      {/* 3. Inclusions Standard Across All 24 Accommodations */}
       <section className="py-20 bg-white dark:bg-[#0E1720] border-b border-stone-200 dark:border-stone-800 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
@@ -248,7 +234,7 @@ export const RoomsPage: React.FC = () => {
               {t('inclusionsHighlights', 'Inclusions & Highlights:')}
             </h2>
             <p className="text-sm text-stone-600 dark:text-stone-300 font-light">
-              {t('heroDescription', 'An intimate 20-room beachfront retreat on the golden sands of Poblacion Beach.')}
+              {t('heroDescription', 'An intimate 24-accommodation boutique retreat on the golden sands of Poblacion Beach.')}
             </p>
           </div>
 
@@ -291,7 +277,7 @@ export const RoomsPage: React.FC = () => {
             {t('buyoutTitle', 'Planning a Family Reunion, Wedding, or Group Retreat?')}
           </h2>
           <p className="text-sm sm:text-base text-teal-100 max-w-2xl mx-auto font-light leading-relaxed">
-            {t('buyoutDesc', 'Reserve all 24 rooms of Alon & Aninag (20 beachfront sanctuaries + 4 standard lofts) for complete resort exclusivity. Accommodate up to 60 guests with dedicated beachfront staff, private dining, and customized acoustic bonfires.')}
+            {t('buyoutDesc', 'Reserve all 24 boutique accommodations of Alon & Aninag (5 Sunset Villas, 4 Oceanfront Suites, 6 Soul Deluxe, 5 Standard Rooms, and 4 Barkada Lofts) for complete resort exclusivity. Accommodate up to 60 guests with dedicated beachfront staff, private dining, and customized acoustic bonfires.')}
           </p>
           <div className="pt-2">
             <button

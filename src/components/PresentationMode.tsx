@@ -189,7 +189,7 @@ export const PresentationMode: React.FC<PresentationModeProps> = ({ onClose }) =
   ];
 
   // Financial calculations for Slide 11
-  const calculatedRoomRev = 20 * (simOccupancy / 100) * simADR * 30;
+  const calculatedRoomRev = 24 * (simOccupancy / 100) * simADR * 30;
   const calculatedDayglowRev = simDayglowPerDay * 850 * 30;
   const calculatedTotalMonthlyRev = calculatedRoomRev + calculatedDayglowRev;
 
@@ -484,7 +484,7 @@ export const PresentationMode: React.FC<PresentationModeProps> = ({ onClose }) =
                 </div>
                 <div className="p-2 rounded bg-teal-950/60 border border-teal-500/40">
                   <span className="font-bold text-[#83C5BE] block">Alon & Aninag Advantage</span>
-                  <p className="text-stone-200 mt-1">Accessible Poblacion Beach road location, 20 rooms at ₱3,500 ADR, curated daytime experiences.</p>
+                  <p className="text-stone-200 mt-1">Accessible Poblacion Beach road location, 24 accommodations at ₱3,500 ADR, curated daytime experiences.</p>
                 </div>
               </div>
             </div>
@@ -523,7 +523,7 @@ export const PresentationMode: React.FC<PresentationModeProps> = ({ onClose }) =
                 </div>
                 <h3 className="font-bold text-sm text-white mb-1">0-Meter Sand Walkout</h3>
                 <p className="text-xs text-stone-300 leading-relaxed">
-                  All 20 rooms feature direct sea views with zero seawall barrier. Guests step from their hardwood patio directly onto the golden sand of Poblacion Beach.
+                  All 24 accommodations feature direct sea views with zero seawall barrier. Guests step from their hardwood patio directly onto the golden sand of Poblacion Beach.
                 </p>
               </div>
 
@@ -669,7 +669,7 @@ export const PresentationMode: React.FC<PresentationModeProps> = ({ onClose }) =
                   }`}
                 >
                   <span className="block font-bold">2x Housekeeping Staff</span>
-                  <span className="text-[10px] opacity-80">Turnover for 20 rooms</span>
+                  <span className="text-[10px] opacity-80">Turnover for 24 accommodations</span>
                 </button>
 
                 <button
@@ -1287,7 +1287,7 @@ export const PresentationMode: React.FC<PresentationModeProps> = ({ onClose }) =
                   <span className="text-base sm:text-lg font-serif font-bold text-white">
                     ₱{Math.round(calculatedRoomRev).toLocaleString()}
                   </span>
-                  <span className="text-[10px] text-stone-400 block">20 rooms × {simOccupancy}% × ₱{simADR}</span>
+                  <span className="text-[10px] text-stone-400 block">24 accommodations × {simOccupancy}% × ₱{simADR}</span>
                 </div>
 
                 <div className="p-2.5 rounded-lg bg-black/30">
@@ -1357,7 +1357,7 @@ export const PresentationMode: React.FC<PresentationModeProps> = ({ onClose }) =
               <div className="p-3.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
                 <span className="font-bold text-white text-xs block mb-1">1. High Asset Efficiency</span>
                 <p className="text-[11px] text-stone-300 leading-relaxed">
-                  20 beachfront rooms generating ₱1.7M+ monthly revenue supported by high-margin daytime paddle experiences.
+                  24 boutique accommodations generating ₱1.7M+ monthly revenue supported by high-margin daytime paddle experiences.
                 </p>
               </div>
 

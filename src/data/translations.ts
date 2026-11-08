@@ -52,7 +52,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'adults': 'Adults',
     'children': 'Children',
     'roomCategory': 'Room Category',
-    'allRooms': 'All 20 Beachfront Rooms',
+    'allRooms': 'All 24 Accommodations',
     'promoCode': 'Promo Code',
     'checkAvailability': 'Check Availability',
     'bestRateGuarantee': 'Direct Booking Best Rate Guarantee',
@@ -77,7 +77,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
 
     // Rooms Section
     'roomsBadge': 'Intimate Boutique Accommodations',
-    'roomsHeading': '20 Cozy Rooms Facing the Sea',
+    'roomsHeading': '24 Boutique Accommodations by the Sea',
     'roomsSubheading': 'Every room at Alon Aninag is crafted with warm teak wood, crisp white linens, and natural rattan elements. Designed to let you wake up to the rhythm of Poblacion Beach and rest your soul at sunset.',
     'perNight': 'per night',
     'capacity': 'Capacity',
@@ -88,10 +88,11 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'reserveThisRoom': 'Reserve This Room',
     'viewRoomDetails': 'View Details & Gallery',
     'allCategories': 'All Rooms',
-    'villasCategory': 'Villas & Master',
-    'suitesCategory': 'Suites',
-    'loftsCategory': 'Barkada Lofts — 4 Standard Rooms',
-    'deluxeCategory': 'Deluxe Rooms',
+    'villasCategory': 'Sunset Master Villas',
+    'suitesCategory': 'Oceanfront Suites',
+    'deluxeCategory': 'Soul Deluxe Rooms',
+    'standardCategory': 'Standard Rooms',
+    'loftsCategory': 'Barkada Lofts',
 
     // Dining Section
     'diningBadge': 'Local Flavors & Sunset Libations',
@@ -246,7 +247,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'adults': 'Matatanda',
     'children': 'Bata',
     'roomCategory': 'Uri ng Kuwarto',
-    'allRooms': 'Lahat ng 20 Kuwarto sa Baybayin',
+    'allRooms': 'Lahat ng 24 Akomodasyon',
     'promoCode': 'Promo Code',
     'checkAvailability': 'Tingnan ang Bakante',
     'bestRateGuarantee': 'Garantiya ng Pinakamababang Presyo sa Direktang Booking',
@@ -271,7 +272,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
 
     // Rooms Section
     'roomsBadge': 'Pribado at Magarang Akomodasyon',
-    'roomsHeading': '20 Magiginhawang Kuwartong Nakaharap sa Dagat',
+    'roomsHeading': '24 Boutique Akomodasyong Nakaharap sa Dagat',
     'roomsSubheading': 'Bawat kuwarto sa Alon Aninag ay yari sa mainit na kahoy na teka, malilinis na puting lino, at natural na yantok. Ginawa upang magising ka sa himig ng Poblacion Beach at mapahinga ang iyong kaluluwa.',
     'perNight': 'bawat gabi',
     'capacity': 'Kapasidad',
@@ -282,10 +283,11 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'reserveThisRoom': 'I-book ang Kuwartong Ito',
     'viewRoomDetails': 'Tingnan ang Detalye at Galerya',
     'allCategories': 'Lahat ng Kuwarto',
-    'villasCategory': 'Mga Villa at Master',
-    'suitesCategory': 'Mga Suite',
-    'loftsCategory': 'Barkada Lofts — 4 Karaniwang Kuwarto',
-    'deluxeCategory': 'Mga Deluxe na Kuwarto',
+    'villasCategory': 'Sunset Master Villas',
+    'suitesCategory': 'Mga Oceanfront Suite',
+    'deluxeCategory': 'Soul Deluxe Rooms',
+    'standardCategory': 'Mga Karaniwang Kuwarto',
+    'loftsCategory': 'Barkada Lofts',
 
     // Dining Section
     'diningBadge': 'Lokal na Lasang Negrense at Inumin',
@@ -440,7 +442,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'adults': 'Mga Magulang',
     'children': 'Kabataan',
     'roomCategory': 'Klase sang Kuwarto',
-    'allRooms': 'Tanan nga 20 ka Kuwarto sa Baybay',
+    'allRooms': 'Tanan nga 24 ka Akomodasyon',
     'promoCode': 'Promo Code',
     'checkAvailability': 'Tan-awa ang Bakante',
     'bestRateGuarantee': 'Pinakabarato nga Presyo sa Diretso nga Booking',
@@ -465,7 +467,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
 
     // Rooms Section
     'roomsBadge': 'Matawhay kag Pinasahi nga mga Kuwarto',
-    'roomsHeading': '20 ka Manami nga Kuwarto nga Nagaatubang sa Dagat',
+    'roomsHeading': '24 ka Boutique Akomodasyon nga Nagaatubang sa Dagat',
     'roomsSubheading': 'Kada kuwarto sa Alon Aninag ginhimo gamit ang teak nga kahoy, matinlo nga puti nga tela, kag uway. Gindisenyo para magbugtaw ka sa tunog sang balod sang Poblacion kag makapahuway ang imo kalag.',
     'perNight': 'kada gab-i',
     'capacity': 'Kapasidad',
@@ -476,10 +478,11 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'reserveThisRoom': 'I-book Ini nga Kuwarto',
     'viewRoomDetails': 'Tan-awa ang Detalye kag Retrato',
     'allCategories': 'Tanan nga Kuwarto',
-    'villasCategory': 'Mga Villa kag Master',
-    'suitesCategory': 'Mga Suite',
-    'loftsCategory': 'Barkada Lofts — 4 ka Standard nga Kuwarto',
-    'deluxeCategory': 'Mga Deluxe nga Kuwarto',
+    'villasCategory': 'Sunset Master Villas',
+    'suitesCategory': 'Mga Oceanfront Suite',
+    'deluxeCategory': 'Soul Deluxe Rooms',
+    'standardCategory': 'Mga Standard nga Kuwarto',
+    'loftsCategory': 'Barkada Lofts',
 
     // Dining Section
     'diningBadge': 'Manamit nga Pagkaon kag Imnonon sang Negros',
@@ -634,7 +637,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'adults': 'Mga Hamtong',
     'children': 'Mga Bata',
     'roomCategory': 'Klase sa Kwarto',
-    'allRooms': 'Tanan 20 ka Kwarto sa Baybayon',
+    'allRooms': 'Tanan 24 ka Akomodasyon',
     'promoCode': 'Promo Code',
     'checkAvailability': 'Susiha ang Bakante',
     'bestRateGuarantee': 'Pinakabarato nga Presyo sa Direktang Booking',
@@ -659,7 +662,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
 
     // Rooms Section
     'roomsBadge': 'Pribado ug Komportableng mga Kwarto',
-    'roomsHeading': '20 ka Nindot nga Kwarto nga Nag-atubang sa Dagat',
+    'roomsHeading': '24 ka Boutique Akomodasyon nga Nag-atubang sa Dagat',
     'roomsSubheading': 'Kada kwarto sa Alon Aninag hinimo sa teak nga kahoy, puting lino, ug uway. Gidisenyo aron makamata ka sa huni sa balod sa Poblacion ug mapahulay ang imong kalag.',
     'perNight': 'matag gabii',
     'capacity': 'Kapasidad',
@@ -670,10 +673,11 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'reserveThisRoom': 'I-book Kining Kwartoha',
     'viewRoomDetails': 'Tan-awa ang Detalye ug Hulagway',
     'allCategories': 'Tanan nga Kwarto',
-    'villasCategory': 'Mga Villa ug Master',
-    'suitesCategory': 'Mga Suite',
-    'loftsCategory': 'Barkada Lofts — 4 ka Standard nga Kwarto',
-    'deluxeCategory': 'Mga Deluxe nga Kwarto',
+    'villasCategory': 'Sunset Master Villas',
+    'suitesCategory': 'Mga Oceanfront Suite',
+    'deluxeCategory': 'Soul Deluxe Rooms',
+    'standardCategory': 'Mga Standard nga Kwarto',
+    'loftsCategory': 'Barkada Lofts',
 
     // Dining Section
     'diningBadge': 'Lamiang Pagkaon ug Inom sa Negros',
@@ -828,7 +832,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'adults': 'Adultos',
     'children': 'Niños',
     'roomCategory': 'Categoría de Habitación',
-    'allRooms': 'Las 20 Habitaciones Frente al Mar',
+    'allRooms': 'Todas las 24 Habitaciones',
     'promoCode': 'Código Promocional',
     'checkAvailability': 'Consultar Disponibilidad',
     'bestRateGuarantee': 'Mejor Tarifa Garantizada en Reserva Directa',
@@ -853,7 +857,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
 
     // Rooms Section
     'roomsBadge': 'Alojamiento Boutique Íntimo',
-    'roomsHeading': '20 Acogedoras Habitaciones Frente al Mar',
+    'roomsHeading': '24 Acogedoras Habitaciones Frente al Mar',
     'roomsSubheading': 'Cada habitación en Alon Aninag está decorada con cálida madera de teca, ropa de cama blanca impecable y detalles de ratán natural. Creada para despertar con el ritmo de Playa Población.',
     'perNight': 'por noche',
     'capacity': 'Capacidad',
@@ -864,10 +868,11 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'reserveThisRoom': 'Reservar Esta Habitación',
     'viewRoomDetails': 'Ver Detalles y Galería',
     'allCategories': 'Todas las Habitaciones',
-    'villasCategory': 'Villas y Master',
-    'suitesCategory': 'Suites',
-    'loftsCategory': 'Barkada Lofts — 4 Habitaciones Estándar',
-    'deluxeCategory': 'Habitaciones Deluxe',
+    'villasCategory': 'Sunset Master Villas',
+    'suitesCategory': 'Suites Frente al Mar',
+    'deluxeCategory': 'Habitaciones Soul Deluxe',
+    'standardCategory': 'Habitaciones Estándar',
+    'loftsCategory': 'Barkada Lofts',
 
     // Dining Section
     'diningBadge': 'Sabores Locales y Cócteles al Atardecer',
@@ -1022,7 +1027,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'adults': '大人',
     'children': 'お子様',
     'roomCategory': '客室タイプ',
-    'allRooms': '全20室のビーチフロント客室',
+    'allRooms': '全24室の客室',
     'promoCode': 'プロモコード',
     'checkAvailability': '空室を検索',
     'bestRateGuarantee': '公式サイト直接予約 最安値保証',
@@ -1046,8 +1051,8 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'lifevestInclusion': '沿岸警備隊認定ライフジャケット＆安全講習',
 
     // Rooms Section
-    'roomsBadge': '全20室のプライベートな空間',
-    'roomsHeading': '海を一望する20室の心地よい客室',
+    'roomsBadge': '全24室のプライベートな空間',
+    'roomsHeading': '海を一望する24室のブティック客室',
     'roomsSubheading': 'アロン・アニナグのすべての部屋は、温かみのあるチーク材、清潔なホワイトリネン、天然ラタンで仕上げられています。波の音で目覚め、夕日に癒やされる贅沢なひとときを。',
     'perNight': '1泊あたり',
     'capacity': '定員',
@@ -1058,10 +1063,11 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'reserveThisRoom': 'この客室を予約する',
     'viewRoomDetails': '詳細と写真を見る',
     'allCategories': 'すべての客室',
-    'villasCategory': 'ヴィラ＆マスター',
-    'suitesCategory': 'スイート',
-    'loftsCategory': 'バルカダ・ロフト — スタンダード4室',
-    'deluxeCategory': 'デラックスルーム',
+    'villasCategory': 'サンセット・マスター・ヴィラ',
+    'suitesCategory': 'オーシャンフロント・スイート',
+    'deluxeCategory': 'ソウル・デラックスルーム',
+    'standardCategory': 'スタンダードルーム',
+    'loftsCategory': 'バルカダ・ロフト',
 
     // Dining Section
     'diningBadge': 'ネグロス島の伝統と海の幸',
@@ -1216,7 +1222,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'adults': '성인',
     'children': '어린이',
     'roomCategory': '객실 타입',
-    'allRooms': '전체 20개 오션프론트 객실',
+    'allRooms': '전체 24개 객실',
     'promoCode': '프로모션 코드',
     'checkAvailability': '빈 객실 확인',
     'bestRateGuarantee': '공식 홈페이지 직접 예약 최저가 보장',
@@ -1240,8 +1246,8 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'lifevestInclusion': '공인 구명조끼 및 수상 안전 교육',
 
     // Rooms Section
-    'roomsBadge': '아늑한 20실 프라이빗 숙소',
-    'roomsHeading': '바다를 마주한 20개의 아늑한 객실',
+    'roomsBadge': '아늑한 24실 프라이빗 부티크 숙소',
+    'roomsHeading': '바다를 마주한 24개의 부티크 객실',
     'roomsSubheading': '알론 아니낙의 모든 객실은 따스한 티크 원목, 새하얀 린넨, 천연 라탄 소재로 정성스럽게 꾸며졌습니다. 파도 소리를 들으며 눈을 뜨고 석양과 함께 평온한 휴식을 취해보세요.',
     'perNight': '1박 기준',
     'capacity': '정원',
@@ -1252,10 +1258,11 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'reserveThisRoom': '이 객실 예약하기',
     'viewRoomDetails': '상세 정보 및 갤러리',
     'allCategories': '모든 객실',
-    'villasCategory': '빌라 & 마스터',
-    'suitesCategory': '스위트룸',
-    'loftsCategory': '바르카다 로프트 — 스탠다드 4실',
-    'deluxeCategory': '디럭스룸',
+    'villasCategory': '선셋 마스터 빌라',
+    'suitesCategory': '오션프론트 스위트',
+    'deluxeCategory': '소울 디럭스룸',
+    'standardCategory': '스탠다드 룸',
+    'loftsCategory': '바르카다 로프트',
 
     // Dining Section
     'diningBadge': '로컬 미식과 선셋 칵테일',

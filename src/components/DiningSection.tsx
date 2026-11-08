@@ -129,7 +129,7 @@ export const DiningSection: React.FC = () => {
                 </div>
                 <div className="bg-white dark:bg-[#0E1720] p-3 rounded-sm border border-stone-200 dark:border-stone-700">
                   <p className="font-bold text-stone-900 dark:text-white">🛎️ {t('roomService', 'Room Service')}</p>
-                  <p className="text-stone-500 dark:text-stone-400">{t('allRooms247', 'All 20 rooms 24/7')}</p>
+                  <p className="text-stone-500 dark:text-stone-400">{t('allRooms247', 'All 24 accommodations 24/7')}</p>
                 </div>
               </div>
             </div>

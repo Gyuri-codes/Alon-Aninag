@@ -261,11 +261,12 @@ export const Hero: React.FC<{
               onChange={(e) => setSelectedRoomCategory(e.target.value)}
               className="w-full px-2 py-2 text-xs sm:text-sm font-semibold bg-transparent border-0 text-stone-800 dark:text-stone-100 focus:ring-0 focus:outline-hidden cursor-pointer"
             >
-              <option value="all" className="dark:bg-[#131F2A] dark:text-stone-100">{t('allRooms', 'All 20 Beachfront Rooms')}</option>
-              <option value="villa" className="dark:bg-[#131F2A] dark:text-stone-100">Aninag Master Villa (₱3,200)</option>
-              <option value="suite" className="dark:bg-[#131F2A] dark:text-stone-100">Alon Cozy Suite (₱2,600)</option>
-              <option value="loft" className="dark:bg-[#131F2A] dark:text-stone-100">Barkada Glow Loft (₱3,500)</option>
-              <option value="deluxe" className="dark:bg-[#131F2A] dark:text-stone-100">Soul Deluxe Queen (₱1,800)</option>
+              <option value="all" className="dark:bg-[#131F2A] dark:text-stone-100">{t('allAccommodationsTab', 'All 24 Accommodations')}</option>
+              <option value="villa" className="dark:bg-[#131F2A] dark:text-stone-100">Sunset Master Villas (5 units)</option>
+              <option value="suite" className="dark:bg-[#131F2A] dark:text-stone-100">Oceanfront Suites (4 units)</option>
+              <option value="deluxe" className="dark:bg-[#131F2A] dark:text-stone-100">Soul Deluxe Rooms (6 units)</option>
+              <option value="standard" className="dark:bg-[#131F2A] dark:text-stone-100">Standard Rooms (5 units)</option>
+              <option value="loft" className="dark:bg-[#131F2A] dark:text-stone-100">Barkada Lofts (4 units)</option>
             </select>
           </div>
 
@@ -286,7 +287,7 @@ export const Hero: React.FC<{
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#006D77] dark:bg-[#83C5BE] animate-ping" />
             <span className="font-semibold text-stone-900 dark:text-white">{t('liveAvailability', 'Live Availability')}:</span>
-            <span className="truncate">{t('roomsAvailableNote', '5 of 20 rooms available for upcoming dates.')}</span>
+            <span className="truncate">{t('roomsAvailableNote', '5 of 24 accommodations available for upcoming dates.')}</span>
           </div>
           <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[11px] text-stone-500 dark:text-stone-400">
             <span className="flex items-center gap-1">

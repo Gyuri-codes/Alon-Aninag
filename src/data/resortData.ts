@@ -31,7 +31,7 @@ export const RESORT_INFO = {
   shortName: 'Alon & Aninag',
   tagline: 'Where Waves Rest and Souls Glow',
   alternativeTagline: 'Rest. Glow. Repeat.',
-  concept: 'Boutique beachfront retreat in Poblacion Beach, Sipalay City • Affordable, aesthetic, soulful • 20 beachfront rooms + 4 standard rooms (24 total units) • Perfect for young travelers, couples, and small families',
+  concept: 'Boutique beachfront retreat in Poblacion Beach, Sipalay City • Affordable, aesthetic, soulful • 24 accommodations across 5 boutique categories • Perfect for young travelers, couples, and small families',
   location: {
     address: 'Poblacion Beach (near Jazz Inn / Sunset Baywalk), Sipalay City, Negros Occidental 6111, Philippines',
     coordinates: { lat: 9.7528, lng: 122.3989 },
@@ -52,8 +52,6 @@ export const RESORT_INFO = {
   stats: {
     totalRooms: 24,
     totalUnits: 24,
-    beachfrontRooms: 20,
-    standardRooms: 4,
     beachfrontDistance: '0 meters (Direct Sand Walkout)',
     satisfactionRate: '99.4%',
     verifiedReviews: 348
@@ -205,8 +203,7 @@ export const ROOMS_DATA: Room[] = [
     id: 'room-aninag-villa',
     name: 'Aninag Sunset Master Villa',
     category: 'Villa',
-    roomClassification: 'Beachfront',
-    displayCategory: 'Sunset Master Villa (Beachfront)',
+    displayCategory: 'Sunset Master Villa',
     tagline: 'Panoramic sea-facing sunset haven with private oceanfront balcony & hammock',
     pricePHP: 3200,
     capacity: { adults: 2, children: 1, maxTotal: 3 },
@@ -224,8 +221,8 @@ export const ROOMS_DATA: Room[] = [
     ],
     amenities: ['Oceanfront Balcony', 'High-Speed Wi-Fi', 'Rain Shower', 'Daily Housekeeping', 'Breakfast for 2', 'Welcome Fresh Buko Drink', 'Smart TV with Netflix'],
     images: [suiteImg, heroImg, sunsetDeckImg],
-    availableUnits: 4,
-    totalUnits: 6,
+    availableUnits: 3,
+    totalUnits: 5,
     rating: 4.98,
     reviewCount: 114,
     featured: true
@@ -234,8 +231,7 @@ export const ROOMS_DATA: Room[] = [
     id: 'room-alon-oceanfront',
     name: 'Alon Oceanfront Cozy Suite',
     category: 'Suite',
-    roomClassification: 'Beachfront',
-    displayCategory: 'Oceanfront Suite (Beachfront)',
+    displayCategory: 'Oceanfront Suite',
     tagline: 'Step directly from your wooden veranda onto the soft warm sand of Poblacion Beach',
     pricePHP: 2600,
     capacity: { adults: 2, children: 2, maxTotal: 4 },
@@ -252,46 +248,17 @@ export const ROOMS_DATA: Room[] = [
     ],
     amenities: ['Beach Walkout', 'Fast Wi-Fi', 'Hot Rain Shower', 'Complimentary Breakfast', 'Mini Fridge', 'Work Nook', 'Beach Towels & Tote Bag'],
     images: [heroImg, suiteImg, diningImg],
-    availableUnits: 6,
-    totalUnits: 8,
+    availableUnits: 2,
+    totalUnits: 4,
     rating: 4.95,
     reviewCount: 92,
-    featured: true
-  },
-  {
-    id: 'room-barkada-loft',
-    name: 'Barkada Glow Loft',
-    category: 'Standard',
-    roomClassification: 'Standard',
-    displayCategory: 'Barkada Lofts — 4 Standard Rooms',
-    tagline: 'Aesthetic multi-level bunk & loft suite created for youth barkadas and fun group trips',
-    pricePHP: 3500,
-    capacity: { adults: 4, children: 1, maxTotal: 5 },
-    bedType: '2 Queen Beds + 1 Upper Loft Bunk',
-    sizeSqM: 48,
-    view: 'Tropical Garden & Sea',
-    description: 'The ultimate barkada haven in Sipalay. High ceilings, industrial-boho rattan lamps, board games shelf, multiple charging ports for cameras and phones, and ample space for group storytelling and guitar jamming after sunset.',
-    features: [
-      'Split-level design with loft mezzanine and lounge corner',
-      'Acoustic guitar and vintage card & board games collection',
-      '5 separate plush beds with personal reading lamps & USB-C ports',
-      'Double vanity bathroom sink for seamless group prep',
-      'Large gear rack for dive bags, snorkel masks, and slippers'
-    ],
-    amenities: ['Sleeps up to 5', 'Double Vanity', 'High-Speed Wi-Fi', 'Board Games & Cards', 'Breakfast for 4 Included', 'Bluetooth Sound Speaker', 'Filtered Drinking Water'],
-    images: [bonfireImg, suiteImg, sunsetDeckImg],
-    availableUnits: 3,
-    totalUnits: 4,
-    rating: 4.92,
-    reviewCount: 78,
     featured: true
   },
   {
     id: 'room-soul-deluxe',
     name: 'Soul Deluxe Queen',
     category: 'Deluxe',
-    roomClassification: 'Beachfront',
-    displayCategory: 'Soul Deluxe Room (Beachfront)',
+    displayCategory: 'Soul Deluxe Room',
     tagline: 'Minimalist wood & white haven delivering maximum comfort at an accessible rate',
     pricePHP: 1800,
     capacity: { adults: 2, children: 0, maxTotal: 2 },
@@ -313,6 +280,61 @@ export const ROOMS_DATA: Room[] = [
     rating: 4.90,
     reviewCount: 64,
     featured: false
+  },
+  {
+    id: 'room-standard',
+    name: 'Alon Aninag Standard Room',
+    category: 'Standard',
+    displayCategory: 'Standard Room',
+    tagline: 'Serene tropical haven crafted with warm native timber, silent split air conditioning & rain shower',
+    pricePHP: 1600,
+    capacity: { adults: 2, children: 1, maxTotal: 3 },
+    bedType: '1 Queen Plush Bed',
+    sizeSqM: 28,
+    view: 'Tropical Garden & Sea',
+    description: 'An inviting, peaceful retreat designed for slow travelers and couples seeking unpretentious coastal comfort. Just steps from Poblacion Beach, featuring locally crafted hardwood furnishings, organic cotton linens, quiet cooling, and a dedicated vanity work desk.',
+    features: [
+      'Split inverter silent air conditioning',
+      'Private stone bathroom with hot & cold rain shower',
+      'Complimentary high-speed Starlink Wi-Fi (150+ Mbps)',
+      'Handcrafted local teak bed and work vanity desk',
+      'Locally sourced virgin coconut bath amenities & fresh towels',
+      'Electric kettle with artisan native coffee & tea'
+    ],
+    amenities: ['Air Conditioning', 'Starlink Wi-Fi', 'Hot Rain Shower', 'Daily Housekeeping', 'Complimentary Breakfast', 'Eco Toiletries', 'Work Nook'],
+    images: [suiteImg, diningImg, heroImg],
+    availableUnits: 3,
+    totalUnits: 5,
+    rating: 4.89,
+    reviewCount: 56,
+    featured: false
+  },
+  {
+    id: 'room-barkada-loft',
+    name: 'Barkada Glow Loft',
+    category: 'Loft',
+    displayCategory: 'Barkada Loft',
+    tagline: 'Aesthetic multi-level bunk & loft suite created for youth barkadas and fun group trips',
+    pricePHP: 3500,
+    capacity: { adults: 4, children: 1, maxTotal: 5 },
+    bedType: '2 Queen Beds + 1 Upper Loft Bunk',
+    sizeSqM: 48,
+    view: 'Tropical Garden & Sea',
+    description: 'The ultimate barkada haven in Sipalay. High ceilings, industrial-boho rattan lamps, board games shelf, multiple charging ports for cameras and phones, and ample space for group storytelling and guitar jamming after sunset.',
+    features: [
+      'Split-level design with loft mezzanine and lounge corner',
+      'Acoustic guitar and vintage card & board games collection',
+      '5 separate plush beds with personal reading lamps & USB-C ports',
+      'Double vanity bathroom sink for seamless group prep',
+      'Large gear rack for dive bags, snorkel masks, and slippers'
+    ],
+    amenities: ['Sleeps up to 5', 'Double Vanity', 'High-Speed Wi-Fi', 'Board Games & Cards', 'Breakfast for 4 Included', 'Bluetooth Sound Speaker', 'Filtered Drinking Water'],
+    images: [bonfireImg, suiteImg, sunsetDeckImg],
+    availableUnits: 2,
+    totalUnits: 4,
+    rating: 4.92,
+    reviewCount: 78,
+    featured: true
   }
 ];
 
@@ -1241,11 +1263,11 @@ export const FAQ_DATA = [
   },
   {
     question: 'Is there reliable Wi-Fi and mobile signal at the resort?',
-    answer: 'Yes! We have high-speed Starlink Satellite Internet throughout all 20 rooms, the sunset deck, and the beachfront dining area with speeds averaging 150+ Mbps. Mobile signal for Globe, Smart, and DITO is strong along Poblacion Beach.'
+    answer: 'Yes! We have high-speed Starlink Satellite Internet throughout all 24 accommodations, the sunset deck, and the beachfront dining area with speeds averaging 150+ Mbps. Mobile signal for Globe, Smart, and DITO is strong along Poblacion Beach.'
   },
   {
     question: 'Are walk-ins accepted?',
-    answer: 'Yes, walk-in guests are always warmly welcomed at our front desk! However, because we only have 20 intimate rooms, we strongly recommend reserving in advance, especially for weekend getaways and peak holiday seasons.'
+    answer: 'Yes, walk-in guests are always warmly welcomed at our front desk! However, because we only have 24 intimate boutique accommodations across 5 categories, we strongly recommend reserving in advance, especially for weekend getaways and peak holiday seasons.'
   }
 ];
 

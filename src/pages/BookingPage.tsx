@@ -584,7 +584,7 @@ export const BookingPage: React.FC = () => {
                                 </div>
                                 <div className="flex items-center justify-between">
                                   <span className="text-[10px] font-bold uppercase text-[#006D77] dark:text-[#83C5BE]">
-                                    {room.displayCategory || (room.category === 'Standard' || room.category === 'Loft' ? 'Barkada Lofts — 4 Standard Rooms' : `${room.category} • Beachfront`)}
+                                    {room.displayCategory || `${room.category} Category`}
                                   </span>
                                   <span className="text-[10px] text-stone-500">{room.availableUnits} {t('unitsAvailable', 'left')}</span>
                                 </div>

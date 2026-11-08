@@ -32,11 +32,11 @@ export const HomePage: React.FC<HomePageProps> = ({
     {
       id: 'rooms',
       title: t('gwRoomsTitle', 'Boutique Accommodations'),
-      subtitle: t('gwRoomsSub', '20 Beachfront Rooms & 4 Standard Lofts'),
+      subtitle: t('gwRoomsSub', '24 Accommodations Across 5 Categories'),
       desc: t('gwRoomsDesc', 'Wake up to the soft lull of waves. Handcrafted local wood, crisp organic linens, and private oceanfront verandas.'),
       image: RESORT_IMAGES.suite,
       icon: Bed,
-      badge: t('gwRoomsBadge', '20 Beachfront Units • 4 Lofts (24 Total)'),
+      badge: t('gwRoomsBadge', '24 Boutique Units (5 Categories)'),
       actionText: t('gwRoomsAction', 'Explore Rooms')
     },
     {
@@ -73,7 +73,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   const highlights = [
     t('hlDirectSand', '0-meter direct walkout to Poblacion Beach sand'),
-    t('hl12Rooms', '20 intimate beachfront rooms + 4 standard lofts'),
+    t('hl12Rooms', '24 intimate boutique accommodations'),
     t('hlDayglow', 'Signature Dayglow Clear Kayak & Floating Tray'),
     t('hlBonfire', 'Nightly acoustic soul bonfires under the stars'),
     t('hlWifi', 'Complimentary high-speed Starlink Wi-Fi (150+ Mbps)'),
@@ -107,7 +107,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               </p>
 
               <p className="text-stone-600 dark:text-stone-300 text-sm sm:text-base leading-relaxed font-light">
-                {t('homeStoryP2', 'With 20 beachfront rooms and 4 standard lofts (24 total accommodations), our boutique retreat honors warm teak wood craftsmanship, crisp white natural linens, authentic Negrense warmth, and minimal ecological impact. Here, days begin with clear kayak glides across turquoise bay waters and culminate with soulful beachfront bonfires beneath starlit skies.')}
+                {t('homeStoryP2', 'With 24 thoughtfully crafted accommodations across 5 distinctive categories, our boutique retreat honors warm teak wood craftsmanship, crisp white natural linens, authentic Negrense warmth, and minimal ecological impact. Here, days begin with clear kayak glides across turquoise bay waters and culminate with soulful beachfront bonfires beneath starlit skies.')}
               </p>
 
               {/* Highlights Bullet List */}
