@@ -27,15 +27,26 @@ export const RoomsPage: React.FC = () => {
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
 
   const categories = [
-    { id: 'all', label: t('allRoomsTab', 'All 20 Beachfront Rooms'), count: 20 },
-    { id: 'Villa', label: t('villasTab', 'Sunset Master Villas'), count: 5 },
-    { id: 'Suite', label: t('suitesTab', 'Oceanfront Suites'), count: 6 },
-    { id: 'Loft', label: t('loftsTab', 'Barkada Lofts'), count: 4 },
-    { id: 'Deluxe', label: t('deluxeTab', 'Soul Deluxe Rooms'), count: 5 }
+    { id: 'all', label: t('allAccommodationsTab', 'All Accommodations (24)'), count: 24 },
+    { id: 'beachfront', label: t('allRoomsTab', 'All 20 Beachfront Rooms'), count: 20 },
+    { id: 'Villa', label: t('villasTab', 'Sunset Master Villas'), count: 6 },
+    { id: 'Suite', label: t('suitesTab', 'Oceanfront Suites'), count: 8 },
+    { id: 'Deluxe', label: t('deluxeTab', 'Soul Deluxe Rooms'), count: 6 },
+    { id: 'Loft', label: t('loftsTab', 'Barkada Lofts — 4 Standard Rooms'), count: 4 }
   ];
 
   const filteredRooms = ROOMS_DATA.filter((room) => {
-    const matchesCategory = activeCategory === 'all' || room.category === activeCategory;
+    let matchesCategory = true;
+    if (activeCategory === 'all') {
+      matchesCategory = true;
+    } else if (activeCategory === 'beachfront') {
+      matchesCategory = room.roomClassification === 'Beachfront';
+    } else if (activeCategory === 'Loft' || activeCategory === 'Standard') {
+      matchesCategory = room.roomClassification === 'Standard' || room.category === 'Standard' || room.category === 'Loft';
+    } else {
+      matchesCategory = room.category === activeCategory;
+    }
+
     const matchesSearch = !searchQuery || 
       room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       room.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -52,8 +63,8 @@ export const RoomsPage: React.FC = () => {
       {/* Page Header */}
       <PageHeader 
         title={t('roomsPageTitle', 'Boutique Accommodations')}
-        subtitle={t('roomsPageSubtitle', '20 intimate, sea-facing sanctuaries crafted with warm natural wood, crisp white linens, and direct access to Poblacion Beach.')}
-        badge={t('roomsPageBadge', '20 Total Rooms')}
+        subtitle={t('roomsPageSubtitle', '20 intimate sea-facing beachfront sanctuaries and 4 standard loft accommodations crafted with warm natural wood, crisp white linens, and direct access to Poblacion Beach.')}
+        badge={t('roomsPageBadge', '20 Beachfront Rooms • 4 Standard Rooms (24 Total Units)')}
         bgImage={RESORT_IMAGES.suite}
       />
 
@@ -83,7 +94,19 @@ export const RoomsPage: React.FC = () => {
             </div>
 
             <div className="text-xs text-stone-500 dark:text-stone-400 font-medium hidden sm:block">
-              {t('showingRooms', 'Showing')} <strong>{filteredRooms.length}</strong> {t('ofRoomsAvailable', 'of 20 rooms available')}
+              {activeCategory === 'beachfront' ? (
+                <>
+                  {t('showingBeachfrontRooms', 'Showing')} <strong>3 {t('beachfrontCategories', 'beachfront categories')}</strong> ({t('beachfrontUnitsTotal', '20 units total')})
+                </>
+              ) : activeCategory === 'Loft' || activeCategory === 'Standard' ? (
+                <>
+                  {t('showingStandardRooms', 'Showing')} <strong>{t('loftsTab', 'Barkada Lofts — 4 Standard Rooms')}</strong>
+                </>
+              ) : (
+                <>
+                  {t('showingRooms', 'Showing')} <strong>{filteredRooms.length} {t('categoriesLabel', 'categories')}</strong> ({t('totalUnitsDesc', '24 units: 20 beachfront + 4 standard')})
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -124,7 +147,7 @@ export const RoomsPage: React.FC = () => {
                     {/* Header & Category */}
                     <div className="flex items-center justify-between gap-2 mb-2">
                       <span className="text-xs font-bold uppercase tracking-widest text-[#006D77] dark:text-[#83C5BE]">
-                        {room.category}
+                        {room.displayCategory || (room.category === 'Standard' || room.category === 'Loft' ? 'Barkada Lofts — 4 Standard Rooms' : `${room.category} • Beachfront`)}
                       </span>
                       <div className="flex items-center gap-1 text-amber-500 text-xs font-bold">
                         <Star className="w-3.5 h-3.5 fill-current" />
@@ -268,7 +291,7 @@ export const RoomsPage: React.FC = () => {
             {t('buyoutTitle', 'Planning a Family Reunion, Wedding, or Group Retreat?')}
           </h2>
           <p className="text-sm sm:text-base text-teal-100 max-w-2xl mx-auto font-light leading-relaxed">
-            {t('buyoutDesc', 'Reserve all 20 rooms of Alon & Aninag for complete resort exclusivity. Accommodate up to 55 guests with dedicated beachfront staff, private dining, and customized acoustic bonfires.')}
+            {t('buyoutDesc', 'Reserve all 24 rooms of Alon & Aninag (20 beachfront sanctuaries + 4 standard lofts) for complete resort exclusivity. Accommodate up to 60 guests with dedicated beachfront staff, private dining, and customized acoustic bonfires.')}
           </p>
           <div className="pt-2">
             <button

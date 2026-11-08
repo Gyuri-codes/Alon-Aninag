@@ -1078,13 +1078,13 @@ export const ResortProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           };
           setUserCoords(coords);
 
-          // Calculate Haversine distance to Sipalay Resort (lat: 9.7523, lng: 122.4042)
+          // Calculate Haversine distance to Sipalay Resort (lat: 9.7528, lng: 122.3989)
           const R = 6371; // km
-          const dLat = (coords.lat - 9.7523) * (Math.PI / 180);
-          const dLng = (coords.lng - 122.4042) * (Math.PI / 180);
+          const dLat = (coords.lat - 9.7528) * (Math.PI / 180);
+          const dLng = (coords.lng - 122.3989) * (Math.PI / 180);
           const a =
             Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(9.7523 * (Math.PI / 180)) *
+            Math.cos(9.7528 * (Math.PI / 180)) *
               Math.cos(coords.lat * (Math.PI / 180)) *
               Math.sin(dLng / 2) *
               Math.sin(dLng / 2);

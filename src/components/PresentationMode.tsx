@@ -8,7 +8,6 @@ import {
   Minimize2,
   X,
   FileText,
-  Download,
   Users,
   Compass,
   Sparkles,
@@ -1378,7 +1377,7 @@ export const PresentationMode: React.FC<PresentationModeProps> = ({ onClose }) =
             </div>
 
             {/* Final Action CTA Buttons */}
-            <div className="flex flex-wrap items-center justify-center gap-3">
+            <div className="flex flex-wrap items-center justify-center gap-4">
               <button
                 onClick={handleClose}
                 className="px-6 py-2.5 rounded-sm bg-[#006D77] hover:bg-[#00555d] text-white text-xs sm:text-sm uppercase tracking-wider font-bold transition shadow-lg cursor-pointer flex items-center gap-2"
@@ -1387,23 +1386,12 @@ export const PresentationMode: React.FC<PresentationModeProps> = ({ onClose }) =
                 <ArrowUpRight className="w-4 h-4" />
               </button>
 
-              <a
-                href="/assets/aistudio/Alon-Aninag-BSHM-Management-Portfolio-Launch-Plan-with-Appendices-Sipalay_7c49b701.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-5 py-2.5 rounded-sm bg-white/15 hover:bg-white/25 text-white text-xs sm:text-sm uppercase tracking-wider font-semibold transition border border-white/20 cursor-pointer flex items-center gap-2"
-                download="Alon-Aninag-BSHM-Management-Portfolio-Launch-Plan.pdf"
-              >
-                <Download className="w-4 h-4 text-[#83C5BE]" />
-                <span>Download Full BSHM Portfolio (PDF)</span>
-              </a>
-
               <button
                 onClick={() => {
                   handleClose();
                   openBookingModal();
                 }}
-                className="px-5 py-2.5 rounded-sm bg-[#E29578] hover:bg-[#d48163] text-white text-xs sm:text-sm uppercase tracking-wider font-bold transition shadow-md cursor-pointer flex items-center gap-2"
+                className="px-6 py-2.5 rounded-sm bg-[#E29578] hover:bg-[#d48163] text-white text-xs sm:text-sm uppercase tracking-wider font-bold transition shadow-md cursor-pointer flex items-center gap-2"
               >
                 <Calendar className="w-4 h-4" />
                 <span>Book Your Stay</span>
@@ -1521,7 +1509,7 @@ export const PresentationMode: React.FC<PresentationModeProps> = ({ onClose }) =
                       {slideNum === 9 && 'Interactive SVG Donut Breakdown'}
                       {slideNum === 10 && '3-Phase 90-Day Milestones'}
                       {slideNum === 11 && 'Dynamic Revenue Calculator'}
-                      {slideNum === 12 && 'Conclusion & PDF Download'}
+                      {slideNum === 12 && 'Conclusion & Launch Recommendation'}
                     </span>
                   </div>
                 </button>

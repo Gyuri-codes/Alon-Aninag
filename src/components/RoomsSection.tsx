@@ -25,15 +25,26 @@ export const RoomsSection: React.FC = () => {
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
 
   const categories = [
-    { id: 'all', label: t('allRooms', 'All 20 Beachfront Rooms') },
-    { id: 'Villa', label: t('villasMaster', 'Villas & Master') },
-    { id: 'Suite', label: t('suites', 'Suites') },
-    { id: 'Loft', label: t('barkadaLofts', 'Barkada Lofts') },
-    { id: 'Deluxe', label: t('deluxeRooms', 'Deluxe Rooms') }
+    { id: 'all', label: t('allAccommodationsTab', 'All 24 Accommodations') },
+    { id: 'beachfront', label: t('allRooms', 'All 20 Beachfront Rooms') },
+    { id: 'Villa', label: t('villasMaster', 'Sunset Master Villas (6)') },
+    { id: 'Suite', label: t('suites', 'Oceanfront Suites (8)') },
+    { id: 'Deluxe', label: t('deluxeRooms', 'Soul Deluxe Rooms (6)') },
+    { id: 'Loft', label: t('barkadaLoftsStandard', 'Barkada Lofts — 4 Standard Rooms') }
   ];
 
   const filteredRooms = ROOMS_DATA.filter((room) => {
-    const matchesCategory = activeCategory === 'all' || room.category === activeCategory;
+    let matchesCategory = true;
+    if (activeCategory === 'all') {
+      matchesCategory = true;
+    } else if (activeCategory === 'beachfront') {
+      matchesCategory = room.roomClassification === 'Beachfront';
+    } else if (activeCategory === 'Loft' || activeCategory === 'Standard') {
+      matchesCategory = room.roomClassification === 'Standard' || room.category === 'Standard' || room.category === 'Loft';
+    } else {
+      matchesCategory = room.category === activeCategory;
+    }
+
     const matchesSearch = !searchQuery || 
       room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       room.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -48,13 +59,13 @@ export const RoomsSection: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-sm bg-teal-50 dark:bg-teal-950/40 text-[#006D77] dark:text-[#83C5BE] border border-teal-200/60 dark:border-teal-800/60 text-xs font-bold uppercase tracking-widest mb-3">
             <Sparkles className="w-3.5 h-3.5 text-[#006D77] dark:text-[#83C5BE]" />
-            {t('intimateAccommodations', 'Intimate Boutique Accommodations')}
+            {t('intimateAccommodations', 'Intimate Boutique Accommodations • 24 Units Total')}
           </div>
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-stone-900 dark:text-white tracking-tight mb-4 font-normal">
-            {t('roomsFacingSea', '20 Cozy Rooms Facing the Sea')}
+            {t('roomsFacingSea', '20 Beachfront Rooms & 4 Standard Lofts')}
           </h2>
           <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 leading-relaxed">
-            {t('roomsDescription', 'Every room at Alon Aninag is crafted with warm teak wood, crisp white linens, and natural rattan elements. Designed to let you wake up to the rhythm of Poblacion Beach and rest your soul at sunset.')}
+            {t('roomsDescription', 'Every room at Alon Aninag is crafted with warm teak wood, crisp white linens, and natural rattan elements. Featuring 20 sea-facing beachfront rooms and 4 spacious standard lofts designed to wake up to the rhythm of Poblacion Beach and rest your soul at sunset.')}
           </p>
         </div>
 
@@ -122,7 +133,7 @@ export const RoomsSection: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span className="text-[11px] uppercase font-bold tracking-widest text-[#006D77] dark:text-[#83C5BE]">
-                      {room.category}
+                      {room.displayCategory || (room.category === 'Standard' || room.category === 'Loft' ? 'Barkada Lofts — 4 Standard Rooms' : `${room.category} • Beachfront`)}
                     </span>
                     <div className="flex items-center gap-1 text-xs font-bold text-stone-800 dark:text-stone-200">
                       <span className="text-[#E29578]">★</span>

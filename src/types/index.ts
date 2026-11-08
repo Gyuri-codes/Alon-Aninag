@@ -5,7 +5,9 @@ export type LanguageCode = 'en' | 'fil' | 'hil' | 'ceb' | 'es' | 'ja' | 'ko';
 export interface Room {
   id: string;
   name: string;
-  category: 'Villa' | 'Suite' | 'Loft' | 'Deluxe';
+  category: 'Villa' | 'Suite' | 'Loft' | 'Deluxe' | 'Standard';
+  roomClassification?: 'Beachfront' | 'Standard';
+  displayCategory?: string;
   tagline: string;
   pricePHP: number;
   capacity: {

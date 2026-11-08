@@ -60,7 +60,7 @@ export const ContactPage: React.FC = () => {
     },
     {
       q: t('faqQ2', 'How fast and reliable is the internet connection for remote work?'),
-      a: t('faqA2', 'We provide complimentary high-speed Starlink satellite Wi-Fi (averaging 150+ Mbps) covering all 20 rooms, private verandas, and the sunset dining deck. Our automatic backup diesel generator ensures uninterrupted power and connectivity 24/7.')
+      a: t('faqA2', 'We provide complimentary high-speed Starlink satellite Wi-Fi (averaging 150+ Mbps) covering all 24 rooms (20 beachfront sanctuaries and 4 standard lofts), private verandas, and the sunset dining deck. Our automatic backup diesel generator ensures uninterrupted power and connectivity 24/7.')
     },
     {
       q: t('faqQ3', 'How do non-staying day visitors access the resort and Dayglow experience?'),
@@ -155,7 +155,7 @@ export const ContactPage: React.FC = () => {
                 </div>
               </div>
               <div className="pt-4 mt-4 border-t border-stone-100 dark:border-stone-800 text-[11px] text-teal-600 dark:text-teal-400 font-semibold">
-                GPS: 9.7523° N, 122.4042° E
+                GPS: 9.7528° N, 122.3989° E
               </div>
             </div>
 
@@ -304,7 +304,7 @@ export const ContactPage: React.FC = () => {
                 {/* Embed Map View */}
                 <iframe
                   title="Alon Aninag Sipalay Location"
-                  src="https://www.openstreetmap.org/export/embed.html?bbox=122.3900%2C9.7450%2C122.4150%2C9.7600&layer=mapnik&marker=9.7523%2C122.4042"
+                  src="https://www.openstreetmap.org/export/embed.html?bbox=122.3900%2C9.7450%2C122.4150%2C9.7600&layer=mapnik&marker=9.7528%2C122.3989"
                   className="w-full h-full border-0"
                   loading="lazy"
                 />

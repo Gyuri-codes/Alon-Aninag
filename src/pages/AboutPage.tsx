@@ -33,9 +33,9 @@ export const AboutPage: React.FC = () => {
       icon: Sparkles
     },
     {
-      title: t('pillar3Title', 'Intimate 20-Room Exclusivity'),
+      title: t('pillar3Title', 'Intimate Beachfront Exclusivity'),
       subtitle: t('pillar3Sub', 'Zero Overcrowding Guarantee'),
-      desc: t('pillar3Desc', 'With only 20 boutique rooms, our shoreline and daybeds remain quiet, intimate, and deeply private even in peak season.'),
+      desc: t('pillar3Desc', 'With 20 beachfront rooms and 4 standard lofts, our shoreline and daybeds remain quiet, intimate, and deeply private even in peak season.'),
       icon: ShieldCheck
     },
     {
@@ -100,10 +100,10 @@ export const AboutPage: React.FC = () => {
                   </div>
                   <div className="p-4 rounded-xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-900/50 text-center">
                     <div className="font-serif text-2xl font-bold text-[#006D77] dark:text-[#83C5BE]">
-                      {t('statRoomsTitle', '20 Rooms')}
+                      {t('statRoomsTitle', '20 Beachfront Rooms')}
                     </div>
                     <div className="text-[11px] uppercase tracking-wider text-stone-600 dark:text-stone-400 font-semibold mt-0.5">
-                      {t('statRoomsSub', 'Intimate Exclusivity')}
+                      {t('statRoomsSub', '+ 4 Standard Lofts (24 Units)')}
                     </div>
                   </div>
                 </div>
@@ -163,7 +163,7 @@ export const AboutPage: React.FC = () => {
                 {t('missionHeading', 'Crafting Unhurried Moments That Restore Body & Spirit')}
               </h3>
               <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed font-light">
-                {t('missionText', 'We are committed to delivering genuine, personalized hospitality through 20 intimate sea-facing rooms, curating innovative daytime experiences like the Aninag Dayglow paddle, showcasing local culinary heritage at our beachside cafe, and safeguarding our coastal waters for generations of travelers to come.')}
+                {t('missionText', 'We are committed to delivering genuine, personalized hospitality through 20 intimate sea-facing beachfront rooms and 4 standard lofts, curating innovative daytime experiences like the Aninag Dayglow paddle, showcasing local culinary heritage at our beachside cafe, and safeguarding our coastal waters for generations of travelers to come.')}
               </p>
             </div>
           </div>

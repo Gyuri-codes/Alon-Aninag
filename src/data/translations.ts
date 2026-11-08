@@ -90,7 +90,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'allCategories': 'All Rooms',
     'villasCategory': 'Villas & Master',
     'suitesCategory': 'Suites',
-    'loftsCategory': 'Barkada Lofts',
+    'loftsCategory': 'Barkada Lofts — 4 Standard Rooms',
     'deluxeCategory': 'Deluxe Rooms',
 
     // Dining Section
@@ -284,7 +284,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'allCategories': 'Lahat ng Kuwarto',
     'villasCategory': 'Mga Villa at Master',
     'suitesCategory': 'Mga Suite',
-    'loftsCategory': 'Barkada Lofts',
+    'loftsCategory': 'Barkada Lofts — 4 Karaniwang Kuwarto',
     'deluxeCategory': 'Mga Deluxe na Kuwarto',
 
     // Dining Section
@@ -478,7 +478,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'allCategories': 'Tanan nga Kuwarto',
     'villasCategory': 'Mga Villa kag Master',
     'suitesCategory': 'Mga Suite',
-    'loftsCategory': 'Barkada Lofts',
+    'loftsCategory': 'Barkada Lofts — 4 ka Standard nga Kuwarto',
     'deluxeCategory': 'Mga Deluxe nga Kuwarto',
 
     // Dining Section
@@ -672,7 +672,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'allCategories': 'Tanan nga Kwarto',
     'villasCategory': 'Mga Villa ug Master',
     'suitesCategory': 'Mga Suite',
-    'loftsCategory': 'Barkada Lofts',
+    'loftsCategory': 'Barkada Lofts — 4 ka Standard nga Kwarto',
     'deluxeCategory': 'Mga Deluxe nga Kwarto',
 
     // Dining Section
@@ -866,7 +866,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'allCategories': 'Todas las Habitaciones',
     'villasCategory': 'Villas y Master',
     'suitesCategory': 'Suites',
-    'loftsCategory': 'Lofts para Amigos',
+    'loftsCategory': 'Barkada Lofts — 4 Habitaciones Estándar',
     'deluxeCategory': 'Habitaciones Deluxe',
 
     // Dining Section
@@ -1060,7 +1060,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'allCategories': 'すべての客室',
     'villasCategory': 'ヴィラ＆マスター',
     'suitesCategory': 'スイート',
-    'loftsCategory': 'グループ向けロフト',
+    'loftsCategory': 'バルカダ・ロフト — スタンダード4室',
     'deluxeCategory': 'デラックスルーム',
 
     // Dining Section
@@ -1254,7 +1254,7 @@ const BASE_TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     'allCategories': '모든 객실',
     'villasCategory': '빌라 & 마스터',
     'suitesCategory': '스위트룸',
-    'loftsCategory': '단체용 로프트',
+    'loftsCategory': '바르카다 로프트 — 스탠다드 4실',
     'deluxeCategory': '디럭스룸',
 
     // Dining Section
