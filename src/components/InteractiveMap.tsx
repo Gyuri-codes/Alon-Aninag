@@ -47,7 +47,9 @@ export const InteractiveMap: React.FC = () => {
     setIsZoomed(true); // Automatically zoom in & pan directly to that geographic area!
 
     // Update geographic zone tag
-    if (competitor.id === 'comp-nayah') {
+    if (competitor.id === 'comp-tinagong') {
+      setActiveAreaTag('Sitio Latasan Hidden Sea Lagoon');
+    } else if (competitor.id === 'comp-nayah') {
       setActiveAreaTag('North Sipalay Coastal Plains');
     } else if (competitor.id === 'comp-bugana') {
       setActiveAreaTag('Campomanes Bay Coastal Enclave');

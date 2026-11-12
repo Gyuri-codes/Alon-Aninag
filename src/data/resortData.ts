@@ -1002,6 +1002,22 @@ export const ACTIVITIES_DATA: Activity[] = [
 
 export const COMPETITORS_DATA: CompetitorResort[] = [
   {
+    id: 'comp-tinagong',
+    name: 'Tinagong Dagat Island Resort',
+    location: 'Sitio Latasan, Brgy. 4, Sipalay City, Negros Occidental, Philippines',
+    category: 'Eco-Island Lagoon Resort',
+    distanceKm: 6.5,
+    travelTime: '15 mins by Boat / 20 mins by Car',
+    description: 'Picturesque hidden sea lagoon surrounded by limestone karst hills with interconnected wooden footbridges across saltwater islets.',
+    highlights: ['Interconnected wooden footbridges', 'Tidal saltwater lagoon swimming', 'Limestone islet viewpoints', 'Kayaking & snorkel spots'],
+    mapPin: {
+      leftPercent: 67,
+      topPercent: 12
+    },
+    priceRange: '₱1,800 – ₱4,500 / night',
+    atmosphere: 'Serene nature-oriented lagoon retreat surrounded by limestone karst islets'
+  },
+  {
     id: 'comp-nayah',
     name: 'Na-Yah Beach Villas Sipalay',
     location: 'Q9CX+65P, Sipalay City, 6113 Negros Occidental, Philippines',

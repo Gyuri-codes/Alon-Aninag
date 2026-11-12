@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useResort } from '../context/ResortContext';
 import { PageHeader } from '../components/PageHeader';
+import { GeographicLocationMap } from '../components/GeographicLocationMap';
 import { RESORT_INFO, RESORT_IMAGES } from '../data/resortData';
 import { 
   Phone, 
@@ -258,7 +259,7 @@ export const ContactPage: React.FC = () => {
                       <option value="General Inquiry">{t('formSubjectGeneral', 'General Question')}</option>
                       <option value="Room Booking">{t('formSubjectBooking', 'Room Booking / Dates')}</option>
                       <option value="Dayglow Pass">{t('formSubjectDayglow', 'Aninag Dayglow Pass')}</option>
-                      <option value="Resort Buyout">{t('formSubjectBuyout', 'Private Event / 20-Room Buyout')}</option>
+                      <option value="Resort Buyout">{t('formSubjectBuyout', 'Private Event / 24-Accommodation Buyout')}</option>
                       <option value="Airport Shuttle">{t('formSubjectTransfer', 'Airport Van Transfer Request')}</option>
                     </select>
                   </div>
@@ -300,48 +301,39 @@ export const ContactPage: React.FC = () => {
 
             {/* Interactive Location / Map Card */}
             <div className="lg:col-span-6 space-y-6">
-              <div className="rounded-2xl overflow-hidden border border-stone-200 dark:border-stone-800 shadow-lg bg-stone-100 dark:bg-stone-800 aspect-16/10 relative">
-                {/* Embed Map View */}
-                <iframe
-                  title="Alon Aninag Sipalay Location"
-                  src="https://www.openstreetmap.org/export/embed.html?bbox=122.3900%2C9.7450%2C122.4150%2C9.7600&layer=mapnik&marker=9.7528%2C122.3989"
-                  className="w-full h-full border-0"
-                  loading="lazy"
-                />
-                
-                {/* Marker Overlay Card */}
-                <div className="absolute bottom-4 left-4 right-4 bg-white/95 dark:bg-[#131F2A]/95 backdrop-blur-md p-4 rounded-xl border border-stone-200 dark:border-stone-800 shadow-lg text-xs">
-                  <div className="flex items-center gap-2 text-[#006D77] dark:text-[#83C5BE] font-bold">
-                    <MapPin className="w-4 h-4 shrink-0" />
-                    <span>{t('resortFrontage', 'Alon & Aninag Boutique Resort Frontage')}</span>
-                  </div>
-                  <p className="text-stone-500 dark:text-stone-400 mt-1">
-                    {t('resortFrontageDesc', 'Direct beachfront on Poblacion Beach. 5 minutes from Sipalay City Public Terminal.')}
-                  </p>
-                </div>
-              </div>
+              <GeographicLocationMap />
 
-              {/* Nearby Landmarks Card */}
-              <div className="p-6 rounded-2xl bg-[#F8F5F2] dark:bg-[#131F2A] border border-stone-200 dark:border-stone-800 space-y-3">
-                <h4 className="font-serif text-base font-semibold text-stone-900 dark:text-white">
-                  {t('nearbyLandmarks', 'Walking Distance & Nearby Landmarks')}
-                </h4>
-                <div className="grid grid-cols-2 gap-3 text-xs text-stone-600 dark:text-stone-300 font-light">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#006D77] font-bold">•</span>
-                    <span>{t('beachSand', 'Poblacion Beach Sand')}: <strong>0 {t('meters', 'meters')}</strong></span>
+              {/* Nearby Landmarks & Competitor Distances Card */}
+              <div className="p-6 rounded-2xl bg-[#F8F5F2] dark:bg-[#131F2A] border border-stone-200 dark:border-stone-800 space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-stone-200 dark:border-stone-800">
+                  <h4 className="font-serif text-base font-semibold text-stone-900 dark:text-white">
+                    {t('nearbyLandmarks', 'Walking Distance, Key Landmarks & Regional Competitors')}
+                  </h4>
+                  <span className="text-[11px] text-[#006D77] dark:text-[#83C5BE] font-bold">
+                    Sipalay Coast
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-stone-600 dark:text-stone-300 font-light">
+                  <div className="flex items-center gap-1.5 p-2 rounded-lg bg-white/70 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#006D77] shrink-0" />
+                    <span>{t('beachSand', 'Poblacion Beach Sand')}: <strong className="text-stone-900 dark:text-white">0 {t('meters', 'meters')}</strong></span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#006D77] font-bold">•</span>
-                    <span>{t('baywalkWalk', 'Sipalay Baywalk')}: <strong>2 {t('minsWalk', 'mins walk')}</strong></span>
+                  <div className="flex items-center gap-1.5 p-2 rounded-lg bg-white/70 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#006D77] shrink-0" />
+                    <span>{t('terminalRide', 'City Public Terminal')}: <strong className="text-stone-900 dark:text-white">5 {t('minsRide', 'mins ride')}</strong></span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#006D77] font-bold">•</span>
-                    <span>{t('jazzInnNext', 'Jazz Inn')}: <strong>{t('nextDoor', 'Next door')}</strong></span>
+                  <div className="flex items-center gap-1.5 p-2 rounded-lg bg-white/70 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#FF2A85] shrink-0" />
+                    <span>Tinagong Dagat: <strong className="text-stone-900 dark:text-white">6.5 km North</strong> (15m boat)</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#006D77] font-bold">•</span>
-                    <span>{t('terminalRide', 'City Public Terminal')}: <strong>5 {t('minsRide', 'mins ride')}</strong></span>
+                  <div className="flex items-center gap-1.5 p-2 rounded-lg bg-white/70 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#FF2A85] shrink-0" />
+                    <span>Bugana Beach & Dive: <strong className="text-stone-900 dark:text-white">11.8 km South</strong> (20m car)</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 p-2 rounded-lg bg-white/70 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60 sm:col-span-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#FF2A85] shrink-0" />
+                    <span>Manami Resort (Top rated): <strong className="text-stone-900 dark:text-white">18.0 km South</strong> in Cayhagan Cove (35m shuttle)</span>
                   </div>
                 </div>
               </div>
