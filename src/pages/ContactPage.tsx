@@ -307,21 +307,25 @@ export const ContactPage: React.FC = () => {
               <div className="p-6 rounded-2xl bg-[#F8F5F2] dark:bg-[#131F2A] border border-stone-200 dark:border-stone-800 space-y-4">
                 <div className="flex items-center justify-between pb-2 border-b border-stone-200 dark:border-stone-800">
                   <h4 className="font-serif text-base font-semibold text-stone-900 dark:text-white">
-                    {t('nearbyLandmarks', 'Walking Distance, Key Landmarks & Regional Competitors')}
+                    {t('nearbyLandmarks', 'Sipalay Regional Resorts & Transit Hub Distances')}
                   </h4>
                   <span className="text-[11px] text-[#006D77] dark:text-[#83C5BE] font-bold">
-                    Sipalay Coast
+                    Direct from Alon & Aninag
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-stone-600 dark:text-stone-300 font-light">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-stone-600 dark:text-stone-300 font-light">
                   <div className="flex items-center gap-1.5 p-2 rounded-lg bg-white/70 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#006D77] shrink-0" />
-                    <span>{t('beachSand', 'Poblacion Beach Sand')}: <strong className="text-stone-900 dark:text-white">0 {t('meters', 'meters')}</strong></span>
+                    <span>Poblacion Beach Sand: <strong className="text-stone-900 dark:text-white">0 m (Direct Frontage)</strong></span>
                   </div>
                   <div className="flex items-center gap-1.5 p-2 rounded-lg bg-white/70 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#006D77] shrink-0" />
-                    <span>{t('terminalRide', 'City Public Terminal')}: <strong className="text-stone-900 dark:text-white">5 {t('minsRide', 'mins ride')}</strong></span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-stone-600 shrink-0" />
+                    <span>Sipalay Ceres Terminal: <strong className="text-stone-900 dark:text-white">0.8 km (5m ride)</strong></span>
+                  </div>
+                  <div className="flex items-center gap-1.5 p-2 rounded-lg bg-white/70 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#9333EA] shrink-0" />
+                    <span>Na-Yah Beach Villas: <strong className="text-stone-900 dark:text-white">3.5 km North</strong> (10m ride)</span>
                   </div>
                   <div className="flex items-center gap-1.5 p-2 rounded-lg bg-white/70 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#FF2A85] shrink-0" />
@@ -331,9 +335,17 @@ export const ContactPage: React.FC = () => {
                     <span className="w-2.5 h-2.5 rounded-full bg-[#FF2A85] shrink-0" />
                     <span>Bugana Beach & Dive: <strong className="text-stone-900 dark:text-white">11.8 km South</strong> (20m car)</span>
                   </div>
-                  <div className="flex items-center gap-1.5 p-2 rounded-lg bg-white/70 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60 sm:col-span-2">
+                  <div className="flex items-center gap-1.5 p-2 rounded-lg bg-white/70 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#EA580C] shrink-0" />
+                    <span>Takatuka Beach: <strong className="text-stone-900 dark:text-white">14.2 km South</strong> (25m car)</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 p-2 rounded-lg bg-white/70 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#0284C7] shrink-0" />
+                    <span>Nataasan Beach & Dive: <strong className="text-stone-900 dark:text-white">14.5 km South</strong> (25m car)</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 p-2 rounded-lg bg-white/70 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#FF2A85] shrink-0" />
-                    <span>Manami Resort (Top rated): <strong className="text-stone-900 dark:text-white">18.0 km South</strong> in Cayhagan Cove (35m shuttle)</span>
+                    <span>Manami Resort (Top rated): <strong className="text-stone-900 dark:text-white">18.0 km South</strong> (35m shuttle)</span>
                   </div>
                 </div>
               </div>

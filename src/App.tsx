@@ -31,6 +31,13 @@ const ResortAppContent: React.FC = () => {
   const [isAdminOpen, setIsAdminOpen] = useState<boolean>(false);
   const [isDayglowModalOpen, setIsDayglowModalOpen] = useState<boolean>(false);
   const [dayglowGuestType, setDayglowGuestType] = useState<'overnight' | 'daypass'>('overnight');
+  const [quotaExceeded, setQuotaExceeded] = useState<boolean>(false);
+
+  React.useEffect(() => {
+    const handler = () => setQuotaExceeded(true);
+    window.addEventListener('gmp-quota-exceeded', handler);
+    return () => window.removeEventListener('gmp-quota-exceeded', handler);
+  }, []);
 
   const handleOpenDayglowModal = (guestType: 'overnight' | 'daypass' = 'overnight') => {
     setDayglowGuestType(guestType);
@@ -72,6 +79,26 @@ const ResortAppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F5F2] dark:bg-[#0B131A] text-[#2D3436] dark:text-[#E2E8F0] font-sans antialiased selection:bg-[#006D77] selection:text-white transition-colors duration-200 flex flex-col justify-between">
+      {/* Google Maps Quota Exceeded Defense Banner */}
+      {quotaExceeded && (
+        <div className="bg-amber-600 text-white px-4 py-2 text-xs font-semibold flex items-center justify-between sticky top-0 z-50 shadow-md">
+          <div className="flex items-center gap-2 max-w-7xl mx-auto w-full justify-between">
+            <span className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-amber-200 animate-ping" />
+              <span>
+                <strong>Map Mode Note:</strong> Maps demo quota reached. Map is seamlessly running in high-definition interactive satellite and topographic mode.
+              </span>
+            </span>
+            <button
+              onClick={() => setQuotaExceeded(false)}
+              className="text-[11px] bg-white/20 hover:bg-white/30 px-3 py-1 rounded-sm uppercase tracking-wider font-bold transition cursor-pointer"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Offline Mode Indicator Bar */}
       {isOfflineMode && (
         <div className="bg-[#006D77] text-white px-4 py-2 text-xs font-semibold flex items-center justify-between sticky top-0 z-50 border-b border-teal-900 shadow-md">
