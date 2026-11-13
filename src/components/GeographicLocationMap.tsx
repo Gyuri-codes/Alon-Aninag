@@ -496,11 +496,17 @@ const TILE_PROVIDERS: Record<MapTileStyle, { url: string; attribution: string; m
 export const GeographicLocationMap: React.FC = () => {
   const { t, addNotification, navigateTo } = useResort();
 
+  const viewportRef = useRef<HTMLDivElement>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const markersRef = useRef<Record<string, L.Marker>>({});
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Viewport & Covering-Square Geometry Refs (prevents any black/empty corners on rotation)
+  const [canvasSize, setCanvasSize] = useState<number>(980);
+  const canvasSizeRef = useRef<number>(980);
+  const viewportSizeRef = useRef<{ w: number; h: number }>({ w: 640, h: 520 });
 
   // States
   const [activeTileStyle, setActiveTileStyle] = useState<MapTileStyle>('standard');
@@ -517,37 +523,53 @@ export const GeographicLocationMap: React.FC = () => {
   const [isActiveTouching, setIsActiveTouching] = useState<boolean>(false);
   const currentBearingRef = useRef<number>(0);
 
-  // Sync ref with mapBearing for event listeners
+  // Sync ref and CSS variable synchronously with mapBearing
   useEffect(() => {
     currentBearingRef.current = mapBearing;
+    if (mapContainerRef.current) {
+      mapContainerRef.current.style.setProperty('--map-bearing', `${-mapBearing}deg`);
+    }
   }, [mapBearing]);
 
-  // Touch Gesture Engine State Ref (Google Maps-like Touchscreen interaction)
+  // Unified Gesture Engine State Ref (Zero conflicting touch/mouse handlers)
   const gestureStateRef = useRef<{
-    isGesturing: boolean;
-    startDistance: number;
-    startAngle: number;
-    startBearing: number;
-    lastMidpoint: { x: number; y: number };
+    mode: 'none' | 'single' | 'multi';
+    lastSingleX: number;
+    lastSingleY: number;
+    totalMove: number;
+    startedOnMarker: boolean;
+    prevDist: number;
+    prevAngle: number;
+    prevMidX: number;
+    prevMidY: number;
     lastTapTime: number;
     lastTapPoint: { x: number; y: number };
-    lastZoomTime: number;
-    isDesktopRotating: boolean;
+    mouseMode: 'none' | 'pan' | 'rotate';
+    lastMouseX: number;
+    lastMouseY: number;
     mouseStartAngle: number;
     mouseStartBearing: number;
+    mouseTotalMove: number;
   }>({
-    isGesturing: false,
-    startDistance: 0,
-    startAngle: 0,
-    startBearing: 0,
-    lastMidpoint: { x: 0, y: 0 },
+    mode: 'none',
+    lastSingleX: 0,
+    lastSingleY: 0,
+    totalMove: 0,
+    startedOnMarker: false,
+    prevDist: 0,
+    prevAngle: 0,
+    prevMidX: 0,
+    prevMidY: 0,
     lastTapTime: 0,
     lastTapPoint: { x: 0, y: 0 },
-    lastZoomTime: 0,
-    isDesktopRotating: false,
+    mouseMode: 'none',
+    lastMouseX: 0,
+    lastMouseY: 0,
     mouseStartAngle: 0,
-    mouseStartBearing: 0
+    mouseStartBearing: 0,
+    mouseTotalMove: 0
   });
+  const suppressClickUntilRef = useRef<number>(0);
 
   // Category Filter State (Requirement 6: multi-select support)
   const [selectedCategories, setSelectedCategories] = useState<LocationCategory[]>([]);
@@ -605,7 +627,7 @@ export const GeographicLocationMap: React.FC = () => {
     }, 3000);
   }, []);
 
-  // Create custom HTML marker pins for each category
+  // Create custom HTML marker pins for each category (always upright via .map-pin-upright)
   const createCustomMarkerIcon = useCallback((location: ResortLocation, isSelected: boolean) => {
     const isOurResort = location.id === 'alon-aninag';
     const isTopRated = location.topRated;
@@ -617,7 +639,7 @@ export const GeographicLocationMap: React.FC = () => {
       iconSize = [44, 52];
       iconAnchor = [22, 50];
       pinSvg = `
-        <div class="relative flex flex-col items-center cursor-pointer group select-none">
+        <div class="map-pin-upright relative flex flex-col items-center cursor-pointer group select-none">
           <div class="absolute -inset-3 rounded-full bg-teal-500/30 animate-ping"></div>
           <div class="relative w-11 h-11 rounded-full bg-[#006D77] border-2 border-white shadow-2xl flex items-center justify-center text-white ring-2 ring-[#006D77]/50 ${
             isSelected ? 'scale-110 ring-4 ring-amber-400' : ''
@@ -632,7 +654,7 @@ export const GeographicLocationMap: React.FC = () => {
       `;
     } else if (location.categoryGroup === 'Competitors') {
       pinSvg = `
-        <div class="relative flex flex-col items-center cursor-pointer group select-none">
+        <div class="map-pin-upright relative flex flex-col items-center cursor-pointer group select-none">
           <div class="relative w-9 h-9 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white ${
             isSelected ? 'scale-110 ring-4 ring-pink-400' : ''
           } transition-all" style="background-color: ${location.color};">
@@ -648,7 +670,7 @@ export const GeographicLocationMap: React.FC = () => {
       `;
     } else if (location.categoryGroup === 'Beaches') {
       pinSvg = `
-        <div class="relative flex flex-col items-center cursor-pointer group select-none">
+        <div class="map-pin-upright relative flex flex-col items-center cursor-pointer group select-none">
           <div class="relative w-8 h-8 rounded-full bg-[#0EA5E9] border-2 border-white shadow-md flex items-center justify-center text-white ${
             isSelected ? 'scale-110 ring-4 ring-cyan-300' : ''
           } transition-all">
@@ -664,7 +686,7 @@ export const GeographicLocationMap: React.FC = () => {
       `;
     } else if (location.categoryGroup === 'Restaurants') {
       pinSvg = `
-        <div class="relative flex flex-col items-center cursor-pointer group select-none">
+        <div class="map-pin-upright relative flex flex-col items-center cursor-pointer group select-none">
           <div class="relative w-8 h-8 rounded-full bg-[#D97706] border-2 border-white shadow-md flex items-center justify-center text-white ${
             isSelected ? 'scale-110 ring-4 ring-amber-300' : ''
           } transition-all">
@@ -679,9 +701,8 @@ export const GeographicLocationMap: React.FC = () => {
         </div>
       `;
     } else {
-      // Tourist Attractions
       pinSvg = `
-        <div class="relative flex flex-col items-center cursor-pointer group select-none">
+        <div class="map-pin-upright relative flex flex-col items-center cursor-pointer group select-none">
           <div class="relative w-8 h-8 rounded-full bg-[#059669] border-2 border-white shadow-md flex items-center justify-center text-white ${
             isSelected ? 'scale-110 ring-4 ring-emerald-300' : ''
           } transition-all">
@@ -707,7 +728,70 @@ export const GeographicLocationMap: React.FC = () => {
     });
   }, []);
 
-  // Center or fly to a location
+  // Measure viewport & resize covering square (D > hypot(W, H) eliminates all black corners)
+  useEffect(() => {
+    const vp = viewportRef.current;
+    if (!vp) return;
+
+    const updateDimensions = () => {
+      const rect = vp.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        viewportSizeRef.current = { w: rect.width, h: rect.height };
+        const neededSquare = Math.ceil(Math.hypot(rect.width, rect.height)) + 160;
+        canvasSizeRef.current = neededSquare;
+        setCanvasSize(neededSquare);
+
+        requestAnimationFrame(() => {
+          const map = mapInstanceRef.current;
+          if (map && (map as any)._mapPane) {
+            try {
+              map.invalidateSize({ animate: false });
+            } catch {
+              // Safe guard
+            }
+          }
+        });
+      }
+    };
+
+    updateDimensions();
+    const ro = new ResizeObserver(updateDimensions);
+    ro.observe(vp);
+    return () => ro.disconnect();
+  }, [isFullscreen]);
+
+  // Re-sync Leaflet after React commits new covering-square canvasSize
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (map && (map as any)._mapPane) {
+      try {
+        map.invalidateSize({ animate: false });
+      } catch {
+        // Safe guard
+      }
+    }
+  }, [canvasSize]);
+
+  // Fit bounds safely inside the visible viewport inside our D x D covering square
+  const fitBoundsInVisibleViewport = useCallback((bounds: L.LatLngBounds) => {
+    const map = mapInstanceRef.current;
+    if (!map || !(map as any)._mapPane) return;
+    const { w, h } = viewportSizeRef.current;
+    const D = canvasSizeRef.current;
+    const padX = Math.max(0, Math.round((D - w) / 2));
+    const padY = Math.max(0, Math.round((D - h) / 2));
+    try {
+      map.fitBounds(bounds, {
+        paddingTopLeft: [padX + 36, padY + 68],
+        paddingBottomRight: [padX + 52, padY + 64],
+        maxZoom: 13
+      });
+    } catch {
+      // Safe guard
+    }
+  }, []);
+
+  // Center or fly to a location cleanly
   const flyToLocation = useCallback((location: ResortLocation, zoom = 15) => {
     setSelectedLocationId(location.id);
     setIsCardVisible(true);
@@ -716,242 +800,401 @@ export const GeographicLocationMap: React.FC = () => {
     const map = mapInstanceRef.current;
     if (map && (map as any)._mapPane) {
       try {
-        map.flyTo([location.lat, location.lng], zoom, {
-          duration: 1.2,
+        map.flyTo([location.lat, location.lng], Math.max(map.getZoom(), zoom), {
+          duration: 0.9,
           easeLinearity: 0.25
         });
-        const marker = markersRef.current[location.id];
-        if (marker) {
-          marker.openPopup();
-        }
       } catch {
-        // Safe guard if map is transitioning
+        // Safe guard
       }
     }
   }, [triggerAutoHide]);
 
   // Reset Map to default position framing all Sipalay destinations & North orientation
   const handleResetMap = useCallback(() => {
+    setIsActiveTouching(false);
     setMapBearing(0);
+    currentBearingRef.current = 0;
     const map = mapInstanceRef.current;
     if (!map || !(map as any)._mapPane) return;
-    try {
-      const bounds = L.latLngBounds(ALL_LOCATIONS.map(l => [l.lat, l.lng]));
-      map.fitBounds(bounds, {
-        padding: [50, 50],
-        maxZoom: 13
-      });
-      setSelectedLocationId('alon-aninag');
-      setIsCardVisible(true);
-      triggerAutoHide();
-    } catch {
-      // Safe guard
+    const bounds = L.latLngBounds(ALL_LOCATIONS.map(l => [l.lat, l.lng]));
+    fitBoundsInVisibleViewport(bounds);
+    setSelectedLocationId('alon-aninag');
+    setIsCardVisible(true);
+    triggerAutoHide();
+  }, [fitBoundsInVisibleViewport, triggerAutoHide]);
+
+  // Helper to apply bearing immediately & smoothly
+  const applyBearingImmediate = useCallback((deg: number) => {
+    let normalized = deg % 360;
+    if (normalized < 0) normalized += 360;
+    const rounded = Math.round(normalized * 10) / 10;
+    currentBearingRef.current = rounded;
+    if (mapContainerRef.current) {
+      mapContainerRef.current.style.transform = `rotate(${rounded}deg)`;
+      mapContainerRef.current.style.setProperty('--map-bearing', `${-rounded}deg`);
     }
-  }, [triggerAutoHide]);
+    setMapBearing(rounded);
+  }, []);
 
   // Rotation controls (with transition re-enabled)
   const handleRotateLeft = () => {
     setIsActiveTouching(false);
-    setMapBearing(prev => {
-      const next = (prev - 45 + 360) % 360;
-      currentBearingRef.current = next;
-      return next;
-    });
+    applyBearingImmediate(currentBearingRef.current - 45);
   };
 
   const handleRotateRight = () => {
     setIsActiveTouching(false);
-    setMapBearing(prev => {
-      const next = (prev + 45) % 360;
-      currentBearingRef.current = next;
-      return next;
-    });
+    applyBearingImmediate(currentBearingRef.current + 45);
   };
 
   const handleResetBearing = () => {
     setIsActiveTouching(false);
-    setMapBearing(0);
-    currentBearingRef.current = 0;
+    applyBearingImmediate(0);
   };
 
+  // Convert screen point relative to viewport center into Leaflet D x D container point
+  const screenPointToLeafletPoint = useCallback((clientX: number, clientY: number, bearingDeg: number): L.Point => {
+    const vp = viewportRef.current;
+    const D = canvasSizeRef.current;
+    if (!vp) return L.point(D / 2, D / 2);
+    const rect = vp.getBoundingClientRect();
+    const mx = clientX - (rect.left + rect.width / 2);
+    const my = clientY - (rect.top + rect.height / 2);
+    const rad = (bearingDeg * Math.PI) / 180;
+    const u = mx * Math.cos(rad) + my * Math.sin(rad);
+    const v = -mx * Math.sin(rad) + my * Math.cos(rad);
+    return L.point(D / 2 + u, D / 2 + v);
+  }, []);
+
   // -------------------------------------------------------------
-  // TOUCHSCREEN GESTURE CONTROLS (Google Maps Touch Engine)
-  // 1. One-Finger Swipe: Drag and pan map freely in all directions
-  // 2. Two-Finger Pinch: Zoom in & Zoom out naturally
-  // 3. Two-Finger Rotation: Rotate map smoothly in real-time
-  // 4. Two-Finger Pan: Reposition map with both fingers moving
-  // 5. Double-Tap Zoom: Rapid double-tap to zoom in
-  // 6. Desktop Shift/Alt + Drag: Rotate map with mouse
+  // UNIFIED TOUCH, POINTER & WHEEL GESTURE ENGINE
+  // Strictly isolated inside the map container:
+  // 1. 1-Finger Swipe: rotation-aware panning in all directions
+  // 2. 2-Finger Pinch: continuous smooth zoom locked to finger midpoint
+  // 3. 2-Finger Rotation: smooth 60fps bearing rotation pivoting around midpoint
+  // 4. 2-Finger Pan: simultaneous repositioning with fingers
+  // 5. Double-Tap / Double-Click Zoom: centered at tap point
+  // 6. Mouse Drag & Wheel / Trackpad Zoom: strictly inside map, zero page zoom
   // -------------------------------------------------------------
   useEffect(() => {
-    const container = mapContainerRef.current;
-    if (!container) return;
+    const mapSurface = mapContainerRef.current;
+    if (!mapSurface) return;
+
+    const getMidRelativeToViewport = (t1: Touch, t2: Touch) => {
+      const vp = viewportRef.current;
+      const rect = vp ? vp.getBoundingClientRect() : mapSurface.getBoundingClientRect();
+      const vpCenterX = rect.left + rect.width / 2;
+      const vpCenterY = rect.top + rect.height / 2;
+      return {
+        mx: (t1.clientX + t2.clientX) / 2 - vpCenterX,
+        my: (t1.clientY + t2.clientY) / 2 - vpCenterY
+      };
+    };
 
     const onTouchStart = (e: TouchEvent) => {
+      const gs = gestureStateRef.current;
       if (e.touches.length === 1) {
-        // Double-Tap Zoom Detection
         const touch = e.touches[0];
-        const now = Date.now();
-        const dist = Math.hypot(
-          touch.clientX - gestureStateRef.current.lastTapPoint.x,
-          touch.clientY - gestureStateRef.current.lastTapPoint.y
-        );
-
-        if (now - gestureStateRef.current.lastTapTime < 320 && dist < 35) {
-          e.preventDefault();
-          const map = mapInstanceRef.current;
-          if (map && (map as any)._mapPane) {
-            map.zoomIn();
-          }
-          gestureStateRef.current.lastTapTime = 0;
-        } else {
-          gestureStateRef.current.lastTapTime = now;
-          gestureStateRef.current.lastTapPoint = { x: touch.clientX, y: touch.clientY };
-        }
-      } else if (e.touches.length === 2) {
-        // Prevent accidental page scroll during multi-touch gestures
+        gs.mode = 'single';
+        gs.lastSingleX = touch.clientX;
+        gs.lastSingleY = touch.clientY;
+        gs.totalMove = 0;
+        gs.startedOnMarker = Boolean((e.target as HTMLElement)?.closest('.leaflet-marker-icon'));
+        // Do NOT call preventDefault on 1-finger touchstart so marker clicks synthesize cleanly
+      } else if (e.touches.length >= 2) {
+        // Multi-touch: block browser pinch/scroll cleanly
         e.preventDefault();
+        e.stopPropagation();
+
         const t1 = e.touches[0];
         const t2 = e.touches[1];
-
         const dx = t2.clientX - t1.clientX;
         const dy = t2.clientY - t1.clientY;
-        const distance = Math.hypot(dx, dy);
-        const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+        const { mx, my } = getMidRelativeToViewport(t1, t2);
 
-        gestureStateRef.current.isGesturing = true;
-        gestureStateRef.current.startDistance = distance;
-        gestureStateRef.current.startAngle = angle;
-        gestureStateRef.current.startBearing = currentBearingRef.current;
-        gestureStateRef.current.lastMidpoint = {
-          x: (t1.clientX + t2.clientX) / 2,
-          y: (t1.clientY + t2.clientY) / 2
-        };
-        gestureStateRef.current.lastZoomTime = Date.now();
-
-        // Disable CSS transition during active touch movement for zero-latency 60fps tracking
+        gs.mode = 'multi';
+        gs.prevDist = Math.hypot(dx, dy);
+        gs.prevAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
+        gs.prevMidX = mx;
+        gs.prevMidY = my;
         setIsActiveTouching(true);
       }
     };
 
     const onTouchMove = (e: TouchEvent) => {
-      if (e.touches.length === 2 && gestureStateRef.current.isGesturing) {
+      const gs = gestureStateRef.current;
+      const map = mapInstanceRef.current;
+      if (!map || !(map as any)._mapPane) return;
+
+      if (e.touches.length === 1 && gs.mode === 'single') {
+        const touch = e.touches[0];
+        const dx = touch.clientX - gs.lastSingleX;
+        const dy = touch.clientY - gs.lastSingleY;
+        gs.lastSingleX = touch.clientX;
+        gs.lastSingleY = touch.clientY;
+        gs.totalMove += Math.hypot(dx, dy);
+
+        if (gs.totalMove > 4) {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsActiveTouching(true);
+
+          const rad = (currentBearingRef.current * Math.PI) / 180;
+          const du = dx * Math.cos(rad) + dy * Math.sin(rad);
+          const dv = -dx * Math.sin(rad) + dy * Math.cos(rad);
+          map.panBy([-du, -dv], { animate: false });
+        }
+      } else if (e.touches.length >= 2) {
         e.preventDefault();
+        e.stopPropagation();
+
         const t1 = e.touches[0];
         const t2 = e.touches[1];
-
         const dx = t2.clientX - t1.clientX;
         const dy = t2.clientY - t1.clientY;
-        const currentDistance = Math.hypot(dx, dy);
-        const currentAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
+        const currDist = Math.hypot(dx, dy);
+        const currAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
+        const { mx: currMx, my: currMy } = getMidRelativeToViewport(t1, t2);
 
-        // 1. Two-Finger Map Rotation
-        const angleDiff = currentAngle - gestureStateRef.current.startAngle;
-        let newBearing = Math.round((gestureStateRef.current.startBearing + angleDiff) % 360);
-        if (newBearing < 0) newBearing += 360;
-
-        currentBearingRef.current = newBearing;
-        setMapBearing(newBearing);
-
-        // 2. Two-Finger Pan
-        const currentMid = {
-          x: (t1.clientX + t2.clientX) / 2,
-          y: (t1.clientY + t2.clientY) / 2
-        };
-        const midDx = currentMid.x - gestureStateRef.current.lastMidpoint.x;
-        const midDy = currentMid.y - gestureStateRef.current.lastMidpoint.y;
-        gestureStateRef.current.lastMidpoint = currentMid;
-
-        const map = mapInstanceRef.current;
-        if (map && (map as any)._mapPane && (Math.abs(midDx) > 1 || Math.abs(midDy) > 1)) {
-          const rad = (newBearing * Math.PI) / 180;
-          const panX = midDx * Math.cos(rad) + midDy * Math.sin(rad);
-          const panY = -midDx * Math.sin(rad) + midDy * Math.cos(rad);
-          map.panBy([-panX, -panY], { animate: false });
+        if (gs.mode !== 'multi') {
+          gs.mode = 'multi';
+          gs.prevDist = currDist;
+          gs.prevAngle = currAngle;
+          gs.prevMidX = currMx;
+          gs.prevMidY = currMy;
+          setIsActiveTouching(true);
+          return;
         }
 
-        // 3. Two-Finger Pinch-to-Zoom
-        const distDelta = currentDistance - gestureStateRef.current.startDistance;
-        const now = Date.now();
-        if (now - gestureStateRef.current.lastZoomTime > 200) {
-          if (distDelta > 38 && map && (map as any)._mapPane) {
-            map.zoomIn();
-            gestureStateRef.current.startDistance = currentDistance;
-            gestureStateRef.current.lastZoomTime = now;
-          } else if (distDelta < -38 && map && (map as any)._mapPane) {
-            map.zoomOut();
-            gestureStateRef.current.startDistance = currentDistance;
-            gestureStateRef.current.lastZoomTime = now;
+        // Incremental rotation delta wrapped cleanly to [-180, 180] (prevents +180/-180 jump)
+        const dAngle = ((currAngle - gs.prevAngle + 540) % 360) - 180;
+        const oldB = currentBearingRef.current;
+        const newB = (oldB + dAngle + 360) % 360;
+
+        // Exact midpoint lock: keep map anchored under moving & rotating fingers
+        const r1 = (oldB * Math.PI) / 180;
+        const r2 = (newB * Math.PI) / 180;
+        const u1 = gs.prevMidX * Math.cos(r1) + gs.prevMidY * Math.sin(r1);
+        const v1 = -gs.prevMidX * Math.sin(r1) + gs.prevMidY * Math.cos(r1);
+        const u2 = currMx * Math.cos(r2) + currMy * Math.sin(r2);
+        const v2 = -currMx * Math.sin(r2) + currMy * Math.cos(r2);
+
+        applyBearingImmediate(newB);
+
+        // Lock pan to finger midpoint
+        if (Math.abs(u1 - u2) > 0.05 || Math.abs(v1 - v2) > 0.05) {
+          map.panBy([u1 - u2, v1 - v2], { animate: false });
+        }
+
+        // Continuous pinch-to-zoom centered right around the midpoint between two fingers
+        if (gs.prevDist > 12 && currDist > 12) {
+          const ratio = currDist / gs.prevDist;
+          if (Math.abs(ratio - 1) > 0.004) {
+            const zoomDelta = Math.log2(ratio);
+            const targetZoom = Math.min(18, Math.max(5, map.getZoom() + zoomDelta));
+            const D = canvasSizeRef.current;
+            const leafletAnchor = L.point(D / 2 + u2, D / 2 + v2);
+            map.setZoomAround(leafletAnchor, targetZoom, { animate: false });
+          }
+        }
+
+        gs.prevDist = currDist;
+        gs.prevAngle = currAngle;
+        gs.prevMidX = currMx;
+        gs.prevMidY = currMy;
+      }
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      const gs = gestureStateRef.current;
+      const map = mapInstanceRef.current;
+
+      if (e.touches.length === 1 && gs.mode === 'multi') {
+        // Seamless transition from 2 fingers down to 1 finger without jumping
+        gs.mode = 'single';
+        gs.lastSingleX = e.touches[0].clientX;
+        gs.lastSingleY = e.touches[0].clientY;
+        gs.totalMove = 10; // Prevent false tap
+        setIsActiveTouching(false);
+        return;
+      }
+
+      if (e.touches.length === 0) {
+        if (gs.mode === 'single' && gs.totalMove <= 8 && !gs.startedOnMarker && e.changedTouches.length > 0) {
+          const touch = e.changedTouches[0];
+          const now = Date.now();
+          const dist = Math.hypot(
+            touch.clientX - gs.lastTapPoint.x,
+            touch.clientY - gs.lastTapPoint.y
+          );
+
+          if (now - gs.lastTapTime < 300 && dist < 40 && map && (map as any)._mapPane) {
+            e.preventDefault();
+            const anchor = screenPointToLeafletPoint(touch.clientX, touch.clientY, currentBearingRef.current);
+            const nextZoom = Math.min(18, map.getZoom() + 1.25);
+            map.setZoomAround(anchor, nextZoom, { animate: true });
+            gs.lastTapTime = 0;
+          } else {
+            gs.lastTapTime = now;
+            gs.lastTapPoint = { x: touch.clientX, y: touch.clientY };
+          }
+        }
+
+        gs.mode = 'none';
+        setIsActiveTouching(false);
+      }
+    };
+
+    // Safari iOS proprietary pinch-zoom blocker inside map container
+    const preventSafariGesture = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    // Desktop Mouse Wheel / Trackpad Pinch Zoom (strictly isolated inside map)
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const map = mapInstanceRef.current;
+      if (!map || !(map as any)._mapPane) return;
+
+      const anchor = screenPointToLeafletPoint(e.clientX, e.clientY, currentBearingRef.current);
+      const deltaZoom = e.ctrlKey
+        ? Math.max(-0.5, Math.min(0.5, -e.deltaY * 0.012))
+        : e.deltaY > 0
+        ? -0.6
+        : 0.6;
+      const nextZoom = Math.min(18, Math.max(5, map.getZoom() + deltaZoom));
+      map.setZoomAround(anchor, nextZoom, { animate: !e.ctrlKey });
+    };
+
+    // Desktop Mouse Drag (rotation-aware) & Shift/Alt Rotate
+    const onMouseDown = (e: MouseEvent) => {
+      if (e.button !== 0) return;
+      const gs = gestureStateRef.current;
+      const vp = viewportRef.current;
+      const rect = vp ? vp.getBoundingClientRect() : mapSurface.getBoundingClientRect();
+
+      if (e.shiftKey || e.altKey) {
+        e.preventDefault();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        gs.mouseMode = 'rotate';
+        gs.mouseStartAngle = (Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180) / Math.PI;
+        gs.mouseStartBearing = currentBearingRef.current;
+        setIsActiveTouching(true);
+      } else {
+        gs.mouseMode = 'pan';
+        gs.lastMouseX = e.clientX;
+        gs.lastMouseY = e.clientY;
+        gs.mouseTotalMove = 0;
+      }
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      const gs = gestureStateRef.current;
+      if (gs.mouseMode === 'none') return;
+
+      if (gs.mouseMode === 'rotate') {
+        e.preventDefault();
+        const vp = viewportRef.current;
+        const rect = vp ? vp.getBoundingClientRect() : mapSurface.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const currAngle = (Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180) / Math.PI;
+        const angleDiff = currAngle - gs.mouseStartAngle;
+        applyBearingImmediate(gs.mouseStartBearing + angleDiff);
+      } else if (gs.mouseMode === 'pan') {
+        const dx = e.clientX - gs.lastMouseX;
+        const dy = e.clientY - gs.lastMouseY;
+        gs.lastMouseX = e.clientX;
+        gs.lastMouseY = e.clientY;
+        gs.mouseTotalMove += Math.hypot(dx, dy);
+
+        if (gs.mouseTotalMove > 3) {
+          const map = mapInstanceRef.current;
+          if (map && (map as any)._mapPane) {
+            const rad = (currentBearingRef.current * Math.PI) / 180;
+            const du = dx * Math.cos(rad) + dy * Math.sin(rad);
+            const dv = -dx * Math.sin(rad) + dy * Math.cos(rad);
+            map.panBy([-du, -dv], { animate: false });
           }
         }
       }
     };
 
-    const onTouchEnd = (e: TouchEvent) => {
-      if (e.touches.length < 2) {
-        gestureStateRef.current.isGesturing = false;
-        setIsActiveTouching(false);
-      }
-    };
-
-    // Desktop Shift+Drag or Alt+Drag Rotation
-    const onMouseDown = (e: MouseEvent) => {
-      if (e.shiftKey || e.altKey) {
-        e.preventDefault();
-        const rect = container.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const angle = (Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180) / Math.PI;
-
-        gestureStateRef.current.isDesktopRotating = true;
-        gestureStateRef.current.mouseStartAngle = angle;
-        gestureStateRef.current.mouseStartBearing = currentBearingRef.current;
-        setIsActiveTouching(true);
-      }
-    };
-
-    const onMouseMove = (e: MouseEvent) => {
-      if (gestureStateRef.current.isDesktopRotating) {
-        e.preventDefault();
-        const rect = container.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const currentAngle = (Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180) / Math.PI;
-        const angleDiff = currentAngle - gestureStateRef.current.mouseStartAngle;
-
-        let newBearing = Math.round((gestureStateRef.current.mouseStartBearing + angleDiff) % 360);
-        if (newBearing < 0) newBearing += 360;
-
-        currentBearingRef.current = newBearing;
-        setMapBearing(newBearing);
-      }
-    };
-
     const onMouseUp = () => {
-      if (gestureStateRef.current.isDesktopRotating) {
-        gestureStateRef.current.isDesktopRotating = false;
+      const gs = gestureStateRef.current;
+      if (gs.mouseMode !== 'none') {
+        if ((gs.mouseMode === 'pan' && gs.mouseTotalMove > 5) || gs.mouseMode === 'rotate') {
+          suppressClickUntilRef.current = Date.now() + 180;
+        }
+        gs.mouseMode = 'none';
         setIsActiveTouching(false);
       }
     };
 
-    container.addEventListener('touchstart', onTouchStart, { passive: false });
-    container.addEventListener('touchmove', onTouchMove, { passive: false });
-    container.addEventListener('touchend', onTouchEnd);
-    container.addEventListener('touchcancel', onTouchEnd);
-    container.addEventListener('mousedown', onMouseDown);
+    const onCaptureClick = (e: MouseEvent) => {
+      if (Date.now() < suppressClickUntilRef.current) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    const onDoubleClick = (e: MouseEvent) => {
+      if ((e.target as HTMLElement)?.closest('.leaflet-marker-icon')) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const map = mapInstanceRef.current;
+      if (!map || !(map as any)._mapPane) return;
+      const anchor = screenPointToLeafletPoint(e.clientX, e.clientY, currentBearingRef.current);
+      map.setZoomAround(anchor, Math.min(18, map.getZoom() + 1), { animate: true });
+    };
+
+    const vp = viewportRef.current;
+    const onViewportCtrlWheel = (e: WheelEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+      }
+    };
+
+    mapSurface.addEventListener('touchstart', onTouchStart, { passive: false });
+    mapSurface.addEventListener('touchmove', onTouchMove, { passive: false });
+    mapSurface.addEventListener('touchend', onTouchEnd, { passive: false });
+    mapSurface.addEventListener('touchcancel', onTouchEnd);
+    mapSurface.addEventListener('gesturestart', preventSafariGesture, { passive: false });
+    mapSurface.addEventListener('gesturechange', preventSafariGesture, { passive: false });
+    mapSurface.addEventListener('gestureend', preventSafariGesture, { passive: false });
+    mapSurface.addEventListener('wheel', onWheel, { passive: false });
+    mapSurface.addEventListener('mousedown', onMouseDown);
+    mapSurface.addEventListener('click', onCaptureClick, true);
+    mapSurface.addEventListener('dblclick', onDoubleClick);
+    vp?.addEventListener('wheel', onViewportCtrlWheel, { passive: false });
+    vp?.addEventListener('gesturestart', preventSafariGesture, { passive: false });
+    vp?.addEventListener('gesturechange', preventSafariGesture, { passive: false });
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
 
     return () => {
-      container.removeEventListener('touchstart', onTouchStart);
-      container.removeEventListener('touchmove', onTouchMove);
-      container.removeEventListener('touchend', onTouchEnd);
-      container.removeEventListener('touchcancel', onTouchEnd);
-      container.removeEventListener('mousedown', onMouseDown);
+      mapSurface.removeEventListener('touchstart', onTouchStart);
+      mapSurface.removeEventListener('touchmove', onTouchMove);
+      mapSurface.removeEventListener('touchend', onTouchEnd);
+      mapSurface.removeEventListener('touchcancel', onTouchEnd);
+      mapSurface.removeEventListener('gesturestart', preventSafariGesture);
+      mapSurface.removeEventListener('gesturechange', preventSafariGesture);
+      mapSurface.removeEventListener('gestureend', preventSafariGesture);
+      mapSurface.removeEventListener('wheel', onWheel);
+      mapSurface.removeEventListener('mousedown', onMouseDown);
+      mapSurface.removeEventListener('click', onCaptureClick, true);
+      mapSurface.removeEventListener('dblclick', onDoubleClick);
+      vp?.removeEventListener('wheel', onViewportCtrlWheel);
+      vp?.removeEventListener('gesturestart', preventSafariGesture);
+      vp?.removeEventListener('gesturechange', preventSafariGesture);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
     };
-  }, []);
+  }, [applyBearingImmediate, screenPointToLeafletPoint]);
 
   // Toggle Category Filter (Multi-select)
   const toggleCategory = (cat: LocationCategory) => {
@@ -990,8 +1233,7 @@ export const GeographicLocationMap: React.FC = () => {
             // Safe guard
           }
 
-          // Calculate distance to Alon & Aninag (Haversine formula)
-          const R = 6371; // km
+          const R = 6371;
           const dLat = ((9.7528 - latitude) * Math.PI) / 180;
           const dLon = ((122.3989 - longitude) * Math.PI) / 180;
           const a =
@@ -1010,7 +1252,7 @@ export const GeographicLocationMap: React.FC = () => {
           );
         }
       },
-      (error) => {
+      () => {
         setIsLocating(false);
         addNotification(
           'Location Access',
@@ -1044,7 +1286,7 @@ export const GeographicLocationMap: React.FC = () => {
         const map = mapInstanceRef.current;
         if (map && (map as any)._mapPane) {
           try {
-            map.invalidateSize();
+            map.invalidateSize({ animate: false });
           } catch {
             // Safe guard
           }
@@ -1064,74 +1306,61 @@ export const GeographicLocationMap: React.FC = () => {
       delete (mapContainerRef.current as any)._leaflet_id;
     }
 
-    // Center on Sipalay Coast
+    const regionalBounds = L.latLngBounds([4.0, 114.0], [21.5, 128.0]);
+
+    // Initialize Leaflet with native touch/drag/wheel disabled so our single
+    // rotation-aware Gesture Engine handles everything cleanly with zero conflicts.
     const initialMap = L.map(mapContainerRef.current, {
       center: [9.7380, 122.3920],
       zoom: 12,
+      minZoom: 5,
+      maxZoom: 18,
+      zoomSnap: 0,
+      zoomDelta: 0.75,
+      maxBounds: regionalBounds,
+      maxBoundsViscosity: 0.85,
+      bounceAtZoomLimits: true,
+      dragging: false,
+      touchZoom: false,
+      doubleClickZoom: false,
+      scrollWheelZoom: false,
+      boxZoom: false,
       zoomControl: false,
       attributionControl: false
     });
 
     const provider = TILE_PROVIDERS['standard'];
     const initialTiles = L.tileLayer(provider.url, {
-      maxZoom: provider.maxZoom,
-      attribution: provider.attribution
+      maxNativeZoom: provider.maxZoom,
+      maxZoom: 18,
+      attribution: provider.attribution,
+      keepBuffer: 6,
+      updateWhenIdle: false,
+      updateWhenZooming: true
     }).addTo(initialMap);
 
     tileLayerRef.current = initialTiles;
     mapInstanceRef.current = initialMap;
-
-    L.control.attribution({ position: 'bottomright', prefix: false })
-      .addAttribution('Google Maps-Style Sipalay Engine')
-      .addTo(initialMap);
 
     // Populate all markers
     ALL_LOCATIONS.forEach(loc => {
       const icon = createCustomMarkerIcon(loc, loc.id === 'alon-aninag');
       const marker = L.marker([loc.lat, loc.lng], { icon }).addTo(initialMap);
 
-      const isOur = loc.id === 'alon-aninag';
-      const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${loc.lat},${loc.lng}&destination_place_id=${encodeURIComponent(
-        loc.name
-      )}`;
-
-      const popupHtml = `
-        <div style="font-family: inherit; min-width: 250px; max-width: 320px; padding: 2px;">
-          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px;">
-            <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 6px; border-radius: 4px; background-color: ${
-              isOur ? '#006D77' : loc.color
-            }; color: white;">
-              ${loc.badge || loc.categoryLabel}
-            </span>
-            ${loc.distanceKm > 0 ? `<span style="font-size: 11px; font-weight: 700; color: #4B5563;">${loc.distanceKm} km away</span>` : ''}
-          </div>
-          <h4 style="font-size: 14px; font-weight: 700; color: #111827; margin: 0 0 4px 0; line-height: 1.3;">
-            ${loc.name}
-          </h4>
-          <p style="font-size: 11px; color: #4B5563; margin: 0 0 8px 0; line-height: 1.4;">
-            ${loc.description}
-          </p>
-          <div style="font-size: 10.5px; color: #374151; background: #F3F4F6; padding: 6px 8px; border-radius: 6px; margin-bottom: 8px;">
-            <div style="margin-bottom: 2px;"><strong>📍 Location:</strong> ${loc.address}</div>
-            ${loc.priceRange ? `<div><strong>🏷 Rate:</strong> ${loc.priceRange}</div>` : ''}
-          </div>
-          <div style="display: flex; gap: 6px;">
-            <a href="${directionsUrl}" target="_blank" rel="noopener noreferrer" style="flex: 1; text-align: center; background-color: #006D77; color: white; padding: 6px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; text-decoration: none;">
-              Directions ↗
-            </a>
-          </div>
-        </div>
-      `;
-
-      marker.bindPopup(popupHtml, {
-        className: 'custom-leaflet-popup',
-        maxWidth: 320
-      });
-
       marker.on('click', () => {
         setSelectedLocationId(loc.id);
         setIsCardVisible(true);
         triggerAutoHide();
+        if ((initialMap as any)._mapPane) {
+          try {
+            initialMap.flyTo([loc.lat, loc.lng], Math.max(initialMap.getZoom(), 14), {
+              duration: 0.8,
+              easeLinearity: 0.25
+            });
+          } catch {
+            // Safe guard
+          }
+        }
       });
 
       markersRef.current[loc.id] = marker;
@@ -1140,14 +1369,14 @@ export const GeographicLocationMap: React.FC = () => {
     let fitTimer: any = setTimeout(() => {
       if (initialMap && (initialMap as any)._mapPane) {
         try {
+          initialMap.invalidateSize({ animate: false });
           const bounds = L.latLngBounds(ALL_LOCATIONS.map(l => [l.lat, l.lng]));
-          initialMap.fitBounds(bounds, { padding: [45, 45], maxZoom: 13 });
-          initialMap.invalidateSize();
+          fitBoundsInVisibleViewport(bounds);
         } catch {
           // Safe guard
         }
       }
-    }, 400);
+    }, 350);
 
     return () => {
       if (fitTimer) {
@@ -1164,9 +1393,9 @@ export const GeographicLocationMap: React.FC = () => {
       mapInstanceRef.current = null;
       tileLayerRef.current = null;
     };
-  }, [createCustomMarkerIcon, triggerAutoHide]);
+  }, [createCustomMarkerIcon, fitBoundsInVisibleViewport, triggerAutoHide]);
 
-  // Handle Tile Layer Switching
+  // Handle Tile Layer Switching with full buffer preloading
   const handleTileChange = (style: MapTileStyle) => {
     setActiveTileStyle(style);
     const map = mapInstanceRef.current;
@@ -1176,8 +1405,12 @@ export const GeographicLocationMap: React.FC = () => {
       map.removeLayer(tileLayerRef.current);
       const provider = TILE_PROVIDERS[style];
       const newTiles = L.tileLayer(provider.url, {
-        maxZoom: provider.maxZoom,
-        attribution: provider.attribution
+        maxNativeZoom: provider.maxZoom,
+        maxZoom: 18,
+        attribution: provider.attribution,
+        keepBuffer: 6,
+        updateWhenIdle: false,
+        updateWhenZooming: true
       }).addTo(map);
 
       tileLayerRef.current = newTiles;
@@ -1384,21 +1617,37 @@ export const GeographicLocationMap: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. MAIN INTERACTIVE MAP CANVAS CONTAINER */}
-      <div className="relative rounded-2xl overflow-hidden border border-stone-200 dark:border-stone-800 shadow-xl bg-stone-100 dark:bg-stone-900">
-        {/* Leaflet Map with Smooth Touch Bearing Rotation */}
+      {/* 3. MAIN INTERACTIVE MAP VIEWPORT CONTAINER */}
+      <div
+        ref={viewportRef}
+        className={`relative rounded-2xl overflow-hidden border border-stone-200 dark:border-stone-800 shadow-xl select-none ${
+          isFullscreen ? 'flex-1 min-h-[70vh]' : 'h-[480px] sm:h-[560px]'
+        }`}
+        style={{
+          backgroundColor: '#AAD3DF',
+          touchAction: 'none',
+          overscrollBehavior: 'contain'
+        }}
+      >
+        {/* Oversized Centered Square Canvas (D x D where D > hypot(W,H) + 160): Zero black/empty corners at any rotation */}
         <div
           ref={mapContainerRef}
-          className="w-full h-[500px] sm:h-[560px] z-10 select-none"
+          className="absolute top-1/2 left-1/2 z-10 select-none"
           style={{
-            transform: mapBearing !== 0 ? `rotate(${mapBearing}deg) scale(${mapBearing !== 0 ? 1.25 : 1})` : 'none',
-            transition: isActiveTouching ? 'none' : 'transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)',
-            touchAction: 'none'
+            width: `${canvasSize}px`,
+            height: `${canvasSize}px`,
+            marginLeft: `${-canvasSize / 2}px`,
+            marginTop: `${-canvasSize / 2}px`,
+            transform: `rotate(${mapBearing}deg)`,
+            transformOrigin: 'center center',
+            transition: isActiveTouching ? 'none' : 'transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1)',
+            touchAction: 'none',
+            ['--map-bearing' as any]: `${-mapBearing}deg`
           }}
         />
 
-        {/* Real-time Bearing Indicator & Quick Reset North (Requirement 7 & 8) */}
-        {mapBearing !== 0 && (
+        {/* Real-time Bearing Indicator & Quick Reset North */}
+        {Math.round(mapBearing) !== 0 && Math.round(mapBearing) !== 360 && (
           <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-stone-900/95 dark:bg-black/95 text-white backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-bold border border-teal-500/50 shadow-xl flex items-center gap-2 animate-fadeIn pointer-events-auto">
             <span
               className="w-3.5 h-3.5 text-teal-400 inline-block transition-transform duration-150"
@@ -1406,7 +1655,7 @@ export const GeographicLocationMap: React.FC = () => {
             >
               ▲
             </span>
-            <span>Rotation: {mapBearing}°</span>
+            <span>Rotation: {Math.round(mapBearing)}°</span>
             <button
               onClick={handleResetBearing}
               className="text-[10px] bg-[#006D77] hover:bg-[#00555d] text-white uppercase font-extrabold tracking-wider px-2.5 py-0.5 rounded-full transition cursor-pointer shadow-xs ml-1"
@@ -1419,9 +1668,9 @@ export const GeographicLocationMap: React.FC = () => {
 
         {/* Touch Gesture Helper Pill */}
         <div className="absolute top-16 left-4 z-20 hidden lg:flex items-center gap-1.5 bg-black/60 backdrop-blur-md text-white/90 text-[10px] px-2.5 py-1 rounded-full border border-white/10 pointer-events-none select-none">
-          <span>🖐️ 1 Finger: Pan</span>
+          <span>1 Finger: Pan</span>
           <span className="opacity-40">•</span>
-          <span>✌️ 2 Fingers: Rotate & Pan</span>
+          <span>2 Fingers: Rotate & Pan</span>
           <span className="opacity-40">•</span>
           <span>Pinch: Zoom</span>
           <span className="opacity-40">•</span>
@@ -1435,7 +1684,9 @@ export const GeographicLocationMap: React.FC = () => {
             <button
               onClick={() => {
                 const map = mapInstanceRef.current;
-                if (map && (map as any)._mapPane) map.zoomIn();
+                if (map && (map as any)._mapPane) {
+                  map.setZoom(Math.min(18, map.getZoom() + 0.75), { animate: true });
+                }
               }}
               className="p-2.5 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer border-b border-stone-200 dark:border-stone-700"
               title="Zoom In"
@@ -1446,7 +1697,9 @@ export const GeographicLocationMap: React.FC = () => {
             <button
               onClick={() => {
                 const map = mapInstanceRef.current;
-                if (map && (map as any)._mapPane) map.zoomOut();
+                if (map && (map as any)._mapPane) {
+                  map.setZoom(Math.max(5, map.getZoom() - 0.75), { animate: true });
+                }
               }}
               className="p-2.5 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer"
               title="Zoom Out"
@@ -1456,21 +1709,24 @@ export const GeographicLocationMap: React.FC = () => {
             </button>
           </div>
 
-          {/* Interactive Compass Widget (Requirement 1: shows orientation, clicking resets to North) */}
+          {/* Interactive Compass Widget (Synchronized orientation; click to reset North) */}
           <button
             onClick={handleResetBearing}
             className="p-2.5 bg-white/95 dark:bg-[#131F2A]/95 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 transition cursor-pointer flex flex-col items-center justify-center group"
-            title={`Compass (${mapBearing}°). Click to reset North.`}
+            title={`Compass (${Math.round(mapBearing)}°). Click to reset North.`}
             aria-label="Reset Compass to North"
           >
             <div
-              className="w-4 h-4 transition-transform duration-500 ease-out flex items-center justify-center text-teal-600 dark:text-teal-400"
-              style={{ transform: `rotate(${-mapBearing}deg)` }}
+              className="w-4 h-4 flex items-center justify-center text-teal-600 dark:text-teal-400"
+              style={{
+                transform: `rotate(${-mapBearing}deg)`,
+                transition: isActiveTouching ? 'none' : 'transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1)'
+              }}
             >
               <Compass className="w-4 h-4 group-hover:scale-110 transition-transform" />
             </div>
             <span className="text-[8px] font-bold text-stone-500 mt-0.5">
-              {mapBearing === 0 ? 'N' : `${mapBearing}°`}
+              {Math.round(mapBearing) === 0 || Math.round(mapBearing) === 360 ? 'N' : `${Math.round(mapBearing)}°`}
             </span>
           </button>
 
@@ -1752,6 +2008,29 @@ export const GeographicLocationMap: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Always-Visible Viewport Attribution Strip */}
+        <div className="absolute bottom-1.5 right-2 z-15 pointer-events-auto bg-white/80 dark:bg-[#0B131A]/80 backdrop-blur-xs text-[10px] text-stone-600 dark:text-stone-300 px-2 py-0.5 rounded-md border border-stone-200/60 dark:border-stone-700/60">
+          {activeTileStyle === 'standard' && (
+            <span>
+              Sipalay Coastal Map • &copy;{' '}
+              <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" className="underline">
+                OpenStreetMap
+              </a>
+            </span>
+          )}
+          {activeTileStyle === 'satellite' && (
+            <span>Sipalay Satellite • Tiles &copy; Esri &amp; GIS User Community</span>
+          )}
+          {activeTileStyle === 'terrain' && (
+            <span>
+              Sipalay Terrain • &copy;{' '}
+              <a href="https://opentopomap.org" target="_blank" rel="noopener noreferrer" className="underline">
+                OpenTopoMap
+              </a>
+            </span>
+          )}
         </div>
       </div>
 
