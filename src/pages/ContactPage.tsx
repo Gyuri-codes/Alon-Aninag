@@ -360,74 +360,169 @@ export const ContactPage: React.FC = () => {
           <div className="text-center max-w-3xl mx-auto mb-14">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 text-xs font-semibold uppercase tracking-wider mb-3">
               <Compass className="w-3.5 h-3.5 text-[#006D77] dark:text-[#83C5BE]" />
-              {t('directionsBadge', 'Transit Directions')}
+              {t('directionsBadge', 'Travel Directions')}
             </div>
             <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-stone-900 dark:text-white tracking-tight mb-4">
               {t('directionsTitle', 'How to Get to Alon & Aninag')}
             </h2>
             <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 leading-relaxed font-light">
-              {t('directionsDesc', 'Sipalay City is easily reached via direct flights to either Bacolod or Dumaguete, followed by a scenic coastal road trip along the South National Highway.')}
+              {t('directionsDesc', 'Sipalay City is easily accessible from both Bacolod and Dumaguete via scenic coastal highways.')}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Route 1: From Bacolod */}
-            <div className="p-8 rounded-2xl bg-white dark:bg-[#131F2A] border border-stone-200 dark:border-stone-800 shadow-sm flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-xl bg-[#006D77]/10 dark:bg-[#83C5BE]/20 text-[#006D77] dark:text-[#83C5BE] flex items-center justify-center">
-                  <Plane className="w-6 h-6" />
+          <div className="space-y-12">
+            {/* CATEGORY 1: LAND TRANSPORTATION (Prominent Overland Public Bus Route) */}
+            <div className="space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-stone-200 dark:border-stone-800">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#006D77]/10 dark:bg-[#83C5BE]/20 text-[#006D77] dark:text-[#83C5BE] flex items-center justify-center">
+                    <Bus className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#006D77] dark:text-[#83C5BE]">
+                    {t('landTransportHeading', 'LAND TRANSPORTATION')}
+                  </h3>
                 </div>
-                <div className="text-xs font-bold uppercase tracking-wider text-[#006D77] dark:text-[#83C5BE]">
-                  {t('fromBacolodTitle', 'Via Bacolod City (BCD)')}
-                </div>
-                <h3 className="font-serif text-xl font-normal text-stone-900 dark:text-white">
-                  Bacolod-Silay Airport • 3.5–4 {t('hours', 'Hours')}
-                </h3>
-                <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 font-light leading-relaxed">
-                  {t('fromBacolodText', 'Fly into Bacolod-Silay Airport. Head to Bacolod South Ceres Terminal and take an air-conditioned Ceres Liner bus direct to Sipalay (departures every 30 mins). Alternatively, request our private resort van shuttle (₱3,800).')}
-                </p>
+                <span className="text-xs text-stone-500 dark:text-stone-400 font-light">
+                  {t('landTransportSub', 'Direct Public Bus Route from Dumaguete City to Sipalay City')}
+                </span>
               </div>
 
-              <div className="pt-4 mt-6 border-t border-stone-100 dark:border-stone-800 text-xs text-stone-500">
-                {t('bacolodRouteNote', 'Scenic countryside route passing Kabankalan and Ilog.')}
+              <div className="p-8 rounded-2xl bg-white dark:bg-[#131F2A] border border-[#006D77]/30 dark:border-[#83C5BE]/30 shadow-sm flex flex-col justify-between">
+                <div className="space-y-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-[#006D77]/10 dark:bg-[#83C5BE]/20 text-[#006D77] dark:text-[#83C5BE] flex items-center justify-center shrink-0">
+                        <Bus className="w-6 h-6" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="text-xs font-bold uppercase tracking-wider text-[#006D77] dark:text-[#83C5BE]">
+                          {t('fromDumagueteBusTitle', 'From Dumaguete City • Public Bus Route')}
+                        </div>
+                        <h4 className="font-serif text-xl sm:text-2xl font-normal text-stone-900 dark:text-white">
+                          {t('fromDumagueteBusHeading', 'Dumaguete City to Sipalay City • 5–6 Hours')}
+                        </h4>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 font-light leading-relaxed max-w-4xl">
+                    {t('fromDumagueteBusText', 'Travel overland by taking a public bus from Dumaguete City heading toward Sipalay City (or Hinoba-an). The scenic land route travels along the southern Negros coastal highway through Zamboanguita, Siaton, Bayawan City, and Hinoba-an with an estimated travel time of approximately 5 to 6 hours by public bus. Upon arriving at Sipalay Public Terminal, guests can take a local motorized tricycle directly to Alon & Aninag Boutique Beach Resort near Poblacion Beach.')}
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                    <div className="p-4 rounded-xl bg-[#FAF7F2] dark:bg-[#0B131A]/70 border border-stone-200/80 dark:border-stone-800 space-y-1">
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-[#006D77] dark:text-[#83C5BE]">
+                        {t('fromDumagueteBusStep1Label', '1. Board Public Bus')}
+                      </div>
+                      <p className="text-xs text-stone-600 dark:text-stone-300 font-light">
+                        {t('fromDumagueteBusStep1Desc', 'Depart from Dumaguete City heading toward Sipalay City')}
+                      </p>
+                    </div>
+                    <div className="p-4 rounded-xl bg-[#FAF7F2] dark:bg-[#0B131A]/70 border border-stone-200/80 dark:border-stone-800 space-y-1">
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-[#E29578]">
+                        {t('fromDumagueteBusStep2Label', '2. Travel Time')}
+                      </div>
+                      <p className="text-xs text-stone-600 dark:text-stone-300 font-light">
+                        {t('fromDumagueteBusStep2Desc', 'Approximately 5 to 6 hours via the southern coastal highway')}
+                      </p>
+                    </div>
+                    <div className="p-4 rounded-xl bg-[#FAF7F2] dark:bg-[#0B131A]/70 border border-stone-200/80 dark:border-stone-800 space-y-1">
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-[#006D77] dark:text-[#83C5BE]">
+                        {t('fromDumagueteBusStep3Label', '3. Terminal to Resort')}
+                      </div>
+                      <p className="text-xs text-stone-600 dark:text-stone-300 font-light">
+                        {t('fromDumagueteBusStep3Desc', 'Take a motorized tricycle from Sipalay Public Terminal near Poblacion Beach')}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 mt-6 border-t border-stone-100 dark:border-stone-800 text-xs text-stone-500">
+                  {t('dumagueteBusNote', 'Economical overland travel with daily public bus departures along scenic coastal highways.')}
+                </div>
               </div>
             </div>
 
-            {/* Route 2: From Dumaguete */}
-            <div className="p-8 rounded-2xl bg-white dark:bg-[#131F2A] border border-stone-200 dark:border-stone-800 shadow-sm flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-xl bg-[#E29578]/15 text-[#E29578] flex items-center justify-center">
-                  <Car className="w-6 h-6" />
+            {/* CATEGORY 2: AIR TRANSPORTATION (Existing Airport Routes Preserved) */}
+            <div className="space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-stone-200 dark:border-stone-800">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#006D77]/10 dark:bg-[#83C5BE]/20 text-[#006D77] dark:text-[#83C5BE] flex items-center justify-center">
+                    <Plane className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#006D77] dark:text-[#83C5BE]">
+                    {t('airTransportHeading', 'AIR TRANSPORTATION')}
+                  </h3>
                 </div>
-                <div className="text-xs font-bold uppercase tracking-wider text-[#E29578]">
-                  {t('fromDumagueteTitle', 'Via Dumaguete City (DGT)')}
-                </div>
-                <h3 className="font-serif text-xl font-normal text-stone-900 dark:text-white">
-                  Dumaguete-Sibulan Airport • ~3.5 {t('hours', 'Hours')}
-                </h3>
-                <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 font-light leading-relaxed">
-                  {t('fromDumagueteText', 'Fly into Dumaguete-Sibulan Airport. Board a Ceres bus bound for Hinoba-an or Sipalay via Bayawan City. The route traverses the rugged coastline of Southern Negros with panoramic sea views throughout.')}
-                </p>
+                <span className="text-xs text-stone-500 dark:text-stone-400 font-light">
+                  {t('airTransportSub', 'Regional Airport Arrivals & Overland Connections')}
+                </span>
               </div>
 
-              <div className="pt-4 mt-6 border-t border-stone-100 dark:border-stone-800 text-xs text-stone-500">
-                {t('dumagueteRouteNote', 'Private airport van pick-up is also available upon request.')}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Route 1: From Bacolod */}
+                <div className="p-8 rounded-2xl bg-white dark:bg-[#131F2A] border border-stone-200 dark:border-stone-800 shadow-sm flex flex-col justify-between">
+                  <div className="space-y-4">
+                    <div className="w-12 h-12 rounded-xl bg-[#006D77]/10 dark:bg-[#83C5BE]/20 text-[#006D77] dark:text-[#83C5BE] flex items-center justify-center">
+                      <Plane className="w-6 h-6" />
+                    </div>
+                    <div className="text-xs font-bold uppercase tracking-wider text-[#006D77] dark:text-[#83C5BE]">
+                      {t('fromBacolodTitle', 'From Bacolod-Silay Airport (BCD)')}
+                    </div>
+                    <h4 className="font-serif text-xl font-normal text-stone-900 dark:text-white">
+                      Bacolod-Silay Airport • 3.5–4 {t('hours', 'Hours')}
+                    </h4>
+                    <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 font-light leading-relaxed">
+                      {t('fromBacolodText', 'Fly into Bacolod-Silay Airport. Head to Bacolod South Ceres Terminal and take an air-conditioned Ceres Liner bus direct to Sipalay (departures every 30 mins). Alternatively, request our private resort van shuttle (₱3,800).')}
+                    </p>
+                  </div>
+
+                  <div className="pt-4 mt-6 border-t border-stone-100 dark:border-stone-800 text-xs text-stone-500">
+                    {t('bacolodRouteNote', 'Scenic countryside route passing Kabankalan and Ilog.')}
+                  </div>
+                </div>
+
+                {/* Route 2: From Dumaguete */}
+                <div className="p-8 rounded-2xl bg-white dark:bg-[#131F2A] border border-stone-200 dark:border-stone-800 shadow-sm flex flex-col justify-between">
+                  <div className="space-y-4">
+                    <div className="w-12 h-12 rounded-xl bg-[#E29578]/15 text-[#E29578] flex items-center justify-center">
+                      <Car className="w-6 h-6" />
+                    </div>
+                    <div className="text-xs font-bold uppercase tracking-wider text-[#E29578]">
+                      {t('fromDumagueteTitle', 'From Dumaguete-Sibulan Airport (DGT)')}
+                    </div>
+                    <h4 className="font-serif text-xl font-normal text-stone-900 dark:text-white">
+                      Dumaguete-Sibulan Airport • ~3.5 {t('hours', 'Hours')}
+                    </h4>
+                    <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 font-light leading-relaxed">
+                      {t('fromDumagueteText', 'Fly into Dumaguete-Sibulan Airport. Board a Ceres bus bound for Hinoba-an or Sipalay via Bayawan City. The route traverses the rugged coastline of Southern Negros with panoramic sea views throughout.')}
+                    </p>
+                  </div>
+
+                  <div className="pt-4 mt-6 border-t border-stone-100 dark:border-stone-800 text-xs text-stone-500">
+                    {t('dumagueteRouteNote', 'Private airport van pick-up is also available upon request.')}
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Route 3: Upon Arrival in Sipalay */}
+            {/* FINAL STEP: LOCAL ARRIVAL IN SIPALAY (Retained Existing Content) */}
             <div className="p-8 rounded-2xl bg-white dark:bg-[#131F2A] border border-stone-200 dark:border-stone-800 shadow-sm flex flex-col justify-between">
               <div className="space-y-4">
-                <div className="w-12 h-12 rounded-xl bg-[#006D77]/10 dark:bg-[#83C5BE]/20 text-[#006D77] dark:text-[#83C5BE] flex items-center justify-center">
-                  <Bus className="w-6 h-6" />
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-[#006D77]/10 dark:bg-[#83C5BE]/20 text-[#006D77] dark:text-[#83C5BE] flex items-center justify-center shrink-0">
+                    <Bus className="w-6 h-6" />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-xs font-bold uppercase tracking-wider text-[#006D77] dark:text-[#83C5BE]">
+                      {t('localArrivalTitle', 'Local Arrival in Sipalay')}
+                    </div>
+                    <h4 className="font-serif text-xl font-normal text-stone-900 dark:text-white">
+                      Sipalay Public Terminal • 5 {t('mins', 'Mins')}
+                    </h4>
+                  </div>
                 </div>
-                <div className="text-xs font-bold uppercase tracking-wider text-[#006D77] dark:text-[#83C5BE]">
-                  {t('localArrivalTitle', 'Local Arrival in Sipalay')}
-                </div>
-                <h3 className="font-serif text-xl font-normal text-stone-900 dark:text-white">
-                  Sipalay Public Terminal • 5 {t('mins', 'Mins')}
-                </h3>
-                <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 font-light leading-relaxed">
+                <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 font-light leading-relaxed max-w-4xl">
                   {t('localArrivalText', 'Upon arriving at the Sipalay City Ceres Terminal, hire a local motorized tricycle (₱15–₱20 per passenger) and ask for "Alon & Aninag Resort sa Poblacion Beach, tupad sang Jazz Inn." The driver will drop you right at our front entrance.')}
                 </p>
               </div>
