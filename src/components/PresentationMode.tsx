@@ -586,113 +586,254 @@ export const PresentationMode: React.FC<PresentationModeProps> = ({ onClose }) =
               10-Person Workforce Architecture
             </h2>
 
-            {/* Interactive Tree View / Org Chart Cards */}
-            <div className="space-y-3 mb-4">
-              {/* Level 1: General Manager */}
-              <div className="flex justify-center">
-                <button
-                  onClick={() => setSelectedStaffRole('manager')}
-                  className={`w-full max-w-md p-3 rounded-xl transition border text-left cursor-pointer ${
-                    selectedStaffRole === 'manager'
-                      ? 'bg-[#006D77] border-[#83C5BE] shadow-lg shadow-teal-950'
-                      : 'bg-white/10 hover:bg-white/15 border-white/20'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] uppercase tracking-wider text-stone-300 font-bold">Resort Leadership (1x)</span>
-                      <h3 className="font-bold text-sm text-white">General / Hotel Operations Manager</h3>
-                    </div>
-                    <span className="px-2 py-0.5 rounded text-[10px] bg-black/30 text-[#83C5BE] font-mono">Lead</span>
+            {/* Interactive Hierarchical Organizational Chart (Connected Reporting Tree) */}
+            {(() => {
+              const isManager = selectedStaffRole === 'manager';
+              const isFoActive = isManager || selectedStaffRole === 'fo_lead' || selectedStaffRole === 'frontdesk';
+              const isHkActive = isManager || selectedStaffRole === 'hk_lead' || selectedStaffRole === 'housekeeping';
+              const isFbActive = isManager || selectedStaffRole === 'fb_lead' || selectedStaffRole === 'kitchen' || selectedStaffRole === 'maintenance';
+              const isFoChildActive = selectedStaffRole === 'fo_lead' || selectedStaffRole === 'frontdesk';
+              const isHkChildActive = selectedStaffRole === 'hk_lead' || selectedStaffRole === 'housekeeping';
+              const isKitchenPathActive = selectedStaffRole === 'fb_lead' || selectedStaffRole === 'kitchen';
+              const isMaintPathActive = selectedStaffRole === 'fb_lead' || selectedStaffRole === 'maintenance';
+
+              const activeLine = 'bg-[#83C5BE] shadow-[0_0_8px_rgba(131,197,190,0.55)]';
+              const idleLine = 'bg-teal-400/35';
+
+              return (
+                <div className="mb-3.5">
+                  {/* LEVEL 1: GENERAL / HOTEL OPERATIONS MANAGER */}
+                  <div className="flex flex-col items-center">
+                    <button
+                      onClick={() => setSelectedStaffRole('manager')}
+                      className={`w-full max-w-md p-3 rounded-xl transition-all border text-left cursor-pointer relative ${
+                        selectedStaffRole === 'manager'
+                          ? 'bg-[#006D77] border-[#83C5BE] shadow-lg shadow-teal-950/80 ring-1 ring-[#83C5BE]/50'
+                          : 'bg-[#16222B]/90 hover:bg-[#1C2C38] border-teal-500/30'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div>
+                          <span className="text-[10px] uppercase tracking-wider text-teal-200/90 font-bold block">
+                            Resort Leadership (1x)
+                          </span>
+                          <h3 className="font-serif font-bold text-sm sm:text-base text-white">
+                            General / Hotel Operations Manager
+                          </h3>
+                        </div>
+                        <span className="px-2.5 py-0.5 rounded text-[10px] bg-black/35 text-[#83C5BE] border border-[#83C5BE]/30 font-mono shrink-0">
+                          Lead
+                        </span>
+                      </div>
+                    </button>
+
+                    {/* Primary Stem from GM down to Trunk */}
+                    <div className={`hidden sm:block w-[2px] h-4 transition-colors duration-300 ${activeLine}`} />
                   </div>
-                </button>
-              </div>
 
-              {/* Level 2: 3 Department Leads */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <button
-                  onClick={() => setSelectedStaffRole('fo_lead')}
-                  className={`p-3 rounded-xl transition border text-left cursor-pointer ${
-                    selectedStaffRole === 'fo_lead'
-                      ? 'bg-[#006D77] border-[#83C5BE] shadow-lg'
-                      : 'bg-white/10 hover:bg-white/15 border-white/20'
-                  }`}
-                >
-                  <span className="text-[10px] uppercase tracking-wider text-stone-300 font-bold">Department Lead (1x)</span>
-                  <h4 className="font-bold text-xs text-white">Front Office & Guest Experience</h4>
-                  <p className="text-[11px] text-stone-300 mt-1">Supervises 2 Front Desk Associates</p>
-                </button>
+                  {/* DESKTOP HORIZONTAL TRUNK & 3 DROP CONNECTORS (Tier 1 -> Tier 2) */}
+                  <div className="hidden sm:grid sm:grid-cols-3">
+                    {/* Branch 1 Arm + Drop */}
+                    <div className="relative h-5">
+                      <div className={`absolute top-0 left-1/2 right-0 h-[2px] transition-colors duration-300 ${isFoActive ? activeLine : idleLine}`} />
+                      <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-full transition-colors duration-300 ${isFoActive ? activeLine : idleLine}`} />
+                      <span className={`absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full transition-colors ${isFoActive ? 'bg-[#83C5BE]' : 'bg-teal-400/50'}`} />
+                    </div>
 
-                <button
-                  onClick={() => setSelectedStaffRole('hk_lead')}
-                  className={`p-3 rounded-xl transition border text-left cursor-pointer ${
-                    selectedStaffRole === 'hk_lead'
-                      ? 'bg-[#006D77] border-[#83C5BE] shadow-lg'
-                      : 'bg-white/10 hover:bg-white/15 border-white/20'
-                  }`}
-                >
-                  <span className="text-[10px] uppercase tracking-wider text-stone-300 font-bold">Department Lead (1x)</span>
-                  <h4 className="font-bold text-xs text-white">Housekeeping & Sustainability</h4>
-                  <p className="text-[11px] text-stone-300 mt-1">Supervises 2 Housekeeping Associates</p>
-                </button>
+                    {/* Branch 2 Center Bridge + Drop */}
+                    <div className="relative h-5">
+                      <div className={`absolute top-0 left-0 right-1/2 h-[2px] transition-colors duration-300 ${isFoActive ? activeLine : idleLine}`} />
+                      <div className={`absolute top-0 left-1/2 right-0 h-[2px] transition-colors duration-300 ${isFbActive ? activeLine : idleLine}`} />
+                      <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-[#83C5BE] ring-2 ring-[#0E1720]" />
+                      <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-full transition-colors duration-300 ${isHkActive ? activeLine : idleLine}`} />
+                      <span className={`absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full transition-colors ${isHkActive ? 'bg-[#83C5BE]' : 'bg-teal-400/50'}`} />
+                    </div>
 
-                <button
-                  onClick={() => setSelectedStaffRole('fb_lead')}
-                  className={`p-3 rounded-xl transition border text-left cursor-pointer ${
-                    selectedStaffRole === 'fb_lead'
-                      ? 'bg-[#006D77] border-[#83C5BE] shadow-lg'
-                      : 'bg-white/10 hover:bg-white/15 border-white/20'
-                  }`}
-                >
-                  <span className="text-[10px] uppercase tracking-wider text-stone-300 font-bold">Department Lead (1x)</span>
-                  <h4 className="font-bold text-xs text-white">F&B & Dining Experience</h4>
-                  <p className="text-[11px] text-stone-300 mt-1">Supervises Kitchen & Facilities</p>
-                </button>
-              </div>
+                    {/* Branch 3 Arm + Drop */}
+                    <div className="relative h-5">
+                      <div className={`absolute top-0 left-0 right-1/2 h-[2px] transition-colors duration-300 ${isFbActive ? activeLine : idleLine}`} />
+                      <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-full transition-colors duration-300 ${isFbActive ? activeLine : idleLine}`} />
+                      <span className={`absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full transition-colors ${isFbActive ? 'bg-[#83C5BE]' : 'bg-teal-400/50'}`} />
+                    </div>
+                  </div>
 
-              {/* Level 3: Frontline Associates (6 Members) */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                <button
-                  onClick={() => setSelectedStaffRole('frontdesk')}
-                  className={`p-2.5 rounded-lg border text-left cursor-pointer transition ${
-                    selectedStaffRole === 'frontdesk' ? 'bg-[#E29578] border-white text-white' : 'bg-white/5 border-white/15 text-stone-300 hover:bg-white/10'
-                  }`}
-                >
-                  <span className="block font-bold">2x Front Desk Associates</span>
-                  <span className="text-[10px] opacity-80">24/7 Rotational shifts</span>
-                </button>
+                  {/* MOBILE TREE SPINE STEM */}
+                  <div className="sm:hidden flex justify-start pl-4">
+                    <div className={`w-[2px] h-3 ${activeLine}`} />
+                  </div>
 
-                <button
-                  onClick={() => setSelectedStaffRole('housekeeping')}
-                  className={`p-2.5 rounded-lg border text-left cursor-pointer transition ${
-                    selectedStaffRole === 'housekeeping' ? 'bg-[#E29578] border-white text-white' : 'bg-white/5 border-white/15 text-stone-300 hover:bg-white/10'
-                  }`}
-                >
-                  <span className="block font-bold">2x Housekeeping Staff</span>
-                  <span className="text-[10px] opacity-80">Turnover for 24 accommodations</span>
-                </button>
+                  {/* LEVEL 2 & LEVEL 3: 3 CONNECTED DEPARTMENT BRANCHES */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-0 border-l-2 sm:border-l-0 border-teal-400/35 ml-4 sm:ml-0 pl-4 sm:pl-0">
+                    {/* BRANCH 1: FRONT OFFICE & GUEST EXPERIENCE */}
+                    <div className="relative flex flex-col sm:px-1.5">
+                      {/* Mobile horizontal branch tick */}
+                      <span className="sm:hidden absolute top-5 -left-4 w-4 h-[2px] bg-teal-400/45" />
+                      <span className="sm:hidden absolute top-[17px] -left-[19px] w-2 h-2 rounded-full bg-[#83C5BE]" />
 
-                <button
-                  onClick={() => setSelectedStaffRole('kitchen')}
-                  className={`p-2.5 rounded-lg border text-left cursor-pointer transition ${
-                    selectedStaffRole === 'kitchen' ? 'bg-[#E29578] border-white text-white' : 'bg-white/5 border-white/15 text-stone-300 hover:bg-white/10'
-                  }`}
-                >
-                  <span className="block font-bold">1x Dining Attendant</span>
-                  <span className="text-[10px] opacity-80">Dayglow trays & breakfast</span>
-                </button>
+                      <button
+                        onClick={() => setSelectedStaffRole('fo_lead')}
+                        className={`w-full p-2.5 sm:p-3 rounded-xl transition-all border text-left cursor-pointer ${
+                          selectedStaffRole === 'fo_lead'
+                            ? 'bg-[#006D77] border-[#83C5BE] shadow-lg ring-1 ring-[#83C5BE]/40'
+                            : isFoActive && !isManager
+                            ? 'bg-[#172834] border-[#83C5BE]/60'
+                            : 'bg-[#16222B]/85 hover:bg-[#1C2C38] border-white/15'
+                        }`}
+                      >
+                        <span className="text-[10px] uppercase tracking-wider text-teal-200/80 font-bold block">
+                          Department Lead (1x)
+                        </span>
+                        <h4 className="font-serif font-bold text-xs sm:text-[13px] text-white mt-0.5">
+                          Front Office &amp; Guest Experience
+                        </h4>
+                        <p className="text-[11px] text-stone-300 mt-0.5">
+                          Supervises 2 Front Desk Associates
+                        </p>
+                      </button>
 
-                <button
-                  onClick={() => setSelectedStaffRole('maintenance')}
-                  className={`p-2.5 rounded-lg border text-left cursor-pointer transition ${
-                    selectedStaffRole === 'maintenance' ? 'bg-[#E29578] border-white text-white' : 'bg-white/5 border-white/15 text-stone-300 hover:bg-white/10'
-                  }`}
-                >
-                  <span className="block font-bold">1x Maintenance Tech</span>
-                  <span className="text-[10px] opacity-80">Solar, water & kayaks</span>
-                </button>
-              </div>
-            </div>
+                      {/* Vertical Reporting Connector (Lead 1 -> Team) */}
+                      <div className="flex flex-col items-start sm:items-center pl-4 sm:pl-0">
+                        <div className={`w-[2px] h-3.5 sm:h-4 transition-colors duration-300 ${isFoChildActive ? activeLine : idleLine}`} />
+                        <span className={`hidden sm:block w-1.5 h-1.5 rounded-full -mt-0.5 transition-colors ${isFoChildActive ? 'bg-[#83C5BE]' : 'bg-teal-400/50'}`} />
+                      </div>
+
+                      <button
+                        onClick={() => setSelectedStaffRole('frontdesk')}
+                        className={`w-full p-2.5 rounded-xl border text-left cursor-pointer transition-all text-xs ${
+                          selectedStaffRole === 'frontdesk'
+                            ? 'bg-[#E29578] border-white text-white shadow-md'
+                            : selectedStaffRole === 'fo_lead'
+                            ? 'bg-[#13222C] border-[#83C5BE]/60 text-white'
+                            : 'bg-black/35 border-white/15 text-stone-200 hover:bg-white/10'
+                        }`}
+                      >
+                        <span className="block font-bold">2x Front Desk Associates</span>
+                        <span className="text-[10px] opacity-80">24/7 Rotational shifts</span>
+                      </button>
+                    </div>
+
+                    {/* BRANCH 2: HOUSEKEEPING & SUSTAINABILITY */}
+                    <div className="relative flex flex-col sm:px-1.5">
+                      <span className="sm:hidden absolute top-5 -left-4 w-4 h-[2px] bg-teal-400/45" />
+                      <span className="sm:hidden absolute top-[17px] -left-[19px] w-2 h-2 rounded-full bg-[#83C5BE]" />
+
+                      <button
+                        onClick={() => setSelectedStaffRole('hk_lead')}
+                        className={`w-full p-2.5 sm:p-3 rounded-xl transition-all border text-left cursor-pointer ${
+                          selectedStaffRole === 'hk_lead'
+                            ? 'bg-[#006D77] border-[#83C5BE] shadow-lg ring-1 ring-[#83C5BE]/40'
+                            : isHkActive && !isManager
+                            ? 'bg-[#172834] border-[#83C5BE]/60'
+                            : 'bg-[#16222B]/85 hover:bg-[#1C2C38] border-white/15'
+                        }`}
+                      >
+                        <span className="text-[10px] uppercase tracking-wider text-teal-200/80 font-bold block">
+                          Department Lead (1x)
+                        </span>
+                        <h4 className="font-serif font-bold text-xs sm:text-[13px] text-white mt-0.5">
+                          Housekeeping &amp; Sustainability
+                        </h4>
+                        <p className="text-[11px] text-stone-300 mt-0.5">
+                          Supervises 2 Housekeeping Associates
+                        </p>
+                      </button>
+
+                      {/* Vertical Reporting Connector (Lead 2 -> Team) */}
+                      <div className="flex flex-col items-start sm:items-center pl-4 sm:pl-0">
+                        <div className={`w-[2px] h-3.5 sm:h-4 transition-colors duration-300 ${isHkChildActive ? activeLine : idleLine}`} />
+                        <span className={`hidden sm:block w-1.5 h-1.5 rounded-full -mt-0.5 transition-colors ${isHkChildActive ? 'bg-[#83C5BE]' : 'bg-teal-400/50'}`} />
+                      </div>
+
+                      <button
+                        onClick={() => setSelectedStaffRole('housekeeping')}
+                        className={`w-full p-2.5 rounded-xl border text-left cursor-pointer transition-all text-xs ${
+                          selectedStaffRole === 'housekeeping'
+                            ? 'bg-[#E29578] border-white text-white shadow-md'
+                            : selectedStaffRole === 'hk_lead'
+                            ? 'bg-[#13222C] border-[#83C5BE]/60 text-white'
+                            : 'bg-black/35 border-white/15 text-stone-200 hover:bg-white/10'
+                        }`}
+                      >
+                        <span className="block font-bold">2x Housekeeping Staff</span>
+                        <span className="text-[10px] opacity-80">Turnover for 24 accommodations</span>
+                      </button>
+                    </div>
+
+                    {/* BRANCH 3: F&B & DINING EXPERIENCE */}
+                    <div className="relative flex flex-col sm:px-1.5">
+                      <span className="sm:hidden absolute top-5 -left-4 w-4 h-[2px] bg-teal-400/45" />
+                      <span className="sm:hidden absolute top-[17px] -left-[19px] w-2 h-2 rounded-full bg-[#83C5BE]" />
+
+                      <button
+                        onClick={() => setSelectedStaffRole('fb_lead')}
+                        className={`w-full p-2.5 sm:p-3 rounded-xl transition-all border text-left cursor-pointer ${
+                          selectedStaffRole === 'fb_lead'
+                            ? 'bg-[#006D77] border-[#83C5BE] shadow-lg ring-1 ring-[#83C5BE]/40'
+                            : isFbActive && !isManager
+                            ? 'bg-[#172834] border-[#83C5BE]/60'
+                            : 'bg-[#16222B]/85 hover:bg-[#1C2C38] border-white/15'
+                        }`}
+                      >
+                        <span className="text-[10px] uppercase tracking-wider text-teal-200/80 font-bold block">
+                          Department Lead (1x)
+                        </span>
+                        <h4 className="font-serif font-bold text-xs sm:text-[13px] text-white mt-0.5">
+                          F&amp;B &amp; Dining Experience
+                        </h4>
+                        <p className="text-[11px] text-stone-300 mt-0.5">
+                          Supervises Kitchen &amp; Facilities
+                        </p>
+                      </button>
+
+                      {/* Vertical Stem -> 2-Way Fork Connector (Lead 3 -> 2 Roles) */}
+                      <div className="flex flex-col items-center">
+                        <div className={`w-[2px] h-2 transition-colors duration-300 ${isKitchenPathActive || isMaintPathActive ? activeLine : idleLine}`} />
+                      </div>
+                      <div className="grid grid-cols-2">
+                        <div className="relative h-2.5">
+                          <div className={`absolute top-0 left-1/2 right-0 h-[2px] transition-colors duration-300 ${isKitchenPathActive ? activeLine : idleLine}`} />
+                          <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-full transition-colors duration-300 ${isKitchenPathActive ? activeLine : idleLine}`} />
+                        </div>
+                        <div className="relative h-2.5">
+                          <div className={`absolute top-0 left-0 right-1/2 h-[2px] transition-colors duration-300 ${isMaintPathActive ? activeLine : idleLine}`} />
+                          <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-full transition-colors duration-300 ${isMaintPathActive ? activeLine : idleLine}`} />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-1.5 text-xs">
+                        <button
+                          onClick={() => setSelectedStaffRole('kitchen')}
+                          className={`p-2 sm:p-2.5 rounded-xl border text-left cursor-pointer transition-all ${
+                            selectedStaffRole === 'kitchen'
+                              ? 'bg-[#E29578] border-white text-white shadow-md'
+                              : selectedStaffRole === 'fb_lead'
+                              ? 'bg-[#13222C] border-[#83C5BE]/60 text-white'
+                              : 'bg-black/35 border-white/15 text-stone-200 hover:bg-white/10'
+                          }`}
+                        >
+                          <span className="block font-bold leading-tight">1x Dining Attendant</span>
+                          <span className="text-[10px] opacity-80 block mt-0.5 leading-tight">Dayglow trays &amp; breakfast</span>
+                        </button>
+
+                        <button
+                          onClick={() => setSelectedStaffRole('maintenance')}
+                          className={`p-2 sm:p-2.5 rounded-xl border text-left cursor-pointer transition-all ${
+                            selectedStaffRole === 'maintenance'
+                              ? 'bg-[#E29578] border-white text-white shadow-md'
+                              : selectedStaffRole === 'fb_lead'
+                              ? 'bg-[#13222C] border-[#83C5BE]/60 text-white'
+                              : 'bg-black/35 border-white/15 text-stone-200 hover:bg-white/10'
+                          }`}
+                        >
+                          <span className="block font-bold leading-tight">1x Maintenance Tech</span>
+                          <span className="text-[10px] opacity-80 block mt-0.5 leading-tight">Solar, water &amp; kayaks</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Interactive Role Detail Inspector */}
             <div className="p-3.5 rounded-xl bg-black/50 border border-teal-500/30 text-xs">
