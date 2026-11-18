@@ -247,7 +247,7 @@ export const ROOMS_DATA: Room[] = [
       'Organic coconut toiletries in refillable ceramic pump bottles'
     ],
     amenities: ['Beach Walkout', 'Fast Wi-Fi', 'Hot Rain Shower', 'Complimentary Breakfast', 'Mini Fridge', 'Work Nook', 'Beach Towels & Tote Bag'],
-    images: [heroImg, suiteImg, diningImg],
+    images: ['./assets/aistudio/Golden_Hour_Beachfront_Villa_Retreat_396e311e.png', suiteImg, diningImg],
     availableUnits: 2,
     totalUnits: 4,
     rating: 4.95,
