@@ -544,7 +544,6 @@ export const GeographicLocationMap: React.FC = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<maplibregl.Map | null>(null);
   const markersRef = useRef<Record<string, maplibregl.Marker>>({});
-  const userMarkerRef = useRef<maplibregl.Marker | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   // States
@@ -553,13 +552,23 @@ export const GeographicLocationMap: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isSearchFocused, setIsSearchFocused] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
-  const [userGpsPosition, setUserGpsPosition] = useState<{ lat: number; lng: number } | null>(null);
-  const [isLocating, setIsLocating] = useState<boolean>(false);
+  const isFullscreenRef = useRef<boolean>(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [activeToolFlash, setActiveToolFlash] = useState<string | null>(null);
+  const flashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Genuine WebGL Camera Orientation States (Rotation Bearing & 3D Tilt Pitch)
+  // Genuine WebGL Camera Orientation & Zoom States
   const [mapBearing, setMapBearing] = useState<number>(0);
   const [mapPitch, setMapPitch] = useState<number>(0);
+  const [mapZoom, setMapZoom] = useState<number>(12);
+
+  // Target accumulator refs so rapid repeated button taps step deterministically
+  const targetZoomRef = useRef<number>(12);
+  const targetPitchRef = useRef<number>(0);
+  const targetBearingRef = useRef<number>(0);
+  const zoomAnimUntilRef = useRef<number>(0);
+  const pitchAnimUntilRef = useRef<number>(0);
+  const bearingAnimUntilRef = useRef<number>(0);
 
   // Category Filter State (Multi-select support)
   const [selectedCategories, setSelectedCategories] = useState<LocationCategory[]>([]);
@@ -744,6 +753,21 @@ export const GeographicLocationMap: React.FC = () => {
     return () => ro.disconnect();
   }, [isFullscreen]);
 
+  // Brief visual activation feedback for toolbar controls
+  const triggerToolFlash = useCallback((toolId: string) => {
+    setActiveToolFlash(toolId);
+    if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
+    flashTimerRef.current = setTimeout(() => {
+      setActiveToolFlash(null);
+    }, 260);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
+    };
+  }, []);
+
   // Fit bounds safely across all Sipalay destinations while respecting UI overlays
   const fitAllDestinations = useCallback((options?: { pitch?: number; bearing?: number; duration?: number }) => {
     const map = mapInstanceRef.current;
@@ -753,11 +777,18 @@ export const GeographicLocationMap: React.FC = () => {
     ALL_LOCATIONS.forEach(loc => bounds.extend([loc.lng, loc.lat]));
 
     try {
+      const targetPitch = options?.pitch ?? map.getPitch();
+      const targetBearing = options?.bearing ?? map.getBearing();
+      targetPitchRef.current = targetPitch;
+      targetBearingRef.current = targetBearing;
+      pitchAnimUntilRef.current = Date.now() + (options?.duration ?? 700) + 80;
+      bearingAnimUntilRef.current = Date.now() + (options?.duration ?? 700) + 80;
+
       map.fitBounds(bounds, {
-        padding: { top: 84, bottom: 72, left: 48, right: 72 },
+        padding: { top: 84, bottom: 72, left: 48, right: 76 },
         maxZoom: 13.5,
-        pitch: options?.pitch ?? map.getPitch(),
-        bearing: options?.bearing ?? map.getBearing(),
+        pitch: targetPitch,
+        bearing: targetBearing,
         duration: options?.duration ?? 700
       });
     } catch {
@@ -774,9 +805,12 @@ export const GeographicLocationMap: React.FC = () => {
     const map = mapInstanceRef.current;
     if (map) {
       try {
+        const nextZoom = Math.max(map.getZoom(), zoom);
+        targetZoomRef.current = nextZoom;
+        zoomAnimUntilRef.current = Date.now() + 980;
         map.flyTo({
           center: [location.lng, location.lat],
-          zoom: Math.max(map.getZoom(), zoom),
+          zoom: nextZoom,
           duration: 900,
           essential: true
         });
@@ -786,74 +820,209 @@ export const GeographicLocationMap: React.FC = () => {
     }
   }, [triggerAutoHide]);
 
-  // Interactive Camera Controls (3D Pitch/Tilt, Rotation Bearing, Zoom, Full Reset)
+  // Interactive Camera Controls (3D Pitch/Tilt, Rotation Bearing, Zoom, Recenter, Full Reset)
   const handleToggle3DTilt = useCallback(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
-    const isTilted = map.getPitch() >= 10;
-    map.easeTo({
-      pitch: isTilted ? 0 : DEFAULT_3D_PITCH,
-      duration: 600,
-      easing: (t) => 1 - Math.pow(1 - t, 3)
-    });
-  }, []);
+    triggerToolFlash('toggle-3d');
+    const now = Date.now();
+    const currentPitch = now < pitchAnimUntilRef.current ? targetPitchRef.current : map.getPitch();
+    const nextPitch = currentPitch >= 10 ? 0 : DEFAULT_3D_PITCH;
+
+    targetPitchRef.current = nextPitch;
+    pitchAnimUntilRef.current = now + 620;
+    setMapPitch(Math.round(nextPitch));
+
+    try {
+      map.easeTo({
+        pitch: nextPitch,
+        duration: 550,
+        easing: (t) => 1 - Math.pow(1 - t, 3),
+        essential: true
+      });
+    } catch {
+      // Safe guard
+    }
+  }, [triggerToolFlash]);
 
   const handleTiltUp = useCallback(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
-    const targetPitch = Math.min(MAX_3D_PITCH, map.getPitch() + 15);
-    map.easeTo({ pitch: targetPitch, duration: 380 });
-  }, []);
+    triggerToolFlash('tilt-up');
+    const now = Date.now();
+    const basePitch = now < pitchAnimUntilRef.current ? targetPitchRef.current : map.getPitch();
+    const nextPitch = Math.min(MAX_3D_PITCH, Math.round(basePitch + 15));
+
+    targetPitchRef.current = nextPitch;
+    pitchAnimUntilRef.current = now + 400;
+    setMapPitch(nextPitch);
+
+    try {
+      map.easeTo({ pitch: nextPitch, duration: 320, essential: true });
+    } catch {
+      // Safe guard
+    }
+  }, [triggerToolFlash]);
 
   const handleTiltDown = useCallback(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
-    const targetPitch = Math.max(0, map.getPitch() - 15);
-    map.easeTo({ pitch: targetPitch, duration: 380 });
-  }, []);
+    triggerToolFlash('tilt-down');
+    const now = Date.now();
+    const basePitch = now < pitchAnimUntilRef.current ? targetPitchRef.current : map.getPitch();
+    const nextPitch = Math.max(0, Math.round(basePitch - 15));
+
+    targetPitchRef.current = nextPitch;
+    pitchAnimUntilRef.current = now + 400;
+    setMapPitch(nextPitch);
+
+    try {
+      map.easeTo({ pitch: nextPitch, duration: 320, essential: true });
+    } catch {
+      // Safe guard
+    }
+  }, [triggerToolFlash]);
 
   const handleReturn2D = useCallback(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
-    map.easeTo({ pitch: 0, duration: 500 });
-  }, []);
+    triggerToolFlash('toggle-3d');
+    targetPitchRef.current = 0;
+    pitchAnimUntilRef.current = Date.now() + 560;
+    setMapPitch(0);
+
+    try {
+      map.easeTo({ pitch: 0, duration: 480, essential: true });
+    } catch {
+      // Safe guard
+    }
+  }, [triggerToolFlash]);
 
   const handleRotateLeft = useCallback(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
-    map.easeTo({ bearing: map.getBearing() - 45, duration: 420 });
-  }, []);
+    triggerToolFlash('rotate-ccw');
+    const now = Date.now();
+    const baseBearing = now < bearingAnimUntilRef.current ? targetBearingRef.current : map.getBearing();
+    const nextBearing = baseBearing - 45;
+
+    targetBearingRef.current = nextBearing;
+    bearingAnimUntilRef.current = now + 440;
+    setMapBearing(normalizeBearing(nextBearing));
+
+    try {
+      map.easeTo({ bearing: nextBearing, duration: 360, essential: true });
+    } catch {
+      // Safe guard
+    }
+  }, [triggerToolFlash]);
 
   const handleRotateRight = useCallback(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
-    map.easeTo({ bearing: map.getBearing() + 45, duration: 420 });
-  }, []);
+    triggerToolFlash('rotate-cw');
+    const now = Date.now();
+    const baseBearing = now < bearingAnimUntilRef.current ? targetBearingRef.current : map.getBearing();
+    const nextBearing = baseBearing + 45;
+
+    targetBearingRef.current = nextBearing;
+    bearingAnimUntilRef.current = now + 440;
+    setMapBearing(normalizeBearing(nextBearing));
+
+    try {
+      map.easeTo({ bearing: nextBearing, duration: 360, essential: true });
+    } catch {
+      // Safe guard
+    }
+  }, [triggerToolFlash]);
 
   const handleResetBearing = useCallback(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
-    map.easeTo({ bearing: 0, duration: 450 });
-  }, []);
+    triggerToolFlash('compass');
+    targetBearingRef.current = 0;
+    bearingAnimUntilRef.current = Date.now() + 480;
+    setMapBearing(0);
+
+    try {
+      map.easeTo({ bearing: 0, duration: 420, essential: true });
+    } catch {
+      // Safe guard
+    }
+  }, [triggerToolFlash]);
 
   const handleZoomIn = useCallback(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
-    map.easeTo({ zoom: Math.min(18, map.getZoom() + 0.85), duration: 280 });
-  }, []);
+    triggerToolFlash('zoom-in');
+    const now = Date.now();
+    const baseZoom = now < zoomAnimUntilRef.current ? targetZoomRef.current : map.getZoom();
+    const nextZoom = Math.min(18, baseZoom + 0.9);
+
+    targetZoomRef.current = nextZoom;
+    zoomAnimUntilRef.current = now + 320;
+    setMapZoom(Number(nextZoom.toFixed(2)));
+
+    try {
+      map.easeTo({ zoom: nextZoom, duration: 240, essential: true });
+    } catch {
+      // Safe guard
+    }
+  }, [triggerToolFlash]);
 
   const handleZoomOut = useCallback(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
-    map.easeTo({ zoom: Math.max(5, map.getZoom() - 0.85), duration: 280 });
-  }, []);
+    triggerToolFlash('zoom-out');
+    const now = Date.now();
+    const baseZoom = now < zoomAnimUntilRef.current ? targetZoomRef.current : map.getZoom();
+    const nextZoom = Math.max(5, baseZoom - 0.9);
+
+    targetZoomRef.current = nextZoom;
+    zoomAnimUntilRef.current = now + 320;
+    setMapZoom(Number(nextZoom.toFixed(2)));
+
+    try {
+      map.easeTo({ zoom: nextZoom, duration: 240, essential: true });
+    } catch {
+      // Safe guard
+    }
+  }, [triggerToolFlash]);
+
+  // Recenter smoothly restores the map's default resort center position (Alon & Aninag)
+  const handleRecenterDefault = useCallback(() => {
+    triggerToolFlash('recenter');
+    const defaultResort = ALL_LOCATIONS[0];
+    setSelectedLocationId(defaultResort.id);
+    setIsCardVisible(true);
+    triggerAutoHide();
+
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    try {
+      const targetZoom = 14.2;
+      targetZoomRef.current = targetZoom;
+      zoomAnimUntilRef.current = Date.now() + 800;
+      map.flyTo({
+        center: [defaultResort.lng, defaultResort.lat],
+        zoom: targetZoom,
+        duration: 720,
+        essential: true
+      });
+    } catch {
+      // Safe guard
+    }
+  }, [triggerAutoHide, triggerToolFlash]);
 
   const handleResetMap = useCallback(() => {
-    fitAllDestinations({ pitch: 0, bearing: 0, duration: 750 });
+    triggerToolFlash('reset');
+    setMapPitch(0);
+    setMapBearing(0);
+    fitAllDestinations({ pitch: 0, bearing: 0, duration: 700 });
     setSelectedLocationId('alon-aninag');
     setIsCardVisible(true);
     triggerAutoHide();
-  }, [fitAllDestinations, triggerAutoHide]);
+  }, [fitAllDestinations, triggerAutoHide, triggerToolFlash]);
 
   // Prevent browser page pinch-zoom or Safari gesture leaks over overlay UI inside viewportRef
   useEffect(() => {
@@ -895,113 +1064,108 @@ export const GeographicLocationMap: React.FC = () => {
     setSelectedCategories([]);
   };
 
-  // User Geolocation
-  const handleLocateUser = () => {
-    if (!navigator.geolocation) {
-      addNotification('Geolocation', 'Geolocation is not supported by your browser.', 'alert');
-      return;
-    }
-
-    setIsLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setIsLocating(false);
-        const { latitude, longitude } = position.coords;
-        setUserGpsPosition({ lat: latitude, lng: longitude });
-
-        const map = mapInstanceRef.current;
-        if (map) {
-          try {
-            map.flyTo({ center: [longitude, latitude], zoom: 14, duration: 1200, essential: true });
-          } catch {
-            // Safe guard
-          }
-
-          const R = 6371;
-          const dLat = ((9.7528 - latitude) * Math.PI) / 180;
-          const dLon = ((122.3989 - longitude) * Math.PI) / 180;
-          const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos((latitude * Math.PI) / 180) *
-              Math.cos((9.7528 * Math.PI) / 180) *
-              Math.sin(dLon / 2) *
-              Math.sin(dLon / 2);
-          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-          const distance = Math.round(R * c);
-
-          addNotification(
-            'GPS Located',
-            `You are approximately ${distance} km from Alon & Aninag Boutique Beach Resort.`,
-            'alert'
-          );
+  // Sync ref for Fullscreen + reliable enter/exit on desktop, mobile, iOS & iframes
+  const syncMapSizeSoon = useCallback(() => {
+    const triggerResize = () => {
+      const map = mapInstanceRef.current;
+      if (map) {
+        try {
+          map.resize();
+        } catch {
+          // Safe guard
         }
-      },
-      () => {
-        setIsLocating(false);
-        addNotification(
-          'Location Access',
-          'Could not retrieve your location. Showing Sipalay coastal map.',
-          'alert'
-        );
-      },
-      { timeout: 10000, enableHighAccuracy: true }
-    );
-  };
+      }
+    };
+    requestAnimationFrame(triggerResize);
+    setTimeout(triggerResize, 120);
+    setTimeout(triggerResize, 260);
+  }, []);
 
-  // Update blue pulsing GPS dot marker when userGpsPosition resolves
-  useEffect(() => {
-    const map = mapInstanceRef.current;
-    if (!map || !userGpsPosition) return;
+  const toggleFullscreen = useCallback(() => {
+    triggerToolFlash('fullscreen');
+    const nextFullscreen = !isFullscreenRef.current;
+    isFullscreenRef.current = nextFullscreen;
+    setIsFullscreen(nextFullscreen);
 
-    if (userMarkerRef.current) {
-      userMarkerRef.current.setLngLat([userGpsPosition.lng, userGpsPosition.lat]);
-      return;
-    }
-
-    const gpsEl = document.createElement('div');
-    gpsEl.className = 'relative flex items-center justify-center pointer-events-none';
-    gpsEl.innerHTML = `
-      <span class="absolute w-7 h-7 rounded-full bg-sky-500/35 animate-ping"></span>
-      <span class="relative w-3.5 h-3.5 rounded-full bg-sky-500 border-2 border-white shadow-lg"></span>
-    `;
-
-    userMarkerRef.current = new maplibregl.Marker({ element: gpsEl, anchor: 'center' })
-      .setLngLat([userGpsPosition.lng, userGpsPosition.lat])
-      .addTo(map);
-  }, [userGpsPosition]);
-
-  // Fullscreen toggle
-  const toggleFullscreen = () => {
-    if (!wrapperRef.current) return;
-    if (!document.fullscreenElement) {
-      wrapperRef.current.requestFullscreen().catch(() => {
-        setIsFullscreen(prev => !prev);
-      });
-      setIsFullscreen(true);
+    if (nextFullscreen) {
+      const el = wrapperRef.current as (HTMLDivElement & { webkitRequestFullscreen?: () => Promise<void> | void }) | null;
+      if (el && document.fullscreenEnabled && typeof el.requestFullscreen === 'function') {
+        try {
+          const maybePromise = el.requestFullscreen();
+          if (maybePromise && typeof maybePromise.catch === 'function') {
+            maybePromise.catch(() => {});
+          }
+        } catch {
+          // Fallback CSS fixed fullscreen remains active cleanly
+        }
+      } else if (el && typeof el.webkitRequestFullscreen === 'function') {
+        try {
+          el.webkitRequestFullscreen();
+        } catch {
+          // Fallback CSS fixed fullscreen remains active cleanly
+        }
+      }
     } else {
-      document.exitFullscreen().catch(() => {});
-      setIsFullscreen(false);
+      const doc = document as Document & { webkitExitFullscreen?: () => Promise<void> | void };
+      if (document.fullscreenElement && typeof document.exitFullscreen === 'function') {
+        try {
+          document.exitFullscreen().catch(() => {});
+        } catch {
+          // Safe guard
+        }
+      } else if (typeof doc.webkitExitFullscreen === 'function') {
+        try {
+          doc.webkitExitFullscreen();
+        } catch {
+          // Safe guard
+        }
+      }
     }
-  };
 
-  // Fullscreen change listener
+    syncMapSizeSoon();
+  }, [syncMapSizeSoon, triggerToolFlash]);
+
+  // Fullscreen & Escape key + scroll lock management
+  useEffect(() => {
+    isFullscreenRef.current = isFullscreen;
+    const prevOverflow = document.body.style.overflow;
+    if (isFullscreen) {
+      document.body.style.overflow = 'hidden';
+    }
+    syncMapSizeSoon();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isFullscreenRef.current) {
+        isFullscreenRef.current = false;
+        setIsFullscreen(false);
+        if (document.fullscreenElement && typeof document.exitFullscreen === 'function') {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isFullscreen, syncMapSizeSoon]);
+
   useEffect(() => {
     const handleFsChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-      setTimeout(() => {
-        const map = mapInstanceRef.current;
-        if (map) {
-          try {
-            map.resize();
-          } catch {
-            // Safe guard
-          }
-        }
-      }, 250);
+      const activeNative = !!document.fullscreenElement;
+      if (!activeNative && isFullscreenRef.current) {
+        isFullscreenRef.current = false;
+        setIsFullscreen(false);
+      } else if (activeNative && !isFullscreenRef.current) {
+        isFullscreenRef.current = true;
+        setIsFullscreen(true);
+      }
+      syncMapSizeSoon();
     };
     document.addEventListener('fullscreenchange', handleFsChange);
     return () => document.removeEventListener('fullscreenchange', handleFsChange);
-  }, []);
+  }, [syncMapSizeSoon]);
 
   // Initialize MapLibre GL 3D WebGL Map Once on Mount
   useEffect(() => {
@@ -1051,13 +1215,30 @@ export const GeographicLocationMap: React.FC = () => {
       }
     });
 
-    // Live camera telemetry synchronization for Compass & 3D Tilt indicators
+    // Live camera telemetry synchronization for Compass, 3D Tilt & Zoom limits
     const syncOrientation = () => {
-      setMapBearing(normalizeBearing(initialMap.getBearing()));
-      setMapPitch(Math.round(initialMap.getPitch()));
+      const nextBearing = normalizeBearing(initialMap.getBearing());
+      const nextPitch = Math.round(initialMap.getPitch());
+      const nextZoom = Number(initialMap.getZoom().toFixed(2));
+      const now = Date.now();
+
+      if (now > bearingAnimUntilRef.current) {
+        targetBearingRef.current = initialMap.getBearing();
+      }
+      if (now > pitchAnimUntilRef.current) {
+        targetPitchRef.current = initialMap.getPitch();
+      }
+      if (now > zoomAnimUntilRef.current) {
+        targetZoomRef.current = initialMap.getZoom();
+      }
+
+      setMapBearing(prev => (prev !== nextBearing ? nextBearing : prev));
+      setMapPitch(prev => (prev !== nextPitch ? nextPitch : prev));
+      setMapZoom(prev => (prev !== nextZoom ? nextZoom : prev));
     };
     initialMap.on('rotate', syncOrientation);
     initialMap.on('pitch', syncOrientation);
+    initialMap.on('zoom', syncOrientation);
     initialMap.on('moveend', syncOrientation);
 
     // Populate all 20 Sipalay destination markers anchored at diamond tip
@@ -1070,9 +1251,12 @@ export const GeographicLocationMap: React.FC = () => {
         setIsCardVisible(true);
         triggerAutoHide();
         try {
+          const nextZoom = Math.max(initialMap.getZoom(), 14);
+          targetZoomRef.current = nextZoom;
+          zoomAnimUntilRef.current = Date.now() + 900;
           initialMap.flyTo({
             center: [loc.lng, loc.lat],
-            zoom: Math.max(initialMap.getZoom(), 14),
+            zoom: nextZoom,
             duration: 850,
             essential: true
           });
@@ -1104,10 +1288,6 @@ export const GeographicLocationMap: React.FC = () => {
       clearTimeout(fitTimer);
       Object.values(markersRef.current).forEach(m => m.remove());
       markersRef.current = {};
-      if (userMarkerRef.current) {
-        userMarkerRef.current.remove();
-        userMarkerRef.current = null;
-      }
       try {
         initialMap.remove();
       } catch {
@@ -1385,14 +1565,21 @@ export const GeographicLocationMap: React.FC = () => {
 
         {/* Real-time 3D Tilt & Bearing Indicator with One-Tap Reset */}
         {(mapPitch >= 1 || (mapBearing !== 0 && mapBearing !== 360)) && (
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-stone-900/95 dark:bg-black/95 text-white backdrop-blur-md px-3 py-1.5 rounded-full text-[11px] font-bold border border-teal-500/50 shadow-xl flex flex-wrap items-center justify-center gap-2 animate-fadeIn pointer-events-auto max-w-[85%] sm:max-w-none">
+          <div
+            className="absolute top-2.5 left-2.5 sm:top-3 sm:left-1/2 sm:-translate-x-1/2 z-[25] bg-stone-900/95 dark:bg-black/95 text-white backdrop-blur-md px-3 py-1.5 rounded-full text-[11px] font-bold border border-teal-500/50 shadow-xl flex flex-wrap items-center justify-center gap-2 animate-fadeIn pointer-events-auto touch-manipulation max-w-[calc(100%-4.5rem)] sm:max-w-none"
+            onPointerDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            onDoubleClick={(e) => e.stopPropagation()}
+          >
             {mapPitch >= 1 && (
               <div className="flex items-center gap-1.5">
                 <Box className="w-3.5 h-3.5 text-teal-400 shrink-0" />
                 <span>Tilt: {mapPitch}°</span>
                 <button
+                  type="button"
                   onClick={handleReturn2D}
-                  className="text-[10px] bg-[#006D77] hover:bg-[#00555d] text-white uppercase font-extrabold tracking-wider px-2 py-0.5 rounded-full transition cursor-pointer shadow-xs"
+                  className="text-[10px] bg-[#006D77] hover:bg-[#00555d] active:scale-95 text-white uppercase font-extrabold tracking-wider px-2 py-0.5 rounded-full transition cursor-pointer shadow-xs"
                   title="Return to flat 2D overhead view"
                 >
                   2D View
@@ -1412,8 +1599,9 @@ export const GeographicLocationMap: React.FC = () => {
                 </span>
                 <span>Rotation: {mapBearing}°</span>
                 <button
+                  type="button"
                   onClick={handleResetBearing}
-                  className="text-[10px] bg-[#006D77] hover:bg-[#00555d] text-white uppercase font-extrabold tracking-wider px-2 py-0.5 rounded-full transition cursor-pointer shadow-xs"
+                  className="text-[10px] bg-[#006D77] hover:bg-[#00555d] active:scale-95 text-white uppercase font-extrabold tracking-wider px-2 py-0.5 rounded-full transition cursor-pointer shadow-xs"
                   title="Reset orientation to True North"
                 >
                   Reset North
@@ -1432,134 +1620,179 @@ export const GeographicLocationMap: React.FC = () => {
           <span>Pinch / Scroll: Zoom</span>
         </div>
 
-        {/* FLOATING TOP-RIGHT 3D & CAMERA CONTROLS: Zoom, Compass, 3D Tilt, Rotate, GPS, Reset, Fullscreen */}
-        <div className="absolute top-3 right-3 z-20 flex flex-col gap-1.5">
-          {/* Zoom Buttons */}
-          <div className="bg-white/95 dark:bg-[#131F2A]/95 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 overflow-hidden flex flex-col">
+        {/* FLOATING TOP-RIGHT INTERACTIVE MAP CONTROL TOOLBAR (Dark Slate/Navy Theme matching Reference) */}
+        <div
+          className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 z-30 flex flex-col items-center gap-1.5 sm:gap-2 pointer-events-auto touch-manipulation select-none max-h-[calc(100%-2.25rem)] overflow-y-auto no-scrollbar"
+          role="toolbar"
+          aria-label="Interactive Map Controls"
+          onPointerDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onDoubleClick={(e) => e.stopPropagation()}
+          onWheel={(e) => e.stopPropagation()}
+        >
+          {/* 1. Zoom In (+) / Zoom Out (-) */}
+          <div className="w-11 bg-[#13202D]/95 backdrop-blur-md rounded-xl shadow-xl border border-white/15 overflow-hidden flex flex-col">
             <button
+              type="button"
               onClick={handleZoomIn}
-              className="py-1.5 px-2.5 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer border-b border-stone-200 dark:border-stone-700 flex items-center justify-center"
-              title="Zoom In"
+              disabled={mapZoom >= 18}
+              className={`w-full h-[34px] sm:h-[38px] flex items-center justify-center text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer border-b border-white/10 disabled:opacity-35 disabled:cursor-not-allowed ${
+                activeToolFlash === 'zoom-in' ? 'bg-[#006D77]/60' : ''
+              }`}
+              title="Zoom In (+)"
               aria-label="Zoom In"
             >
-              <span className="text-sm font-bold leading-none">+</span>
+              <span className="text-base font-bold leading-none">+</span>
             </button>
             <button
+              type="button"
               onClick={handleZoomOut}
-              className="py-1.5 px-2.5 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer flex items-center justify-center"
-              title="Zoom Out"
+              disabled={mapZoom <= 5}
+              className={`w-full h-[34px] sm:h-[38px] flex items-center justify-center text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer disabled:opacity-35 disabled:cursor-not-allowed ${
+                activeToolFlash === 'zoom-out' ? 'bg-[#006D77]/60' : ''
+              }`}
+              title="Zoom Out (−)"
               aria-label="Zoom Out"
             >
-              <span className="text-sm font-bold leading-none">−</span>
+              <span className="text-base font-bold leading-none">−</span>
             </button>
           </div>
 
-          {/* Interactive Compass Widget (Synchronized orientation; click to reset North) */}
+          {/* 2. Interactive Compass (Reset North Orientation) */}
           <button
+            type="button"
             onClick={handleResetBearing}
-            className="py-1.5 px-2 bg-white/95 dark:bg-[#131F2A]/95 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 transition cursor-pointer flex flex-col items-center justify-center group"
-            title={`Compass (${mapBearing}°). Click to reset North.`}
+            className={`w-11 h-[38px] sm:h-[42px] bg-[#13202D]/95 backdrop-blur-md text-white hover:bg-[#1A2B3C] active:scale-95 rounded-xl shadow-xl border transition-all cursor-pointer flex flex-col items-center justify-center group ${
+              mapBearing !== 0
+                ? 'border-teal-400/70 ring-1 ring-teal-400/40'
+                : 'border-white/15'
+            } ${activeToolFlash === 'compass' ? 'bg-[#006D77]/70' : ''}`}
+            title={`Compass (${mapBearing}°). Tap to reset North orientation.`}
             aria-label="Reset Compass to North"
           >
             <div
-              className="w-4 h-4 flex items-center justify-center text-teal-600 dark:text-teal-400 transition-transform duration-150"
+              className="w-4 h-4 flex items-center justify-center text-teal-400 transition-transform duration-200"
               style={{ transform: `rotate(${-mapBearing}deg)` }}
             >
               <Compass className="w-4 h-4 group-hover:scale-110 transition-transform" />
             </div>
-            <span className="text-[8px] font-bold text-stone-500 dark:text-stone-400 leading-none mt-0.5">
+            <span className="text-[9px] font-bold text-stone-300 leading-none mt-0.5">
               {mapBearing === 0 ? 'N' : `${mapBearing}°`}
             </span>
           </button>
 
-          {/* Interactive 3D Tilt Controls: 3D/2D Mode Toggle + Tilt Up/Down */}
-          <div className="bg-white/95 dark:bg-[#131F2A]/95 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 overflow-hidden flex flex-col">
+          {/* 3. Interactive 3D / 2D Toggle + Tilt Up / Down */}
+          <div className="w-11 bg-[#13202D]/95 backdrop-blur-md rounded-xl shadow-xl border border-white/15 overflow-hidden flex flex-col">
             <button
+              type="button"
               onClick={handleToggle3DTilt}
-              className={`py-1.5 px-2 transition cursor-pointer border-b border-stone-200 dark:border-stone-700 flex flex-col items-center justify-center ${
+              className={`w-full h-[38px] sm:h-[42px] transition-all cursor-pointer border-b border-white/10 flex flex-col items-center justify-center active:scale-95 ${
                 mapPitch >= 10
-                  ? 'bg-[#006D77] text-white'
-                  : 'text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800'
+                  ? 'bg-[#006D77] hover:bg-[#007d88] text-white'
+                  : 'text-white hover:bg-white/10'
               }`}
               title={mapPitch >= 10 ? 'Return to flat 2D view' : 'Switch to angled 3D perspective'}
-              aria-label="Toggle 3D Tilt View"
+              aria-label={mapPitch >= 10 ? 'Switch to 2D view' : 'Switch to 3D view'}
+              aria-pressed={mapPitch >= 10}
             >
-              <Box className="w-3.5 h-3.5" />
-              <span className="text-[8.5px] font-extrabold leading-none mt-0.5">
+              <Box className="w-4 h-4" />
+              <span className="text-[9px] font-extrabold leading-none mt-0.5 tracking-wide">
                 {mapPitch >= 10 ? '2D' : '3D'}
               </span>
             </button>
             <button
+              type="button"
               onClick={handleTiltUp}
               disabled={mapPitch >= MAX_3D_PITCH}
-              className="py-1 px-2 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-35 disabled:cursor-not-allowed transition cursor-pointer border-b border-stone-200 dark:border-stone-700 flex items-center justify-center"
+              className={`w-full h-[30px] sm:h-[34px] text-white hover:bg-white/10 active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed transition-all cursor-pointer border-b border-white/10 flex items-center justify-center ${
+                activeToolFlash === 'tilt-up' ? 'bg-[#006D77]/60' : ''
+              }`}
               title="Tilt Up (Increase 3D perspective angle)"
               aria-label="Tilt Up"
             >
-              <ChevronUp className="w-3.5 h-3.5" />
+              <ChevronUp className="w-4 h-4" />
             </button>
             <button
+              type="button"
               onClick={handleTiltDown}
               disabled={mapPitch <= 0}
-              className="py-1 px-2 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-35 disabled:cursor-not-allowed transition cursor-pointer flex items-center justify-center"
+              className={`w-full h-[30px] sm:h-[34px] text-white hover:bg-white/10 active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center justify-center ${
+                activeToolFlash === 'tilt-down' ? 'bg-[#006D77]/60' : ''
+              }`}
               title="Tilt Down (Flatten toward 2D view)"
               aria-label="Tilt Down"
             >
-              <ChevronDown className="w-3.5 h-3.5" />
+              <ChevronDown className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Map Rotation Buttons */}
-          <div className="bg-white/95 dark:bg-[#131F2A]/95 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 overflow-hidden flex flex-col">
+          {/* 4. Rotate Counterclockwise & Rotate Clockwise */}
+          <div className="w-11 bg-[#13202D]/95 backdrop-blur-md rounded-xl shadow-xl border border-white/15 overflow-hidden flex flex-col">
             <button
+              type="button"
               onClick={handleRotateLeft}
-              className="p-1.5 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer border-b border-stone-200 dark:border-stone-700 flex items-center justify-center"
-              title="Rotate Map Counter-Clockwise (-45°)"
-              aria-label="Rotate Left"
+              className={`w-full h-[32px] sm:h-[36px] text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer border-b border-white/10 flex items-center justify-center ${
+                activeToolFlash === 'rotate-ccw' ? 'bg-[#006D77]/60' : ''
+              }`}
+              title="Rotate Counterclockwise (−45°)"
+              aria-label="Rotate Counterclockwise"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
+              <RotateCcw className="w-4 h-4" />
             </button>
             <button
+              type="button"
               onClick={handleRotateRight}
-              className="p-1.5 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer flex items-center justify-center"
-              title="Rotate Map Clockwise (+45°)"
-              aria-label="Rotate Right"
+              className={`w-full h-[32px] sm:h-[36px] text-white hover:bg-white/10 active:scale-95 transition-all cursor-pointer flex items-center justify-center ${
+                activeToolFlash === 'rotate-cw' ? 'bg-[#006D77]/60' : ''
+              }`}
+              title="Rotate Clockwise (+45°)"
+              aria-label="Rotate Clockwise"
             >
-              <RotateCw className="w-3.5 h-3.5" />
+              <RotateCw className="w-4 h-4" />
             </button>
           </div>
 
-          {/* User Geolocation GPS Button */}
+          {/* 5. Recenter to Resort Default Position */}
           <button
-            onClick={handleLocateUser}
-            disabled={isLocating}
-            className={`p-2 bg-white/95 dark:bg-[#131F2A]/95 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 transition cursor-pointer flex items-center justify-center ${
-              isLocating ? 'animate-spin text-teal-600' : ''
+            type="button"
+            onClick={handleRecenterDefault}
+            className={`w-11 h-[34px] sm:h-[38px] bg-[#13202D]/95 backdrop-blur-md text-white hover:bg-[#1A2B3C] active:scale-95 rounded-xl shadow-xl border border-white/15 transition-all cursor-pointer flex items-center justify-center ${
+              activeToolFlash === 'recenter' ? 'bg-[#006D77] border-teal-400' : ''
             }`}
-            title="Locate My Current GPS Position"
-            aria-label="Locate Me"
+            title="Recenter on Alon & Aninag Resort"
+            aria-label="Recenter Map"
           >
-            <Crosshair className="w-3.5 h-3.5" />
+            <Crosshair className="w-4 h-4" />
           </button>
 
-          {/* Reset Map Button (Overview + True North + Flat 2D) */}
+          {/* 6. Reset Full Map Camera (Position, Zoom, Orientation & 2D Tilt) */}
           <button
+            type="button"
             onClick={handleResetMap}
-            className="py-1.5 px-2 bg-white/95 dark:bg-[#131F2A]/95 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 transition cursor-pointer flex items-center justify-center"
-            title="Reset Map Position, Orientation & 2D View"
+            className={`w-11 h-[30px] sm:h-[34px] bg-[#13202D]/95 backdrop-blur-md hover:bg-[#1A2B3C] active:scale-95 rounded-xl shadow-xl border border-white/15 transition-all cursor-pointer flex items-center justify-center ${
+              activeToolFlash === 'reset' ? 'bg-[#006D77] border-teal-400' : ''
+            }`}
+            title="Reset Original Map Zoom, Position, Rotation & 2D View"
             aria-label="Reset Map"
           >
-            <span className="text-[9.5px] font-extrabold text-[#006D77] dark:text-[#83C5BE]">RESET</span>
+            <span className="text-[9.5px] font-extrabold tracking-wide text-[#83C5BE]">RESET</span>
           </button>
 
-          {/* Fullscreen Toggle */}
+          {/* 7. Fullscreen Toggle (Enter & Exit) */}
           <button
+            type="button"
             onClick={toggleFullscreen}
-            className="p-2 bg-white/95 dark:bg-[#131F2A]/95 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 transition cursor-pointer flex items-center justify-center"
-            title={isFullscreen ? 'Exit Fullscreen' : 'View Fullscreen Map'}
-            aria-label="Toggle Fullscreen"
+            className={`w-11 h-[34px] sm:h-[38px] bg-[#13202D]/95 backdrop-blur-md hover:bg-[#1A2B3C] active:scale-95 rounded-xl shadow-xl border transition-all cursor-pointer flex items-center justify-center ${
+              isFullscreen
+                ? 'bg-[#006D77] text-white border-teal-400'
+                : 'text-white border-white/15'
+            }`}
+            title={isFullscreen ? 'Exit Fullscreen Map' : 'Open Fullscreen Map'}
+            aria-label={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
+            aria-pressed={isFullscreen}
           >
-            {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </button>
         </div>
 
