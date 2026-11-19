@@ -1,30 +1,25 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import L from 'leaflet';
+import * as maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { useResort } from '../context/ResortContext';
 import { RESORT_IMAGES } from '../data/resortData';
 import {
-  MapPin,
-  Search,
-  Maximize2,
-  Minimize2,
   Crosshair,
   Layers,
   ExternalLink,
   Copy,
   Check,
   Compass,
-  Star,
   Navigation,
-  Car,
   X,
   RotateCcw,
   RotateCw,
   Filter,
-  Waves,
-  Utensils,
-  Camera,
-  Building2,
-  Eye,
+  Search,
+  Maximize2,
+  Minimize2,
+  Box,
+  ChevronUp,
   ChevronDown
 } from 'lucide-react';
 
@@ -473,40 +468,84 @@ export const CATEGORIES: LocationCategory[] = [
 
 type MapTileStyle = 'standard' | 'satellite' | 'terrain';
 
-const TILE_PROVIDERS: Record<MapTileStyle, { url: string; attribution: string; maxZoom: number }> = {
-  standard: {
-    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
-    maxZoom: 19
+const MAP_STYLE: maplibregl.StyleSpecification = {
+  version: 8,
+  sources: {
+    standard: {
+      type: 'raster',
+      tiles: [
+        'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
+      ],
+      tileSize: 256,
+      maxzoom: 19
+    },
+    satellite: {
+      type: 'raster',
+      tiles: [
+        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+      ],
+      tileSize: 256,
+      maxzoom: 18
+    },
+    terrain: {
+      type: 'raster',
+      tiles: [
+        'https://a.tile.opentopomap.org/{z}/{x}/{y}.png',
+        'https://b.tile.opentopomap.org/{z}/{x}/{y}.png',
+        'https://c.tile.opentopomap.org/{z}/{x}/{y}.png'
+      ],
+      tileSize: 256,
+      maxzoom: 17
+    }
   },
-  satellite: {
-    // High-resolution Esri World Imagery Photorealistic Satellite
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-    maxZoom: 18
-  },
-  terrain: {
-    // OpenTopoMap detailed topography and elevation contours
-    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-    attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a>',
-    maxZoom: 17
-  }
+  layers: [
+    {
+      id: 'ocean-background',
+      type: 'background',
+      paint: {
+        'background-color': '#AAD3DF'
+      }
+    },
+    {
+      id: 'standard-layer',
+      type: 'raster',
+      source: 'standard',
+      layout: { visibility: 'visible' }
+    },
+    {
+      id: 'satellite-layer',
+      type: 'raster',
+      source: 'satellite',
+      layout: { visibility: 'none' }
+    },
+    {
+      id: 'terrain-layer',
+      type: 'raster',
+      source: 'terrain',
+      layout: { visibility: 'none' }
+    }
+  ]
+};
+
+const MAX_3D_PITCH = 65;
+const DEFAULT_3D_PITCH = 52;
+
+const normalizeBearing = (deg: number): number => {
+  const normalized = ((deg % 360) + 360) % 360;
+  return normalized >= 359.5 || normalized < 0.5 ? 0 : Math.round(normalized);
 };
 
 export const GeographicLocationMap: React.FC = () => {
-  const { t, addNotification, navigateTo } = useResort();
+  const { addNotification, navigateTo } = useResort();
 
   const viewportRef = useRef<HTMLDivElement>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<L.Map | null>(null);
-  const tileLayerRef = useRef<L.TileLayer | null>(null);
-  const markersRef = useRef<Record<string, L.Marker>>({});
+  const mapInstanceRef = useRef<maplibregl.Map | null>(null);
+  const markersRef = useRef<Record<string, maplibregl.Marker>>({});
+  const userMarkerRef = useRef<maplibregl.Marker | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-
-  // Viewport & Covering-Square Geometry Refs (prevents any black/empty corners on rotation)
-  const [canvasSize, setCanvasSize] = useState<number>(980);
-  const canvasSizeRef = useRef<number>(980);
-  const viewportSizeRef = useRef<{ w: number; h: number }>({ w: 640, h: 520 });
 
   // States
   const [activeTileStyle, setActiveTileStyle] = useState<MapTileStyle>('standard');
@@ -518,65 +557,16 @@ export const GeographicLocationMap: React.FC = () => {
   const [isLocating, setIsLocating] = useState<boolean>(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // Map Rotation State (Compass & Bearing)
+  // Genuine WebGL Camera Orientation States (Rotation Bearing & 3D Tilt Pitch)
   const [mapBearing, setMapBearing] = useState<number>(0);
-  const [isActiveTouching, setIsActiveTouching] = useState<boolean>(false);
-  const currentBearingRef = useRef<number>(0);
+  const [mapPitch, setMapPitch] = useState<number>(0);
 
-  // Sync ref and CSS variable synchronously with mapBearing
-  useEffect(() => {
-    currentBearingRef.current = mapBearing;
-    if (mapContainerRef.current) {
-      mapContainerRef.current.style.setProperty('--map-bearing', `${-mapBearing}deg`);
-    }
-  }, [mapBearing]);
-
-  // Unified Gesture Engine State Ref (Zero conflicting touch/mouse handlers)
-  const gestureStateRef = useRef<{
-    mode: 'none' | 'single' | 'multi';
-    lastSingleX: number;
-    lastSingleY: number;
-    totalMove: number;
-    startedOnMarker: boolean;
-    prevDist: number;
-    prevAngle: number;
-    prevMidX: number;
-    prevMidY: number;
-    lastTapTime: number;
-    lastTapPoint: { x: number; y: number };
-    mouseMode: 'none' | 'pan' | 'rotate';
-    lastMouseX: number;
-    lastMouseY: number;
-    mouseStartAngle: number;
-    mouseStartBearing: number;
-    mouseTotalMove: number;
-  }>({
-    mode: 'none',
-    lastSingleX: 0,
-    lastSingleY: 0,
-    totalMove: 0,
-    startedOnMarker: false,
-    prevDist: 0,
-    prevAngle: 0,
-    prevMidX: 0,
-    prevMidY: 0,
-    lastTapTime: 0,
-    lastTapPoint: { x: 0, y: 0 },
-    mouseMode: 'none',
-    lastMouseX: 0,
-    lastMouseY: 0,
-    mouseStartAngle: 0,
-    mouseStartBearing: 0,
-    mouseTotalMove: 0
-  });
-  const suppressClickUntilRef = useRef<number>(0);
-
-  // Category Filter State (Requirement 6: multi-select support)
+  // Category Filter State (Multi-select support)
   const [selectedCategories, setSelectedCategories] = useState<LocationCategory[]>([]);
 
-  // Information Card Visibility & Auto-hide Timer (Requirement 4)
+  // Information Card Visibility & Auto-hide Timer
   const [isCardVisible, setIsCardVisible] = useState<boolean>(true);
-  const autoHideTimerRef = useRef<any>(null);
+  const autoHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Selected Location memo
   const selectedLocation = useMemo(() => {
@@ -604,7 +594,7 @@ export const GeographicLocationMap: React.FC = () => {
     );
   }, [searchQuery]);
 
-  // Requirement 1 & 4: Initial 3-second auto-hide on load
+  // Initial 3-second auto-hide on load
   useEffect(() => {
     autoHideTimerRef.current = setTimeout(() => {
       setIsCardVisible(false);
@@ -627,182 +617,168 @@ export const GeographicLocationMap: React.FC = () => {
     }, 3000);
   }, []);
 
-  // Create custom HTML marker pins for each category (always upright via .map-pin-upright)
-  const createCustomMarkerIcon = useCallback((location: ResortLocation, isSelected: boolean) => {
+  // Build HTML marker DOM element anchored strictly at diamond tip (bottom-center of pin geometry)
+  const createMarkerElement = useCallback((location: ResortLocation, isSelected: boolean): HTMLDivElement => {
     const isOurResort = location.id === 'alon-aninag';
     const isTopRated = location.topRated;
-    let pinSvg = '';
-    let iconSize: [number, number] = [36, 44];
-    let iconAnchor: [number, number] = [18, 42];
+
+    const root = document.createElement('div');
+    root.className = 'maplibregl-custom-marker relative flex flex-col items-center cursor-pointer group select-none';
+    root.style.zIndex = isSelected ? '20' : isOurResort ? '12' : '2';
+
+    const ringClass = isOurResort
+      ? 'ring-4 ring-amber-400 scale-110'
+      : location.categoryGroup === 'Competitors'
+      ? 'ring-4 ring-pink-400 scale-110'
+      : location.categoryGroup === 'Beaches'
+      ? 'ring-4 ring-cyan-300 scale-110'
+      : location.categoryGroup === 'Restaurants'
+      ? 'ring-4 ring-amber-300 scale-110'
+      : 'ring-4 ring-emerald-300 scale-110';
 
     if (isOurResort) {
-      iconSize = [44, 52];
-      iconAnchor = [22, 50];
-      pinSvg = `
-        <div class="map-pin-upright relative flex flex-col items-center cursor-pointer group select-none">
-          <div class="absolute -inset-3 rounded-full bg-teal-500/30 animate-ping"></div>
-          <div class="relative w-11 h-11 rounded-full bg-[#006D77] border-2 border-white shadow-2xl flex items-center justify-center text-white ring-2 ring-[#006D77]/50 ${
-            isSelected ? 'scale-110 ring-4 ring-amber-400' : ''
-          } transition-all">
+      root.innerHTML = `
+        <div class="relative flex flex-col items-center">
+          <div class="absolute -inset-2 rounded-full bg-teal-500/30 animate-ping pointer-events-none"></div>
+          <div data-pin-circle="true" class="relative w-11 h-11 rounded-full bg-[#006D77] border-2 border-white shadow-2xl flex items-center justify-center text-white transition-transform duration-200 ${
+            isSelected ? ringClass : 'ring-2 ring-[#006D77]/50'
+          }">
             <span class="text-base font-bold text-amber-300">✦</span>
           </div>
           <div class="w-2.5 h-2.5 bg-[#006D77] rotate-45 -mt-1.5 border-r-2 border-b-2 border-white"></div>
-          <div class="mt-1 px-2 py-0.5 rounded-md bg-[#006D77] text-white text-[10px] font-bold shadow-md whitespace-nowrap border border-white/40">
-            Alon & Aninag (Our Resort)
-          </div>
+        </div>
+        <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 px-2 py-0.5 rounded-md bg-[#006D77] text-white text-[10px] font-bold shadow-md whitespace-nowrap border border-white/40 pointer-events-none">
+          Alon & Aninag (Our Resort)
         </div>
       `;
     } else if (location.categoryGroup === 'Competitors') {
-      pinSvg = `
-        <div class="map-pin-upright relative flex flex-col items-center cursor-pointer group select-none">
-          <div class="relative w-9 h-9 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white ${
-            isSelected ? 'scale-110 ring-4 ring-pink-400' : ''
-          } transition-all" style="background-color: ${location.color};">
+      root.innerHTML = `
+        <div class="relative flex flex-col items-center">
+          <div data-pin-circle="true" class="relative w-9 h-9 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white transition-transform duration-200 ${
+            isSelected ? ringClass : ''
+          }" style="background-color: ${location.color};">
             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11m16-11v11" />
             </svg>
           </div>
           <div class="w-2 h-2 rotate-45 -mt-1 border-r border-b border-white" style="background-color: ${location.color};"></div>
-          <div class="mt-0.5 px-2 py-0.5 rounded bg-white text-stone-900 text-[10px] font-bold shadow-md whitespace-nowrap border border-pink-400" style="color: ${location.color};">
-            ${location.name.split(' ')[0]} ${isTopRated ? '★' : ''}
-          </div>
+        </div>
+        <div class="absolute top-full left-1/2 -translate-x-1/2 mt-0.5 px-2 py-0.5 rounded bg-white text-stone-900 text-[10px] font-bold shadow-md whitespace-nowrap border border-pink-400 pointer-events-none" style="color: ${location.color};">
+          ${location.name.split(' ')[0]} ${isTopRated ? '★' : ''}
         </div>
       `;
     } else if (location.categoryGroup === 'Beaches') {
-      pinSvg = `
-        <div class="map-pin-upright relative flex flex-col items-center cursor-pointer group select-none">
-          <div class="relative w-8 h-8 rounded-full bg-[#0EA5E9] border-2 border-white shadow-md flex items-center justify-center text-white ${
-            isSelected ? 'scale-110 ring-4 ring-cyan-300' : ''
-          } transition-all">
+      root.innerHTML = `
+        <div class="relative flex flex-col items-center">
+          <div data-pin-circle="true" class="relative w-8 h-8 rounded-full bg-[#0EA5E9] border-2 border-white shadow-md flex items-center justify-center text-white transition-transform duration-200 ${
+            isSelected ? ringClass : ''
+          }">
             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
           </div>
           <div class="w-2 h-2 bg-[#0EA5E9] rotate-45 -mt-1 border-r border-b border-white"></div>
-          <div class="mt-0.5 px-1.5 py-0.2 rounded bg-white text-[#0EA5E9] text-[9.5px] font-bold shadow whitespace-nowrap border border-cyan-300">
-            ${location.shortName}
-          </div>
+        </div>
+        <div class="absolute top-full left-1/2 -translate-x-1/2 mt-0.5 px-1.5 py-0.2 rounded bg-white text-[#0EA5E9] text-[9.5px] font-bold shadow whitespace-nowrap border border-cyan-300 pointer-events-none">
+          ${location.shortName}
         </div>
       `;
     } else if (location.categoryGroup === 'Restaurants') {
-      pinSvg = `
-        <div class="map-pin-upright relative flex flex-col items-center cursor-pointer group select-none">
-          <div class="relative w-8 h-8 rounded-full bg-[#D97706] border-2 border-white shadow-md flex items-center justify-center text-white ${
-            isSelected ? 'scale-110 ring-4 ring-amber-300' : ''
-          } transition-all">
+      root.innerHTML = `
+        <div class="relative flex flex-col items-center">
+          <div data-pin-circle="true" class="relative w-8 h-8 rounded-full bg-[#D97706] border-2 border-white shadow-md flex items-center justify-center text-white transition-transform duration-200 ${
+            isSelected ? ringClass : ''
+          }">
             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
           </div>
           <div class="w-2 h-2 bg-[#D97706] rotate-45 -mt-1 border-r border-b border-white"></div>
-          <div class="mt-0.5 px-1.5 py-0.2 rounded bg-white text-[#D97706] text-[9.5px] font-bold shadow whitespace-nowrap border border-amber-300">
-            ${location.shortName}
-          </div>
+        </div>
+        <div class="absolute top-full left-1/2 -translate-x-1/2 mt-0.5 px-1.5 py-0.2 rounded bg-white text-[#D97706] text-[9.5px] font-bold shadow whitespace-nowrap border border-amber-300 pointer-events-none">
+          ${location.shortName}
         </div>
       `;
     } else {
-      pinSvg = `
-        <div class="map-pin-upright relative flex flex-col items-center cursor-pointer group select-none">
-          <div class="relative w-8 h-8 rounded-full bg-[#059669] border-2 border-white shadow-md flex items-center justify-center text-white ${
-            isSelected ? 'scale-110 ring-4 ring-emerald-300' : ''
-          } transition-all">
+      root.innerHTML = `
+        <div class="relative flex flex-col items-center">
+          <div data-pin-circle="true" class="relative w-8 h-8 rounded-full bg-[#059669] border-2 border-white shadow-md flex items-center justify-center text-white transition-transform duration-200 ${
+            isSelected ? ringClass : ''
+          }">
             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
           </div>
           <div class="w-2 h-2 bg-[#059669] rotate-45 -mt-1 border-r border-b border-white"></div>
-          <div class="mt-0.5 px-1.5 py-0.2 rounded bg-white text-[#059669] text-[9.5px] font-bold shadow whitespace-nowrap border border-emerald-300">
-            ${location.shortName}
-          </div>
+        </div>
+        <div class="absolute top-full left-1/2 -translate-x-1/2 mt-0.5 px-1.5 py-0.2 rounded bg-white text-[#059669] text-[9.5px] font-bold shadow whitespace-nowrap border border-emerald-300 pointer-events-none">
+          ${location.shortName}
         </div>
       `;
     }
 
-    return L.divIcon({
-      html: pinSvg,
-      className: 'custom-map-div-marker',
-      iconSize,
-      iconAnchor,
-      popupAnchor: [0, -iconAnchor[1] - 4]
-    });
+    return root;
   }, []);
 
-  // Measure viewport & resize covering square (D > hypot(W, H) eliminates all black corners)
+  // Keep WebGL canvas sized cleanly with container & fullscreen changes
   useEffect(() => {
     const vp = viewportRef.current;
     if (!vp) return;
 
-    const updateDimensions = () => {
-      const rect = vp.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) {
-        viewportSizeRef.current = { w: rect.width, h: rect.height };
-        const neededSquare = Math.ceil(Math.hypot(rect.width, rect.height)) + 160;
-        canvasSizeRef.current = neededSquare;
-        setCanvasSize(neededSquare);
-
-        requestAnimationFrame(() => {
-          const map = mapInstanceRef.current;
-          if (map && (map as any)._mapPane) {
-            try {
-              map.invalidateSize({ animate: false });
-            } catch {
-              // Safe guard
-            }
+    const handleResize = () => {
+      requestAnimationFrame(() => {
+        const map = mapInstanceRef.current;
+        if (map) {
+          try {
+            map.resize();
+          } catch {
+            // Safe guard
           }
-        });
-      }
+        }
+      });
     };
 
-    updateDimensions();
-    const ro = new ResizeObserver(updateDimensions);
+    const ro = new ResizeObserver(handleResize);
     ro.observe(vp);
     return () => ro.disconnect();
   }, [isFullscreen]);
 
-  // Re-sync Leaflet after React commits new covering-square canvasSize
-  useEffect(() => {
+  // Fit bounds safely across all Sipalay destinations while respecting UI overlays
+  const fitAllDestinations = useCallback((options?: { pitch?: number; bearing?: number; duration?: number }) => {
     const map = mapInstanceRef.current;
-    if (map && (map as any)._mapPane) {
-      try {
-        map.invalidateSize({ animate: false });
-      } catch {
-        // Safe guard
-      }
-    }
-  }, [canvasSize]);
+    if (!map) return;
 
-  // Fit bounds safely inside the visible viewport inside our D x D covering square
-  const fitBoundsInVisibleViewport = useCallback((bounds: L.LatLngBounds) => {
-    const map = mapInstanceRef.current;
-    if (!map || !(map as any)._mapPane) return;
-    const { w, h } = viewportSizeRef.current;
-    const D = canvasSizeRef.current;
-    const padX = Math.max(0, Math.round((D - w) / 2));
-    const padY = Math.max(0, Math.round((D - h) / 2));
+    const bounds = new maplibregl.LngLatBounds();
+    ALL_LOCATIONS.forEach(loc => bounds.extend([loc.lng, loc.lat]));
+
     try {
       map.fitBounds(bounds, {
-        paddingTopLeft: [padX + 36, padY + 68],
-        paddingBottomRight: [padX + 52, padY + 64],
-        maxZoom: 13
+        padding: { top: 84, bottom: 72, left: 48, right: 72 },
+        maxZoom: 13.5,
+        pitch: options?.pitch ?? map.getPitch(),
+        bearing: options?.bearing ?? map.getBearing(),
+        duration: options?.duration ?? 700
       });
     } catch {
       // Safe guard
     }
   }, []);
 
-  // Center or fly to a location cleanly
+  // Center or fly cleanly to a selected destination (preserves user 3D tilt angle)
   const flyToLocation = useCallback((location: ResortLocation, zoom = 15) => {
     setSelectedLocationId(location.id);
     setIsCardVisible(true);
     triggerAutoHide();
 
     const map = mapInstanceRef.current;
-    if (map && (map as any)._mapPane) {
+    if (map) {
       try {
-        map.flyTo([location.lat, location.lng], Math.max(map.getZoom(), zoom), {
-          duration: 0.9,
-          easeLinearity: 0.25
+        map.flyTo({
+          center: [location.lng, location.lat],
+          zoom: Math.max(map.getZoom(), zoom),
+          duration: 900,
+          essential: true
         });
       } catch {
         // Safe guard
@@ -810,391 +786,99 @@ export const GeographicLocationMap: React.FC = () => {
     }
   }, [triggerAutoHide]);
 
-  // Reset Map to default position framing all Sipalay destinations & North orientation
-  const handleResetMap = useCallback(() => {
-    setIsActiveTouching(false);
-    setMapBearing(0);
-    currentBearingRef.current = 0;
+  // Interactive Camera Controls (3D Pitch/Tilt, Rotation Bearing, Zoom, Full Reset)
+  const handleToggle3DTilt = useCallback(() => {
     const map = mapInstanceRef.current;
-    if (!map || !(map as any)._mapPane) return;
-    const bounds = L.latLngBounds(ALL_LOCATIONS.map(l => [l.lat, l.lng]));
-    fitBoundsInVisibleViewport(bounds);
+    if (!map) return;
+    const isTilted = map.getPitch() >= 10;
+    map.easeTo({
+      pitch: isTilted ? 0 : DEFAULT_3D_PITCH,
+      duration: 600,
+      easing: (t) => 1 - Math.pow(1 - t, 3)
+    });
+  }, []);
+
+  const handleTiltUp = useCallback(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    const targetPitch = Math.min(MAX_3D_PITCH, map.getPitch() + 15);
+    map.easeTo({ pitch: targetPitch, duration: 380 });
+  }, []);
+
+  const handleTiltDown = useCallback(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    const targetPitch = Math.max(0, map.getPitch() - 15);
+    map.easeTo({ pitch: targetPitch, duration: 380 });
+  }, []);
+
+  const handleReturn2D = useCallback(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    map.easeTo({ pitch: 0, duration: 500 });
+  }, []);
+
+  const handleRotateLeft = useCallback(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    map.easeTo({ bearing: map.getBearing() - 45, duration: 420 });
+  }, []);
+
+  const handleRotateRight = useCallback(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    map.easeTo({ bearing: map.getBearing() + 45, duration: 420 });
+  }, []);
+
+  const handleResetBearing = useCallback(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    map.easeTo({ bearing: 0, duration: 450 });
+  }, []);
+
+  const handleZoomIn = useCallback(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    map.easeTo({ zoom: Math.min(18, map.getZoom() + 0.85), duration: 280 });
+  }, []);
+
+  const handleZoomOut = useCallback(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    map.easeTo({ zoom: Math.max(5, map.getZoom() - 0.85), duration: 280 });
+  }, []);
+
+  const handleResetMap = useCallback(() => {
+    fitAllDestinations({ pitch: 0, bearing: 0, duration: 750 });
     setSelectedLocationId('alon-aninag');
     setIsCardVisible(true);
     triggerAutoHide();
-  }, [fitBoundsInVisibleViewport, triggerAutoHide]);
+  }, [fitAllDestinations, triggerAutoHide]);
 
-  // Helper to apply bearing immediately & smoothly
-  const applyBearingImmediate = useCallback((deg: number) => {
-    let normalized = deg % 360;
-    if (normalized < 0) normalized += 360;
-    const rounded = Math.round(normalized * 10) / 10;
-    currentBearingRef.current = rounded;
-    if (mapContainerRef.current) {
-      mapContainerRef.current.style.transform = `rotate(${rounded}deg)`;
-      mapContainerRef.current.style.setProperty('--map-bearing', `${-rounded}deg`);
-    }
-    setMapBearing(rounded);
-  }, []);
-
-  // Rotation controls (with transition re-enabled)
-  const handleRotateLeft = () => {
-    setIsActiveTouching(false);
-    applyBearingImmediate(currentBearingRef.current - 45);
-  };
-
-  const handleRotateRight = () => {
-    setIsActiveTouching(false);
-    applyBearingImmediate(currentBearingRef.current + 45);
-  };
-
-  const handleResetBearing = () => {
-    setIsActiveTouching(false);
-    applyBearingImmediate(0);
-  };
-
-  // Convert screen point relative to viewport center into Leaflet D x D container point
-  const screenPointToLeafletPoint = useCallback((clientX: number, clientY: number, bearingDeg: number): L.Point => {
-    const vp = viewportRef.current;
-    const D = canvasSizeRef.current;
-    if (!vp) return L.point(D / 2, D / 2);
-    const rect = vp.getBoundingClientRect();
-    const mx = clientX - (rect.left + rect.width / 2);
-    const my = clientY - (rect.top + rect.height / 2);
-    const rad = (bearingDeg * Math.PI) / 180;
-    const u = mx * Math.cos(rad) + my * Math.sin(rad);
-    const v = -mx * Math.sin(rad) + my * Math.cos(rad);
-    return L.point(D / 2 + u, D / 2 + v);
-  }, []);
-
-  // -------------------------------------------------------------
-  // UNIFIED TOUCH, POINTER & WHEEL GESTURE ENGINE
-  // Strictly isolated inside the map container:
-  // 1. 1-Finger Swipe: rotation-aware panning in all directions
-  // 2. 2-Finger Pinch: continuous smooth zoom locked to finger midpoint
-  // 3. 2-Finger Rotation: smooth 60fps bearing rotation pivoting around midpoint
-  // 4. 2-Finger Pan: simultaneous repositioning with fingers
-  // 5. Double-Tap / Double-Click Zoom: centered at tap point
-  // 6. Mouse Drag & Wheel / Trackpad Zoom: strictly inside map, zero page zoom
-  // -------------------------------------------------------------
+  // Prevent browser page pinch-zoom or Safari gesture leaks over overlay UI inside viewportRef
   useEffect(() => {
-    const mapSurface = mapContainerRef.current;
-    if (!mapSurface) return;
-
-    const getMidRelativeToViewport = (t1: Touch, t2: Touch) => {
-      const vp = viewportRef.current;
-      const rect = vp ? vp.getBoundingClientRect() : mapSurface.getBoundingClientRect();
-      const vpCenterX = rect.left + rect.width / 2;
-      const vpCenterY = rect.top + rect.height / 2;
-      return {
-        mx: (t1.clientX + t2.clientX) / 2 - vpCenterX,
-        my: (t1.clientY + t2.clientY) / 2 - vpCenterY
-      };
-    };
-
-    const onTouchStart = (e: TouchEvent) => {
-      const gs = gestureStateRef.current;
-      if (e.touches.length === 1) {
-        const touch = e.touches[0];
-        gs.mode = 'single';
-        gs.lastSingleX = touch.clientX;
-        gs.lastSingleY = touch.clientY;
-        gs.totalMove = 0;
-        gs.startedOnMarker = Boolean((e.target as HTMLElement)?.closest('.leaflet-marker-icon'));
-        // Do NOT call preventDefault on 1-finger touchstart so marker clicks synthesize cleanly
-      } else if (e.touches.length >= 2) {
-        // Multi-touch: block browser pinch/scroll cleanly
-        e.preventDefault();
-        e.stopPropagation();
-
-        const t1 = e.touches[0];
-        const t2 = e.touches[1];
-        const dx = t2.clientX - t1.clientX;
-        const dy = t2.clientY - t1.clientY;
-        const { mx, my } = getMidRelativeToViewport(t1, t2);
-
-        gs.mode = 'multi';
-        gs.prevDist = Math.hypot(dx, dy);
-        gs.prevAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
-        gs.prevMidX = mx;
-        gs.prevMidY = my;
-        setIsActiveTouching(true);
-      }
-    };
-
-    const onTouchMove = (e: TouchEvent) => {
-      const gs = gestureStateRef.current;
-      const map = mapInstanceRef.current;
-      if (!map || !(map as any)._mapPane) return;
-
-      if (e.touches.length === 1 && gs.mode === 'single') {
-        const touch = e.touches[0];
-        const dx = touch.clientX - gs.lastSingleX;
-        const dy = touch.clientY - gs.lastSingleY;
-        gs.lastSingleX = touch.clientX;
-        gs.lastSingleY = touch.clientY;
-        gs.totalMove += Math.hypot(dx, dy);
-
-        if (gs.totalMove > 4) {
-          e.preventDefault();
-          e.stopPropagation();
-          setIsActiveTouching(true);
-
-          const rad = (currentBearingRef.current * Math.PI) / 180;
-          const du = dx * Math.cos(rad) + dy * Math.sin(rad);
-          const dv = -dx * Math.sin(rad) + dy * Math.cos(rad);
-          map.panBy([-du, -dv], { animate: false });
-        }
-      } else if (e.touches.length >= 2) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const t1 = e.touches[0];
-        const t2 = e.touches[1];
-        const dx = t2.clientX - t1.clientX;
-        const dy = t2.clientY - t1.clientY;
-        const currDist = Math.hypot(dx, dy);
-        const currAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
-        const { mx: currMx, my: currMy } = getMidRelativeToViewport(t1, t2);
-
-        if (gs.mode !== 'multi') {
-          gs.mode = 'multi';
-          gs.prevDist = currDist;
-          gs.prevAngle = currAngle;
-          gs.prevMidX = currMx;
-          gs.prevMidY = currMy;
-          setIsActiveTouching(true);
-          return;
-        }
-
-        // Incremental rotation delta wrapped cleanly to [-180, 180] (prevents +180/-180 jump)
-        const dAngle = ((currAngle - gs.prevAngle + 540) % 360) - 180;
-        const oldB = currentBearingRef.current;
-        const newB = (oldB + dAngle + 360) % 360;
-
-        // Exact midpoint lock: keep map anchored under moving & rotating fingers
-        const r1 = (oldB * Math.PI) / 180;
-        const r2 = (newB * Math.PI) / 180;
-        const u1 = gs.prevMidX * Math.cos(r1) + gs.prevMidY * Math.sin(r1);
-        const v1 = -gs.prevMidX * Math.sin(r1) + gs.prevMidY * Math.cos(r1);
-        const u2 = currMx * Math.cos(r2) + currMy * Math.sin(r2);
-        const v2 = -currMx * Math.sin(r2) + currMy * Math.cos(r2);
-
-        applyBearingImmediate(newB);
-
-        // Lock pan to finger midpoint
-        if (Math.abs(u1 - u2) > 0.05 || Math.abs(v1 - v2) > 0.05) {
-          map.panBy([u1 - u2, v1 - v2], { animate: false });
-        }
-
-        // Continuous pinch-to-zoom centered right around the midpoint between two fingers
-        if (gs.prevDist > 12 && currDist > 12) {
-          const ratio = currDist / gs.prevDist;
-          if (Math.abs(ratio - 1) > 0.004) {
-            const zoomDelta = Math.log2(ratio);
-            const targetZoom = Math.min(18, Math.max(5, map.getZoom() + zoomDelta));
-            const D = canvasSizeRef.current;
-            const leafletAnchor = L.point(D / 2 + u2, D / 2 + v2);
-            map.setZoomAround(leafletAnchor, targetZoom, { animate: false });
-          }
-        }
-
-        gs.prevDist = currDist;
-        gs.prevAngle = currAngle;
-        gs.prevMidX = currMx;
-        gs.prevMidY = currMy;
-      }
-    };
-
-    const onTouchEnd = (e: TouchEvent) => {
-      const gs = gestureStateRef.current;
-      const map = mapInstanceRef.current;
-
-      if (e.touches.length === 1 && gs.mode === 'multi') {
-        // Seamless transition from 2 fingers down to 1 finger without jumping
-        gs.mode = 'single';
-        gs.lastSingleX = e.touches[0].clientX;
-        gs.lastSingleY = e.touches[0].clientY;
-        gs.totalMove = 10; // Prevent false tap
-        setIsActiveTouching(false);
-        return;
-      }
-
-      if (e.touches.length === 0) {
-        if (gs.mode === 'single' && gs.totalMove <= 8 && !gs.startedOnMarker && e.changedTouches.length > 0) {
-          const touch = e.changedTouches[0];
-          const now = Date.now();
-          const dist = Math.hypot(
-            touch.clientX - gs.lastTapPoint.x,
-            touch.clientY - gs.lastTapPoint.y
-          );
-
-          if (now - gs.lastTapTime < 300 && dist < 40 && map && (map as any)._mapPane) {
-            e.preventDefault();
-            const anchor = screenPointToLeafletPoint(touch.clientX, touch.clientY, currentBearingRef.current);
-            const nextZoom = Math.min(18, map.getZoom() + 1.25);
-            map.setZoomAround(anchor, nextZoom, { animate: true });
-            gs.lastTapTime = 0;
-          } else {
-            gs.lastTapTime = now;
-            gs.lastTapPoint = { x: touch.clientX, y: touch.clientY };
-          }
-        }
-
-        gs.mode = 'none';
-        setIsActiveTouching(false);
-      }
-    };
-
-    // Safari iOS proprietary pinch-zoom blocker inside map container
-    const preventSafariGesture = (e: Event) => {
-      e.preventDefault();
-      e.stopPropagation();
-    };
-
-    // Desktop Mouse Wheel / Trackpad Pinch Zoom (strictly isolated inside map)
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const map = mapInstanceRef.current;
-      if (!map || !(map as any)._mapPane) return;
-
-      const anchor = screenPointToLeafletPoint(e.clientX, e.clientY, currentBearingRef.current);
-      const deltaZoom = e.ctrlKey
-        ? Math.max(-0.5, Math.min(0.5, -e.deltaY * 0.012))
-        : e.deltaY > 0
-        ? -0.6
-        : 0.6;
-      const nextZoom = Math.min(18, Math.max(5, map.getZoom() + deltaZoom));
-      map.setZoomAround(anchor, nextZoom, { animate: !e.ctrlKey });
-    };
-
-    // Desktop Mouse Drag (rotation-aware) & Shift/Alt Rotate
-    const onMouseDown = (e: MouseEvent) => {
-      if (e.button !== 0) return;
-      const gs = gestureStateRef.current;
-      const vp = viewportRef.current;
-      const rect = vp ? vp.getBoundingClientRect() : mapSurface.getBoundingClientRect();
-
-      if (e.shiftKey || e.altKey) {
-        e.preventDefault();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        gs.mouseMode = 'rotate';
-        gs.mouseStartAngle = (Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180) / Math.PI;
-        gs.mouseStartBearing = currentBearingRef.current;
-        setIsActiveTouching(true);
-      } else {
-        gs.mouseMode = 'pan';
-        gs.lastMouseX = e.clientX;
-        gs.lastMouseY = e.clientY;
-        gs.mouseTotalMove = 0;
-      }
-    };
-
-    const onMouseMove = (e: MouseEvent) => {
-      const gs = gestureStateRef.current;
-      if (gs.mouseMode === 'none') return;
-
-      if (gs.mouseMode === 'rotate') {
-        e.preventDefault();
-        const vp = viewportRef.current;
-        const rect = vp ? vp.getBoundingClientRect() : mapSurface.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const currAngle = (Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180) / Math.PI;
-        const angleDiff = currAngle - gs.mouseStartAngle;
-        applyBearingImmediate(gs.mouseStartBearing + angleDiff);
-      } else if (gs.mouseMode === 'pan') {
-        const dx = e.clientX - gs.lastMouseX;
-        const dy = e.clientY - gs.lastMouseY;
-        gs.lastMouseX = e.clientX;
-        gs.lastMouseY = e.clientY;
-        gs.mouseTotalMove += Math.hypot(dx, dy);
-
-        if (gs.mouseTotalMove > 3) {
-          const map = mapInstanceRef.current;
-          if (map && (map as any)._mapPane) {
-            const rad = (currentBearingRef.current * Math.PI) / 180;
-            const du = dx * Math.cos(rad) + dy * Math.sin(rad);
-            const dv = -dx * Math.sin(rad) + dy * Math.cos(rad);
-            map.panBy([-du, -dv], { animate: false });
-          }
-        }
-      }
-    };
-
-    const onMouseUp = () => {
-      const gs = gestureStateRef.current;
-      if (gs.mouseMode !== 'none') {
-        if ((gs.mouseMode === 'pan' && gs.mouseTotalMove > 5) || gs.mouseMode === 'rotate') {
-          suppressClickUntilRef.current = Date.now() + 180;
-        }
-        gs.mouseMode = 'none';
-        setIsActiveTouching(false);
-      }
-    };
-
-    const onCaptureClick = (e: MouseEvent) => {
-      if (Date.now() < suppressClickUntilRef.current) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    };
-
-    const onDoubleClick = (e: MouseEvent) => {
-      if ((e.target as HTMLElement)?.closest('.leaflet-marker-icon')) return;
-      e.preventDefault();
-      e.stopPropagation();
-      const map = mapInstanceRef.current;
-      if (!map || !(map as any)._mapPane) return;
-      const anchor = screenPointToLeafletPoint(e.clientX, e.clientY, currentBearingRef.current);
-      map.setZoomAround(anchor, Math.min(18, map.getZoom() + 1), { animate: true });
-    };
-
     const vp = viewportRef.current;
-    const onViewportCtrlWheel = (e: WheelEvent) => {
+    if (!vp) return;
+
+    const onViewportWheel = (e: WheelEvent) => {
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault();
       }
     };
+    const preventSafariGesture = (e: Event) => {
+      e.preventDefault();
+    };
 
-    mapSurface.addEventListener('touchstart', onTouchStart, { passive: false });
-    mapSurface.addEventListener('touchmove', onTouchMove, { passive: false });
-    mapSurface.addEventListener('touchend', onTouchEnd, { passive: false });
-    mapSurface.addEventListener('touchcancel', onTouchEnd);
-    mapSurface.addEventListener('gesturestart', preventSafariGesture, { passive: false });
-    mapSurface.addEventListener('gesturechange', preventSafariGesture, { passive: false });
-    mapSurface.addEventListener('gestureend', preventSafariGesture, { passive: false });
-    mapSurface.addEventListener('wheel', onWheel, { passive: false });
-    mapSurface.addEventListener('mousedown', onMouseDown);
-    mapSurface.addEventListener('click', onCaptureClick, true);
-    mapSurface.addEventListener('dblclick', onDoubleClick);
-    vp?.addEventListener('wheel', onViewportCtrlWheel, { passive: false });
-    vp?.addEventListener('gesturestart', preventSafariGesture, { passive: false });
-    vp?.addEventListener('gesturechange', preventSafariGesture, { passive: false });
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
+    vp.addEventListener('wheel', onViewportWheel, { passive: false });
+    vp.addEventListener('gesturestart', preventSafariGesture, { passive: false });
+    vp.addEventListener('gesturechange', preventSafariGesture, { passive: false });
 
     return () => {
-      mapSurface.removeEventListener('touchstart', onTouchStart);
-      mapSurface.removeEventListener('touchmove', onTouchMove);
-      mapSurface.removeEventListener('touchend', onTouchEnd);
-      mapSurface.removeEventListener('touchcancel', onTouchEnd);
-      mapSurface.removeEventListener('gesturestart', preventSafariGesture);
-      mapSurface.removeEventListener('gesturechange', preventSafariGesture);
-      mapSurface.removeEventListener('gestureend', preventSafariGesture);
-      mapSurface.removeEventListener('wheel', onWheel);
-      mapSurface.removeEventListener('mousedown', onMouseDown);
-      mapSurface.removeEventListener('click', onCaptureClick, true);
-      mapSurface.removeEventListener('dblclick', onDoubleClick);
-      vp?.removeEventListener('wheel', onViewportCtrlWheel);
-      vp?.removeEventListener('gesturestart', preventSafariGesture);
-      vp?.removeEventListener('gesturechange', preventSafariGesture);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
+      vp.removeEventListener('wheel', onViewportWheel);
+      vp.removeEventListener('gesturestart', preventSafariGesture);
+      vp.removeEventListener('gesturechange', preventSafariGesture);
     };
-  }, [applyBearingImmediate, screenPointToLeafletPoint]);
+  }, []);
 
   // Toggle Category Filter (Multi-select)
   const toggleCategory = (cat: LocationCategory) => {
@@ -1226,9 +910,9 @@ export const GeographicLocationMap: React.FC = () => {
         setUserGpsPosition({ lat: latitude, lng: longitude });
 
         const map = mapInstanceRef.current;
-        if (map && (map as any)._mapPane) {
+        if (map) {
           try {
-            map.flyTo([latitude, longitude], 14, { duration: 1.2 });
+            map.flyTo({ center: [longitude, latitude], zoom: 14, duration: 1200, essential: true });
           } catch {
             // Safe guard
           }
@@ -1264,6 +948,28 @@ export const GeographicLocationMap: React.FC = () => {
     );
   };
 
+  // Update blue pulsing GPS dot marker when userGpsPosition resolves
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !userGpsPosition) return;
+
+    if (userMarkerRef.current) {
+      userMarkerRef.current.setLngLat([userGpsPosition.lng, userGpsPosition.lat]);
+      return;
+    }
+
+    const gpsEl = document.createElement('div');
+    gpsEl.className = 'relative flex items-center justify-center pointer-events-none';
+    gpsEl.innerHTML = `
+      <span class="absolute w-7 h-7 rounded-full bg-sky-500/35 animate-ping"></span>
+      <span class="relative w-3.5 h-3.5 rounded-full bg-sky-500 border-2 border-white shadow-lg"></span>
+    `;
+
+    userMarkerRef.current = new maplibregl.Marker({ element: gpsEl, anchor: 'center' })
+      .setLngLat([userGpsPosition.lng, userGpsPosition.lat])
+      .addTo(map);
+  }, [userGpsPosition]);
+
   // Fullscreen toggle
   const toggleFullscreen = () => {
     if (!wrapperRef.current) return;
@@ -1284,9 +990,9 @@ export const GeographicLocationMap: React.FC = () => {
       setIsFullscreen(!!document.fullscreenElement);
       setTimeout(() => {
         const map = mapInstanceRef.current;
-        if (map && (map as any)._mapPane) {
+        if (map) {
           try {
-            map.invalidateSize({ animate: false });
+            map.resize();
           } catch {
             // Safe guard
           }
@@ -1297,132 +1003,147 @@ export const GeographicLocationMap: React.FC = () => {
     return () => document.removeEventListener('fullscreenchange', handleFsChange);
   }, []);
 
-  // Initialize Map Once on Mount
+  // Initialize MapLibre GL 3D WebGL Map Once on Mount
   useEffect(() => {
     if (!mapContainerRef.current) return;
     if (mapInstanceRef.current) return;
 
-    if ((mapContainerRef.current as any)._leaflet_id) {
-      delete (mapContainerRef.current as any)._leaflet_id;
-    }
-
-    const regionalBounds = L.latLngBounds([4.0, 114.0], [21.5, 128.0]);
-
-    // Initialize Leaflet with native touch/drag/wheel disabled so our single
-    // rotation-aware Gesture Engine handles everything cleanly with zero conflicts.
-    const initialMap = L.map(mapContainerRef.current, {
-      center: [9.7380, 122.3920],
+    const initialMap = new maplibregl.Map({
+      container: mapContainerRef.current,
+      style: MAP_STYLE,
+      center: [122.3920, 9.7380],
       zoom: 12,
       minZoom: 5,
       maxZoom: 18,
-      zoomSnap: 0,
-      zoomDelta: 0.75,
-      maxBounds: regionalBounds,
-      maxBoundsViscosity: 0.85,
-      bounceAtZoomLimits: true,
-      dragging: false,
-      touchZoom: false,
-      doubleClickZoom: false,
-      scrollWheelZoom: false,
-      boxZoom: false,
-      zoomControl: false,
+      pitch: 0,
+      maxPitch: MAX_3D_PITCH,
+      bearing: 0,
+      maxBounds: [
+        [114.0, 4.0],
+        [128.0, 21.5]
+      ],
+      dragPan: true,
+      dragRotate: true,
+      pitchWithRotate: true,
+      touchZoomRotate: true,
+      touchPitch: true,
+      scrollZoom: true,
+      doubleClickZoom: true,
+      keyboard: true,
       attributionControl: false
     });
 
-    const provider = TILE_PROVIDERS['standard'];
-    const initialTiles = L.tileLayer(provider.url, {
-      maxNativeZoom: provider.maxZoom,
-      maxZoom: 18,
-      attribution: provider.attribution,
-      keepBuffer: 6,
-      updateWhenIdle: false,
-      updateWhenZooming: true
-    }).addTo(initialMap);
-
-    tileLayerRef.current = initialTiles;
     mapInstanceRef.current = initialMap;
 
-    // Populate all markers
-    ALL_LOCATIONS.forEach(loc => {
-      const icon = createCustomMarkerIcon(loc, loc.id === 'alon-aninag');
-      const marker = L.marker([loc.lat, loc.lng], { icon }).addTo(initialMap);
+    // Add coastal sky/horizon atmosphere for angled 3D view
+    initialMap.on('style.load', () => {
+      try {
+        initialMap.setSky({
+          'sky-color': '#88C6DF',
+          'sky-horizon-blend': 0.55,
+          'horizon-color': '#DDEFF6',
+          'horizon-fog-blend': 0.5,
+          'fog-color': '#CDE5EE',
+          'fog-ground-blend': 0.25
+        });
+      } catch {
+        // Safe fallback if browser WebGL shader skips sky
+      }
+    });
 
-      marker.on('click', () => {
+    // Live camera telemetry synchronization for Compass & 3D Tilt indicators
+    const syncOrientation = () => {
+      setMapBearing(normalizeBearing(initialMap.getBearing()));
+      setMapPitch(Math.round(initialMap.getPitch()));
+    };
+    initialMap.on('rotate', syncOrientation);
+    initialMap.on('pitch', syncOrientation);
+    initialMap.on('moveend', syncOrientation);
+
+    // Populate all 20 Sipalay destination markers anchored at diamond tip
+    ALL_LOCATIONS.forEach(loc => {
+      const el = createMarkerElement(loc, loc.id === 'alon-aninag');
+
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
         setSelectedLocationId(loc.id);
         setIsCardVisible(true);
         triggerAutoHide();
-        if ((initialMap as any)._mapPane) {
-          try {
-            initialMap.flyTo([loc.lat, loc.lng], Math.max(initialMap.getZoom(), 14), {
-              duration: 0.8,
-              easeLinearity: 0.25
-            });
-          } catch {
-            // Safe guard
-          }
+        try {
+          initialMap.flyTo({
+            center: [loc.lng, loc.lat],
+            zoom: Math.max(initialMap.getZoom(), 14),
+            duration: 850,
+            essential: true
+          });
+        } catch {
+          // Safe guard
         }
       });
+
+      const marker = new maplibregl.Marker({
+        element: el,
+        anchor: 'bottom'
+      })
+        .setLngLat([loc.lng, loc.lat])
+        .addTo(initialMap);
 
       markersRef.current[loc.id] = marker;
     });
 
-    let fitTimer: any = setTimeout(() => {
-      if (initialMap && (initialMap as any)._mapPane) {
-        try {
-          initialMap.invalidateSize({ animate: false });
-          const bounds = L.latLngBounds(ALL_LOCATIONS.map(l => [l.lat, l.lng]));
-          fitBoundsInVisibleViewport(bounds);
-        } catch {
-          // Safe guard
-        }
+    const fitTimer = setTimeout(() => {
+      try {
+        initialMap.resize();
+        fitAllDestinations({ pitch: 0, bearing: 0, duration: 0 });
+      } catch {
+        // Safe guard
       }
-    }, 350);
+    }, 300);
 
     return () => {
-      if (fitTimer) {
-        clearTimeout(fitTimer);
-        fitTimer = null;
+      clearTimeout(fitTimer);
+      Object.values(markersRef.current).forEach(m => m.remove());
+      markersRef.current = {};
+      if (userMarkerRef.current) {
+        userMarkerRef.current.remove();
+        userMarkerRef.current = null;
       }
       try {
-        if ((initialMap as any)._mapPane) {
-          initialMap.remove();
-        }
+        initialMap.remove();
       } catch {
         // Safe guard
       }
       mapInstanceRef.current = null;
-      tileLayerRef.current = null;
     };
-  }, [createCustomMarkerIcon, fitBoundsInVisibleViewport, triggerAutoHide]);
+  }, [createMarkerElement, fitAllDestinations, triggerAutoHide]);
 
-  // Handle Tile Layer Switching with full buffer preloading
+  // Handle Instant Tile Layer Switching (Zero Flicker, Preserves 3D Tilt & Bearing)
   const handleTileChange = (style: MapTileStyle) => {
     setActiveTileStyle(style);
     const map = mapInstanceRef.current;
-    if (!map || !(map as any)._mapPane || !tileLayerRef.current) return;
+    if (!map) return;
+
+    const layers: Array<{ id: string; key: MapTileStyle }> = [
+      { id: 'standard-layer', key: 'standard' },
+      { id: 'satellite-layer', key: 'satellite' },
+      { id: 'terrain-layer', key: 'terrain' }
+    ];
 
     try {
-      map.removeLayer(tileLayerRef.current);
-      const provider = TILE_PROVIDERS[style];
-      const newTiles = L.tileLayer(provider.url, {
-        maxNativeZoom: provider.maxZoom,
-        maxZoom: 18,
-        attribution: provider.attribution,
-        keepBuffer: 6,
-        updateWhenIdle: false,
-        updateWhenZooming: true
-      }).addTo(map);
-
-      tileLayerRef.current = newTiles;
+      layers.forEach(({ id, key }) => {
+        if (map.getLayer(id)) {
+          map.setLayoutProperty(id, 'visibility', key === style ? 'visible' : 'none');
+        }
+      });
     } catch {
       // Safe guard
     }
   };
 
-  // Sync Markers with Category Filters and Selection
+  // Sync Markers with Category Filters and Selection Without Rebuilding DOM Nodes
   useEffect(() => {
     const map = mapInstanceRef.current;
-    if (!map || !(map as any)._mapPane) return;
+    if (!map) return;
 
     ALL_LOCATIONS.forEach(loc => {
       const marker = markersRef.current[loc.id];
@@ -1430,19 +1151,45 @@ export const GeographicLocationMap: React.FC = () => {
 
       const isCategoryVisible =
         selectedCategories.length === 0 || selectedCategories.includes(loc.categoryGroup);
+      const isSelected = loc.id === selectedLocationId;
+      const el = marker.getElement();
 
-      if (isCategoryVisible) {
-        if (!map.hasLayer(marker)) {
-          marker.addTo(map);
-        }
-        marker.setIcon(createCustomMarkerIcon(loc, loc.id === selectedLocationId));
-      } else {
-        if (map.hasLayer(marker)) {
-          map.removeLayer(marker);
+      el.style.display = isCategoryVisible ? 'flex' : 'none';
+      el.style.zIndex = isSelected ? '20' : loc.id === 'alon-aninag' ? '12' : '2';
+
+      const circleEl = el.querySelector('[data-pin-circle="true"]');
+      if (circleEl) {
+        const activeClasses =
+          loc.id === 'alon-aninag'
+            ? ['ring-4', 'ring-amber-400', 'scale-110']
+            : loc.categoryGroup === 'Competitors'
+            ? ['ring-4', 'ring-pink-400', 'scale-110']
+            : loc.categoryGroup === 'Beaches'
+            ? ['ring-4', 'ring-cyan-300', 'scale-110']
+            : loc.categoryGroup === 'Restaurants'
+            ? ['ring-4', 'ring-amber-300', 'scale-110']
+            : ['ring-4', 'ring-emerald-300', 'scale-110'];
+
+        circleEl.classList.remove(
+          'ring-2',
+          'ring-[#006D77]/50',
+          'ring-4',
+          'ring-amber-400',
+          'ring-pink-400',
+          'ring-cyan-300',
+          'ring-amber-300',
+          'ring-emerald-300',
+          'scale-110'
+        );
+
+        if (isSelected) {
+          circleEl.classList.add(...activeClasses);
+        } else if (loc.id === 'alon-aninag') {
+          circleEl.classList.add('ring-2', 'ring-[#006D77]/50');
         }
       }
     });
-  }, [selectedCategories, selectedLocationId, createCustomMarkerIcon]);
+  }, [selectedCategories, selectedLocationId]);
 
   const handleCopyAddress = (loc: ResortLocation) => {
     if (navigator.clipboard) {
@@ -1629,112 +1376,144 @@ export const GeographicLocationMap: React.FC = () => {
           overscrollBehavior: 'contain'
         }}
       >
-        {/* Oversized Centered Square Canvas (D x D where D > hypot(W,H) + 160): Zero black/empty corners at any rotation */}
+        {/* Full-bleed WebGL 3D Interactive Map Canvas */}
         <div
           ref={mapContainerRef}
-          className="absolute top-1/2 left-1/2 z-10 select-none"
-          style={{
-            width: `${canvasSize}px`,
-            height: `${canvasSize}px`,
-            marginLeft: `${-canvasSize / 2}px`,
-            marginTop: `${-canvasSize / 2}px`,
-            transform: `rotate(${mapBearing}deg)`,
-            transformOrigin: 'center center',
-            transition: isActiveTouching ? 'none' : 'transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1)',
-            touchAction: 'none',
-            ['--map-bearing' as any]: `${-mapBearing}deg`
-          }}
+          className="absolute inset-0 w-full h-full z-10 select-none"
+          style={{ touchAction: 'none' }}
         />
 
-        {/* Real-time Bearing Indicator & Quick Reset North */}
-        {Math.round(mapBearing) !== 0 && Math.round(mapBearing) !== 360 && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-stone-900/95 dark:bg-black/95 text-white backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-bold border border-teal-500/50 shadow-xl flex items-center gap-2 animate-fadeIn pointer-events-auto">
-            <span
-              className="w-3.5 h-3.5 text-teal-400 inline-block transition-transform duration-150"
-              style={{ transform: `rotate(${-mapBearing}deg)` }}
-            >
-              ▲
-            </span>
-            <span>Rotation: {Math.round(mapBearing)}°</span>
-            <button
-              onClick={handleResetBearing}
-              className="text-[10px] bg-[#006D77] hover:bg-[#00555d] text-white uppercase font-extrabold tracking-wider px-2.5 py-0.5 rounded-full transition cursor-pointer shadow-xs ml-1"
-              title="Reset orientation to True North"
-            >
-              Reset North
-            </button>
+        {/* Real-time 3D Tilt & Bearing Indicator with One-Tap Reset */}
+        {(mapPitch >= 1 || (mapBearing !== 0 && mapBearing !== 360)) && (
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-stone-900/95 dark:bg-black/95 text-white backdrop-blur-md px-3 py-1.5 rounded-full text-[11px] font-bold border border-teal-500/50 shadow-xl flex flex-wrap items-center justify-center gap-2 animate-fadeIn pointer-events-auto max-w-[85%] sm:max-w-none">
+            {mapPitch >= 1 && (
+              <div className="flex items-center gap-1.5">
+                <Box className="w-3.5 h-3.5 text-teal-400 shrink-0" />
+                <span>Tilt: {mapPitch}°</span>
+                <button
+                  onClick={handleReturn2D}
+                  className="text-[10px] bg-[#006D77] hover:bg-[#00555d] text-white uppercase font-extrabold tracking-wider px-2 py-0.5 rounded-full transition cursor-pointer shadow-xs"
+                  title="Return to flat 2D overhead view"
+                >
+                  2D View
+                </button>
+              </div>
+            )}
+            {mapPitch >= 1 && mapBearing !== 0 && mapBearing !== 360 && (
+              <span className="text-white/25">•</span>
+            )}
+            {mapBearing !== 0 && mapBearing !== 360 && (
+              <div className="flex items-center gap-1.5">
+                <span
+                  className="w-3 h-3 text-teal-400 inline-flex items-center justify-center transition-transform duration-150"
+                  style={{ transform: `rotate(${-mapBearing}deg)` }}
+                >
+                  ▲
+                </span>
+                <span>Rotation: {mapBearing}°</span>
+                <button
+                  onClick={handleResetBearing}
+                  className="text-[10px] bg-[#006D77] hover:bg-[#00555d] text-white uppercase font-extrabold tracking-wider px-2 py-0.5 rounded-full transition cursor-pointer shadow-xs"
+                  title="Reset orientation to True North"
+                >
+                  Reset North
+                </button>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Touch Gesture Helper Pill */}
-        <div className="absolute top-16 left-4 z-20 hidden lg:flex items-center gap-1.5 bg-black/60 backdrop-blur-md text-white/90 text-[10px] px-2.5 py-1 rounded-full border border-white/10 pointer-events-none select-none">
-          <span>1 Finger: Pan</span>
+        {/* Unobtrusive Desktop Gesture Hint Pill */}
+        <div className="absolute bottom-8 right-2 z-15 hidden xl:flex items-center gap-1.5 bg-black/60 backdrop-blur-md text-white/90 text-[10px] px-2.5 py-1 rounded-full border border-white/10 pointer-events-none select-none">
+          <span>Drag: Pan</span>
           <span className="opacity-40">•</span>
-          <span>2 Fingers: Rotate & Pan</span>
+          <span>Right-Drag / 2-Finger Drag: 3D Tilt &amp; Rotate</span>
           <span className="opacity-40">•</span>
-          <span>Pinch: Zoom</span>
-          <span className="opacity-40">•</span>
-          <span>Double-Tap: Zoom In</span>
+          <span>Pinch / Scroll: Zoom</span>
         </div>
 
-        {/* FLOATING TOP-RIGHT MAP CONTROLS: Zoom, Rotation, Compass, GPS, Fullscreen */}
-        <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
+        {/* FLOATING TOP-RIGHT 3D & CAMERA CONTROLS: Zoom, Compass, 3D Tilt, Rotate, GPS, Reset, Fullscreen */}
+        <div className="absolute top-3 right-3 z-20 flex flex-col gap-1.5">
           {/* Zoom Buttons */}
           <div className="bg-white/95 dark:bg-[#131F2A]/95 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 overflow-hidden flex flex-col">
             <button
-              onClick={() => {
-                const map = mapInstanceRef.current;
-                if (map && (map as any)._mapPane) {
-                  map.setZoom(Math.min(18, map.getZoom() + 0.75), { animate: true });
-                }
-              }}
-              className="p-2.5 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer border-b border-stone-200 dark:border-stone-700"
+              onClick={handleZoomIn}
+              className="py-1.5 px-2.5 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer border-b border-stone-200 dark:border-stone-700 flex items-center justify-center"
               title="Zoom In"
               aria-label="Zoom In"
             >
-              <span className="text-base font-bold leading-none">+</span>
+              <span className="text-sm font-bold leading-none">+</span>
             </button>
             <button
-              onClick={() => {
-                const map = mapInstanceRef.current;
-                if (map && (map as any)._mapPane) {
-                  map.setZoom(Math.max(5, map.getZoom() - 0.75), { animate: true });
-                }
-              }}
-              className="p-2.5 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer"
+              onClick={handleZoomOut}
+              className="py-1.5 px-2.5 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer flex items-center justify-center"
               title="Zoom Out"
               aria-label="Zoom Out"
             >
-              <span className="text-base font-bold leading-none">−</span>
+              <span className="text-sm font-bold leading-none">−</span>
             </button>
           </div>
 
           {/* Interactive Compass Widget (Synchronized orientation; click to reset North) */}
           <button
             onClick={handleResetBearing}
-            className="p-2.5 bg-white/95 dark:bg-[#131F2A]/95 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 transition cursor-pointer flex flex-col items-center justify-center group"
-            title={`Compass (${Math.round(mapBearing)}°). Click to reset North.`}
+            className="py-1.5 px-2 bg-white/95 dark:bg-[#131F2A]/95 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 transition cursor-pointer flex flex-col items-center justify-center group"
+            title={`Compass (${mapBearing}°). Click to reset North.`}
             aria-label="Reset Compass to North"
           >
             <div
-              className="w-4 h-4 flex items-center justify-center text-teal-600 dark:text-teal-400"
-              style={{
-                transform: `rotate(${-mapBearing}deg)`,
-                transition: isActiveTouching ? 'none' : 'transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1)'
-              }}
+              className="w-4 h-4 flex items-center justify-center text-teal-600 dark:text-teal-400 transition-transform duration-150"
+              style={{ transform: `rotate(${-mapBearing}deg)` }}
             >
               <Compass className="w-4 h-4 group-hover:scale-110 transition-transform" />
             </div>
-            <span className="text-[8px] font-bold text-stone-500 mt-0.5">
-              {Math.round(mapBearing) === 0 || Math.round(mapBearing) === 360 ? 'N' : `${Math.round(mapBearing)}°`}
+            <span className="text-[8px] font-bold text-stone-500 dark:text-stone-400 leading-none mt-0.5">
+              {mapBearing === 0 ? 'N' : `${mapBearing}°`}
             </span>
           </button>
+
+          {/* Interactive 3D Tilt Controls: 3D/2D Mode Toggle + Tilt Up/Down */}
+          <div className="bg-white/95 dark:bg-[#131F2A]/95 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 overflow-hidden flex flex-col">
+            <button
+              onClick={handleToggle3DTilt}
+              className={`py-1.5 px-2 transition cursor-pointer border-b border-stone-200 dark:border-stone-700 flex flex-col items-center justify-center ${
+                mapPitch >= 10
+                  ? 'bg-[#006D77] text-white'
+                  : 'text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800'
+              }`}
+              title={mapPitch >= 10 ? 'Return to flat 2D view' : 'Switch to angled 3D perspective'}
+              aria-label="Toggle 3D Tilt View"
+            >
+              <Box className="w-3.5 h-3.5" />
+              <span className="text-[8.5px] font-extrabold leading-none mt-0.5">
+                {mapPitch >= 10 ? '2D' : '3D'}
+              </span>
+            </button>
+            <button
+              onClick={handleTiltUp}
+              disabled={mapPitch >= MAX_3D_PITCH}
+              className="py-1 px-2 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-35 disabled:cursor-not-allowed transition cursor-pointer border-b border-stone-200 dark:border-stone-700 flex items-center justify-center"
+              title="Tilt Up (Increase 3D perspective angle)"
+              aria-label="Tilt Up"
+            >
+              <ChevronUp className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={handleTiltDown}
+              disabled={mapPitch <= 0}
+              className="py-1 px-2 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 disabled:opacity-35 disabled:cursor-not-allowed transition cursor-pointer flex items-center justify-center"
+              title="Tilt Down (Flatten toward 2D view)"
+              aria-label="Tilt Down"
+            >
+              <ChevronDown className="w-3.5 h-3.5" />
+            </button>
+          </div>
 
           {/* Map Rotation Buttons */}
           <div className="bg-white/95 dark:bg-[#131F2A]/95 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 overflow-hidden flex flex-col">
             <button
               onClick={handleRotateLeft}
-              className="p-2 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer border-b border-stone-200 dark:border-stone-700"
+              className="p-1.5 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer border-b border-stone-200 dark:border-stone-700 flex items-center justify-center"
               title="Rotate Map Counter-Clockwise (-45°)"
               aria-label="Rotate Left"
             >
@@ -1742,7 +1521,7 @@ export const GeographicLocationMap: React.FC = () => {
             </button>
             <button
               onClick={handleRotateRight}
-              className="p-2 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer"
+              className="p-1.5 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer flex items-center justify-center"
               title="Rotate Map Clockwise (+45°)"
               aria-label="Rotate Right"
             >
@@ -1754,33 +1533,33 @@ export const GeographicLocationMap: React.FC = () => {
           <button
             onClick={handleLocateUser}
             disabled={isLocating}
-            className={`p-2.5 bg-white/95 dark:bg-[#131F2A]/95 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 transition cursor-pointer flex items-center justify-center ${
+            className={`p-2 bg-white/95 dark:bg-[#131F2A]/95 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 transition cursor-pointer flex items-center justify-center ${
               isLocating ? 'animate-spin text-teal-600' : ''
             }`}
             title="Locate My Current GPS Position"
             aria-label="Locate Me"
           >
-            <Crosshair className="w-4 h-4" />
+            <Crosshair className="w-3.5 h-3.5" />
           </button>
 
-          {/* Reset Map Button (Requirement 1: Overview of all destinations) */}
+          {/* Reset Map Button (Overview + True North + Flat 2D) */}
           <button
             onClick={handleResetMap}
-            className="p-2.5 bg-white/95 dark:bg-[#131F2A]/95 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 transition cursor-pointer flex items-center justify-center"
-            title="Reset Map to Full Sipalay Overview"
+            className="py-1.5 px-2 bg-white/95 dark:bg-[#131F2A]/95 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 transition cursor-pointer flex items-center justify-center"
+            title="Reset Map Position, Orientation & 2D View"
             aria-label="Reset Map"
           >
-            <span className="text-[10px] font-extrabold text-[#006D77] dark:text-[#83C5BE]">RESET</span>
+            <span className="text-[9.5px] font-extrabold text-[#006D77] dark:text-[#83C5BE]">RESET</span>
           </button>
 
           {/* Fullscreen Toggle */}
           <button
             onClick={toggleFullscreen}
-            className="p-2.5 bg-white/95 dark:bg-[#131F2A]/95 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 transition cursor-pointer flex items-center justify-center"
+            className="p-2 bg-white/95 dark:bg-[#131F2A]/95 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl shadow-lg border border-stone-200 dark:border-stone-700 transition cursor-pointer flex items-center justify-center"
             title={isFullscreen ? 'Exit Fullscreen' : 'View Fullscreen Map'}
             aria-label="Toggle Fullscreen"
           >
-            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
           </button>
         </div>
 

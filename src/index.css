@@ -60,22 +60,17 @@
   scrollbar-width: none;  /* Firefox */
 }
 
-/* Geographic Map: Keep markers upright when map is rotated */
-.map-pin-upright {
-  transform: rotate(var(--map-bearing, 0deg));
-  transform-origin: center bottom;
-  will-change: transform;
-}
-
-.leaflet-container {
-  background-color: #aadaff !important;
+/* Geographic Map: WebGL 3D Interactive Map Viewport & Markers */
+.maplibregl-map,
+.maplibregl-canvas-container,
+.maplibregl-canvas {
+  background-color: #AAD3DF;
   touch-action: none !important;
   -webkit-user-select: none;
   user-select: none;
   outline: none;
 }
 
-.custom-map-div-marker {
-  background: transparent !important;
-  border: none !important;
+.maplibregl-custom-marker {
+  will-change: transform;
 }
